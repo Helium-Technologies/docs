@@ -1,0 +1,49 @@
+---
+title: "Authentication"
+description: "Authenticate your API requests using Bearer tokens."
+---
+
+Every request to the NinjaChat API must include your API key as a Bearer token in the `Authorization` header:
+
+```
+Authorization: Bearer nj_sk_YOUR_API_KEY
+```
+
+## API key format
+
+All NinjaChat API keys start with the `nj_sk_` prefix. Keys are shown only once at creation — store them securely.
+
+## Creating an API key
+
+You can create API keys in two ways:
+
+1. **Dashboard** — Go to [Settings > API](https://ninjachat.ai/settings?tab=api) and click "Create API Key"
+2. **API** — Use the [API key management endpoint](/api-reference/api-keys) to create keys programmatically
+
+You can have up to **5 active API keys** per account.
+
+## Security best practices
+
+<Warning>
+  Never commit API keys to source control or expose them in client-side code.
+</Warning>
+
+- Store keys in environment variables or a secrets manager
+- Rotate keys periodically
+- Revoke compromised keys immediately from your [dashboard](https://ninjachat.ai/settings?tab=api) or via the [API](/api-reference/api-keys)
+- Use separate keys for development and production environments
+
+## CORS support
+
+All `/api/v1/*` endpoints support CORS, so you can call the API directly from browser-based applications:
+
+```
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: POST, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Authorization
+Access-Control-Max-Age: 86400
+```
+
+<Note>
+  Even though CORS is supported, avoid exposing your API key in frontend code. Use a backend proxy for production applications.
+</Note>

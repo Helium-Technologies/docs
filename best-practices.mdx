@@ -1,0 +1,45 @@
+---
+title: "Best Practices"
+description: "Recommendations for building reliable integrations with the NinjaChat API."
+---
+
+## Store keys securely
+
+Never commit API keys to source control or expose them in client-side code. Use environment variables or a secrets manager.
+
+```bash
+export NINJACHAT_API_KEY="nj_sk_YOUR_API_KEY"
+```
+
+## Handle rate limits gracefully
+
+Check the `Retry-After` header on 429 responses and implement exponential backoff. See [Plans & Limits](/plans-and-limits) for rate limit details.
+
+## Monitor your quota
+
+Every response includes your `remaining` request count. Set up alerts before you hit your limit to avoid service interruptions.
+
+## Use streaming for chat
+
+For user-facing applications, set `stream: true` in chat requests to display responses as they generate. This provides a better user experience than waiting for the full response.
+
+```json
+{
+  "messages": [{"role": "user", "content": "Hello!"}],
+  "stream": true
+}
+```
+
+## Write specific image prompts
+
+Include style, lighting, detail level, and composition keywords for better image generation results:
+
+```json
+{
+  "prompt": "A cyberpunk cityscape at night with neon signs and rain, photorealistic, 8k detail"
+}
+```
+
+## Rotate keys periodically
+
+Create new keys and revoke old ones on a regular schedule. If a key is compromised, [revoke it immediately](https://ninjachat.ai/settings?tab=api).

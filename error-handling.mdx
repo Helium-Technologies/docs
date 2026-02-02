@@ -1,0 +1,81 @@
+---
+title: "Error Handling"
+description: "Understand error responses and status codes from the NinjaChat API."
+---
+
+All errors follow a consistent JSON format:
+
+```json
+{
+  "error": "error_code",
+  "message": "Human-readable description"
+}
+```
+
+Validation errors include a `details` array with field-level information:
+
+```json
+{
+  "error": "validation_error",
+  "message": "Invalid parameters",
+  "details": [
+    {
+      "field": "messages",
+      "message": "Required"
+    }
+  ]
+}
+```
+
+## Error codes
+
+| Status | Code | Description |
+|---|---|---|
+| 400 | `invalid_json` | Request body is not valid JSON |
+| 400 | `validation_error` | One or more parameters failed validation |
+| 401 | `missing_api_key` | No `Authorization: Bearer` header provided |
+| 401 | `invalid_api_key` | API key is invalid, revoked, or malformed |
+| 403 | `subscription_required` | Account does not have a paid NinjaChat plan |
+| 429 | `rate_limit_exceeded` | Too many requests — check `Retry-After` header |
+| 429 | `quota_exceeded` | Monthly request quota exhausted — upgrade your plan |
+| 502 | `generation_failed` | Upstream image generation failed (images endpoint only) |
+| 500 | `internal_error` | Server error — retry the request |
+
+## Handling errors in code
+
+<CodeGroup>
+
+```python Python
+import requests
+
+response = requests.post("https://ninjachat.ai/api/v1/chat", ...)
+
+if response.status_code == 200:
+    data = response.json()
+    print(data["message"]["content"])
+elif response.status_code == 429:
+    retry_after = int(response.headers.get("Retry-After", 60))
+    print(f"Rate limited. Retry after {retry_after} seconds.")
+elif response.status_code == 401:
+    print("Authentication failed. Check your API key.")
+else:
+    error = response.json()
+    print(f"Error {error['error']}: {error['message']}")
+```
+
+```javascript JavaScript
+const response = await fetch("https://ninjachat.ai/api/v1/chat", { ... });
+
+if (response.ok) {
+  const data = await response.json();
+  console.log(data.message.content);
+} else if (response.status === 429) {
+  const retryAfter = response.headers.get("Retry-After") || 60;
+  console.log(`Rate limited. Retry after ${retryAfter} seconds.`);
+} else {
+  const error = await response.json();
+  console.error(`Error ${error.error}: ${error.message}`);
+}
+```
+
+</CodeGroup>
