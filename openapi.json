@@ -41,20 +41,13 @@
           }
         }
       },
-      "Quota": {
+      "Cost": {
         "type": "object",
         "properties": {
-          "remaining": {
-            "type": "integer",
-            "example": 4999
-          },
-          "limit": {
-            "type": "integer",
-            "example": 5000
-          },
-          "plan": {
+          "this_request": {
             "type": "string",
-            "example": "starter"
+            "example": "$0.006",
+            "description": "Cost of this request."
           }
         }
       },
@@ -89,7 +82,7 @@
       "post": {
         "operationId": "createChatCompletion",
         "summary": "Chat Completions",
-        "description": "Generate AI text completions. Supports both standard and streaming responses.",
+        "description": "Generate AI text completions. Supports both standard and streaming responses. Cost: $0.006 per request.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -171,7 +164,7 @@
                         "total_tokens": { "type": "integer", "example": 170 }
                       }
                     },
-                    "quota": { "$ref": "#/components/schemas/Quota" },
+                    "cost": { "$ref": "#/components/schemas/Cost" },
                     "metadata": {
                       "type": "object",
                       "properties": {
@@ -185,27 +178,23 @@
           },
           "400": {
             "description": "Invalid request.",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "401": {
             "description": "Authentication failed.",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "402": {
+            "description": "Insufficient credits.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "403": {
+            "description": "No active API subscription.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "429": {
-            "description": "Rate limit or quota exceeded.",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
-              }
-            }
+            "description": "Rate limit exceeded.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           }
         }
       }
@@ -214,7 +203,7 @@
       "post": {
         "operationId": "searchWeb",
         "summary": "Web Search",
-        "description": "Search the web, academic papers, or news with an optional AI-generated answer that synthesizes the results.",
+        "description": "Search the web, academic papers, or news with an optional AI-generated answer that synthesizes the results. Cost: $0.05 per query.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -314,14 +303,7 @@
                       "type": "array",
                       "items": { "type": "string" }
                     },
-                    "usage": {
-                      "type": "object",
-                      "properties": {
-                        "remaining": { "type": "integer" },
-                        "limit": { "type": "integer" },
-                        "plan": { "type": "string" }
-                      }
-                    },
+                    "cost": { "$ref": "#/components/schemas/Cost" },
                     "metadata": {
                       "type": "object",
                       "properties": {
@@ -344,8 +326,12 @@
             "description": "Authentication failed.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
+          "402": {
+            "description": "Insufficient credits.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
           "429": {
-            "description": "Rate limit or quota exceeded.",
+            "description": "Rate limit exceeded.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           }
         }
@@ -355,7 +341,7 @@
       "post": {
         "operationId": "generateImages",
         "summary": "Image Generation",
-        "description": "Generate images from text prompts. Supports text-to-image and image-to-image editing with a reference URL.",
+        "description": "Generate images from text prompts. Supports text-to-image and image-to-image editing with a reference URL. Cost: $0.08 per image.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -431,7 +417,14 @@
                         "images_generated": { "type": "integer" }
                       }
                     },
-                    "quota": { "$ref": "#/components/schemas/Quota" },
+                    "cost": {
+                      "type": "object",
+                      "properties": {
+                        "this_request": { "type": "string", "example": "$0.08" },
+                        "per_image": { "type": "string", "example": "$0.08" },
+                        "images": { "type": "integer", "example": 1 }
+                      }
+                    },
                     "metadata": {
                       "type": "object",
                       "properties": {
@@ -452,8 +445,12 @@
             "description": "Authentication failed.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
+          "402": {
+            "description": "Insufficient credits.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
           "429": {
-            "description": "Rate limit or quota exceeded.",
+            "description": "Rate limit exceeded.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "502": {
@@ -467,11 +464,11 @@
       "get": {
         "operationId": "listApiKeys",
         "summary": "List API Keys",
-        "description": "List all your API keys with usage stats and plan info.",
+        "description": "List all your API keys with usage stats and billing info.",
         "tags": ["Management"],
         "responses": {
           "200": {
-            "description": "API key list.",
+            "description": "API key list with billing info.",
             "content": {
               "application/json": {
                 "schema": {
@@ -488,8 +485,7 @@
                           "createdAt": { "type": "string", "format": "date-time" },
                           "lastUsedAt": { "type": "string", "format": "date-time", "nullable": true },
                           "revokedAt": { "type": "string", "format": "date-time", "nullable": true },
-                          "usageCount": { "type": "integer" },
-                          "monthlyUsage": { "type": "integer" }
+                          "usageCount": { "type": "integer" }
                         }
                       }
                     },
@@ -497,18 +493,49 @@
                       "type": "object",
                       "properties": {
                         "activeKeys": { "type": "integer" },
-                        "monthlyUsage": { "type": "integer" },
                         "totalUsage": { "type": "integer" }
                       }
                     },
-                    "plan": {
+                    "billing": {
                       "type": "object",
                       "properties": {
-                        "name": { "type": "string" },
-                        "monthlyLimit": { "type": "integer" },
-                        "remaining": { "type": "integer" },
-                        "rateLimit": { "type": "integer" },
-                        "hasPaidPlan": { "type": "boolean" }
+                        "isSubscribed": { "type": "boolean" },
+                        "balanceCents": { "type": "integer", "description": "Remaining balance in cents." },
+                        "balanceFormatted": { "type": "string", "example": "$42.50" },
+                        "rateLimit": {
+                          "type": "object",
+                          "properties": {
+                            "requests": { "type": "integer", "example": 60 },
+                            "windowSeconds": { "type": "integer", "example": 60 }
+                          }
+                        },
+                        "usage": {
+                          "type": "object",
+                          "properties": {
+                            "chat": {
+                              "type": "object",
+                              "properties": {
+                                "count": { "type": "integer" },
+                                "costCents": { "type": "number" }
+                              }
+                            },
+                            "search": {
+                              "type": "object",
+                              "properties": {
+                                "count": { "type": "integer" },
+                                "costCents": { "type": "number" }
+                              }
+                            },
+                            "images": {
+                              "type": "object",
+                              "properties": {
+                                "count": { "type": "integer" },
+                                "costCents": { "type": "number" }
+                              }
+                            },
+                            "totalSpentCents": { "type": "number" }
+                          }
+                        }
                       }
                     }
                   }

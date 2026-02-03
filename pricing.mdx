@@ -1,0 +1,65 @@
+---
+title: "Pricing"
+description: "Understand API pricing, credits, and rate limits."
+---
+
+API access requires a **$5/month base subscription** plus prepaid credits. Each API call deducts from your credit balance.
+
+Subscribe and add credits from [Settings > API](https://www.ninjachat.ai/settings?tab=api).
+
+## Base subscription
+
+$5/month gives you API access, key management, dashboard, and rate limiting.
+
+## Credit packs
+
+| Pack | Price |
+|---|---|
+| 1,000 credits | $10 |
+| 2,500 credits | $25 |
+| 10,000 credits | $100 |
+
+1 credit = 1 cent. Credits never expire.
+
+## Per-request costs
+
+| Endpoint | Cost per request |
+|---|---|
+| Chat (`/api/v1/chat`) | $0.006 (0.6 credits) |
+| Search (`/api/v1/search`) | $0.05 (5 credits) |
+| Images (`/api/v1/images`) | $0.08 per image (8 credits) |
+
+Credits are deducted before each request. If your balance is insufficient, you'll receive a `402` error. Add more credits from [Settings > API](https://www.ninjachat.ai/settings?tab=api).
+
+## Rate limits
+
+All endpoints share a single rate limit of **60 requests per minute**. Image generation uses half the rate limit (30 req/min).
+
+## Rate limit headers
+
+All responses include these headers so you can monitor your rate limit status:
+
+| Header | Description |
+|---|---|
+| `X-RateLimit-Limit` | Max requests allowed in the current window |
+| `X-RateLimit-Remaining` | Requests remaining in the current window |
+| `X-RateLimit-Reset` | Seconds until the rate limit window resets |
+| `Retry-After` | Seconds to wait before retrying (only on 429 responses) |
+
+## Handling rate limits
+
+When you exceed your rate limit, the API returns a `429` status code. Use the `Retry-After` header to determine when to retry:
+
+```python
+import time
+import requests
+
+response = requests.post("https://ninjachat.ai/api/v1/chat", ...)
+
+if response.status_code == 429:
+    retry_after = int(response.headers.get("Retry-After", 60))
+    time.sleep(retry_after)
+    # Retry the request
+```
+
+For production applications, implement exponential backoff to handle rate limits gracefully.

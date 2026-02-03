@@ -24,7 +24,7 @@
           {
             "group": "Concepts",
             "pages": [
-              "plans-and-limits",
+              "pricing",
               "error-handling",
               "best-practices"
             ]
@@ -59,12 +59,12 @@
       "anchors": [
         {
           "anchor": "API Playground",
-          "href": "https://ninjachat.ai/api-playground",
+          "href": "https://www.ninjachat.ai/api-playground",
           "icon": "play"
         },
         {
           "anchor": "Dashboard",
-          "href": "https://ninjachat.ai/settings?tab=api",
+          "href": "https://www.ninjachat.ai/settings?tab=api",
           "icon": "key"
         }
       ]
@@ -78,14 +78,14 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:support@ninjachat.ai"
+        "label": "NinjaChat",
+        "href": "https://www.ninjachat.ai"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Get API Key",
-      "href": "https://ninjachat.ai/settings?tab=api"
+      "href": "https://www.ninjachat.ai/settings?tab=api"
     }
   },
   "contextual": {
@@ -100,7 +100,7 @@
   },
   "footer": {
     "socials": {
-      "website": "https://ninjachat.ai"
+      "website": "https://www.ninjachat.ai"
     }
   },
   "api": {
