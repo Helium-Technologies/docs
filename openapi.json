@@ -365,9 +365,9 @@
                   },
                   "size": {
                     "type": "string",
-                    "enum": ["1920x1920", "1920x1080", "1080x1920"],
+                    "enum": ["1920x1920", "2560x1440", "1440x2560"],
                     "default": "1920x1920",
-                    "description": "Output size: square, landscape, or portrait."
+                    "description": "Output size: 1920x1920 (square, 1:1), 2560x1440 (landscape, 16:9), or 1440x2560 (portrait, 9:16)."
                   },
                   "n": {
                     "type": "integer",
@@ -386,7 +386,7 @@
               "example": {
                 "model": "ninja-vision-1",
                 "prompt": "A cyberpunk cityscape at night with neon signs and rain, photorealistic, 8k detail",
-                "size": "1920x1080",
+                "size": "2560x1440",
                 "n": 1
               }
             }
