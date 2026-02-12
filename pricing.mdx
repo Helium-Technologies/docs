@@ -28,12 +28,13 @@ $5/month gives you API access, key management, dashboard, and rate limiting.
 | Chat (`/api/v1/chat`) | $0.006 (0.6 credits) |
 | Search (`/api/v1/search`) | $0.05 (5 credits) |
 | Images (`/api/v1/images`) | $0.08 per image (8 credits) |
+| Video (`/api/v1/video`) | $3.00 per video (300 credits) |
 
 Credits are deducted before each request. If your balance is insufficient, you'll receive a `402` error. Add more credits from [Settings > API](https://www.ninjachat.ai/settings?tab=api).
 
 ## Rate limits
 
-All endpoints share a single rate limit of **60 requests per minute**. Image generation uses half the rate limit (30 req/min).
+All endpoints share a single rate limit of **60 requests per minute**. Image generation uses half the rate limit (30 req/min). Video generation uses a stricter limit of **2 requests per minute** due to its higher compute cost. Polling the video status endpoint does not count toward the video rate limit.
 
 ## Rate limit headers
 

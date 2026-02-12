@@ -3,7 +3,7 @@
   "info": {
     "title": "NinjaChat API",
     "version": "1.0.0",
-    "description": "AI chat, web search, and image generation API. All models are uncensored with no content filters."
+    "description": "AI chat, web search, image generation, and video generation API. All models are uncensored with no content filters."
   },
   "servers": [
     {
@@ -455,6 +455,174 @@
           },
           "502": {
             "description": "Image generation failed upstream.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/video": {
+      "post": {
+        "operationId": "generateVideo",
+        "summary": "Video Generation",
+        "description": "Start a video generation job using Seedance 2.0. Supports text-to-video and image-to-video. The request is charged $3.00 per video upon acceptance. Poll the status endpoint with the returned `request_id` to retrieve the result. Cost: $3.00 per video.",
+        "tags": ["Endpoints"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["prompt"],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000,
+                    "description": "Text description of the video to generate. Cannot be empty or whitespace-only."
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "minimum": 5,
+                    "maximum": 15,
+                    "default": 15,
+                    "description": "Video length in seconds (5–15)."
+                  },
+                  "image_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Public URL of a reference image for image-to-video generation. Must be an HTTP or HTTPS URL (no localhost, private IPs, or internal hosts). Omit for text-to-video."
+                  }
+                }
+              },
+              "example": {
+                "prompt": "A golden retriever running in a sunny park",
+                "duration": 10
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Video generation job accepted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "request_id": {
+                      "type": "string",
+                      "example": "seedance2:abc123",
+                      "description": "Unique job identifier. Use this to poll the status endpoint."
+                    },
+                    "model": { "type": "string", "example": "seedance-2" },
+                    "message": {
+                      "type": "string",
+                      "example": "Video generation started. Poll GET /api/v1/video/status?request_id=seedance2:abc123 for progress."
+                    },
+                    "cost": {
+                      "type": "object",
+                      "properties": {
+                        "this_request": { "type": "string", "example": "$3.00" },
+                        "per_video": { "type": "string", "example": "$3.00" }
+                      }
+                    },
+                    "balance": { "type": "string", "example": "$39.00", "description": "Remaining credit balance after this charge." }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (missing/invalid prompt, invalid duration, or invalid image_url).",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "402": {
+            "description": "Insufficient credits.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "403": {
+            "description": "No active API subscription.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "429": {
+            "description": "Rate limit exceeded.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "502": {
+            "description": "Upstream video generation failed. You were not charged.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/video/status": {
+      "get": {
+        "operationId": "getVideoStatus",
+        "summary": "Video Generation Status",
+        "description": "Check the status of a video generation job created by `POST /api/v1/video`. Poll this endpoint until `status` is `completed` or `failed`. Recommended polling interval: every 15–30 seconds. No additional charge for polling.",
+        "tags": ["Endpoints"],
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The `request_id` returned from `POST /api/v1/video` (e.g. `seedance2:abc123`).",
+            "example": "seedance2:abc123"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "request_id": { "type": "string", "example": "seedance2:abc123" },
+                    "status": {
+                      "type": "string",
+                      "enum": ["processing", "completed", "failed"],
+                      "description": "`processing` — still generating (check `progress`). `completed` — video is ready (see `result.video_url`). `failed` — generation failed (see `error`)."
+                    },
+                    "progress": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 95,
+                      "description": "Approximate progress percentage (0–95). Only present when status is `processing`."
+                    },
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "video_url": {
+                          "type": "string",
+                          "description": "URL of the generated video. Only present when status is `completed`."
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Error description. Only present when status is `failed`."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid `request_id`.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "502": {
+            "description": "Upstream status check failed.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           }
         }

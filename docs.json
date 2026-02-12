@@ -40,7 +40,9 @@
             "pages": [
               "POST /api/v1/chat",
               "POST /api/v1/search",
-              "POST /api/v1/images"
+              "POST /api/v1/images",
+              "POST /api/v1/video",
+              "GET /api/v1/video/status"
             ]
           },
           {
