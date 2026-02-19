@@ -22,6 +22,12 @@
             ]
           },
           {
+            "group": "Guides",
+            "pages": [
+              "video-generation"
+            ]
+          },
+          {
             "group": "Concepts",
             "pages": [
               "pricing",

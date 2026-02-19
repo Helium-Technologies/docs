@@ -1,0 +1,257 @@
+---
+title: "Video Generation"
+description: "Generate AI videos with Seedance 2, Google Veo 3.1, and Veo 3.1 Fast."
+---
+
+The video generation API supports three models through a single endpoint. Submit a job, poll for completion, and receive a CDN-hosted MP4 URL.
+
+## Available models
+
+| Model | ID | Description | Duration | Aspect Ratio |
+|---|---|---|---|---|
+| Seedance 2 | `seedance-2` | Default model. Uncensored, no content filters. Longest duration support. | 5–15s | Fixed |
+| Google Veo 3.1 | `veo-3.1` | Google DeepMind's premium model. Cinematic quality, photorealistic detail. | 4, 6, or 8s | 16:9, 9:16 |
+| Veo 3.1 Fast | `veo-3.1-fast` | Speed-optimized Veo 3.1. Same architecture, 2-3x faster generation. | 4, 6, or 8s | 16:9, 9:16 |
+
+All models cost **$3.00 per video**. Credits are refunded automatically if generation fails.
+
+## How it works
+
+Video generation is asynchronous. The flow is:
+
+1. **Submit** — `POST /api/v1/video` with your prompt and model. Returns a `request_id` immediately.
+2. **Poll** — `GET /api/v1/video/status?request_id=...` until `status` is `completed` or `failed`.
+3. **Use** — The completed response contains a `video_url` pointing to a CDN-hosted MP4.
+
+<Note>
+Polling the status endpoint is free and does not count toward your rate limit or credits.
+</Note>
+
+## Text-to-video
+
+Generate a video from a text prompt:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://ninjachat.ai/api/v1/video \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -d '{
+    "prompt": "A drone shot soaring over a misty mountain range at golden hour",
+    "model": "veo-3.1",
+    "duration": 8,
+    "aspect_ratio": "16:9"
+  }'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://ninjachat.ai/api/v1/video",
+    headers={
+        "Content-Type": "application/json",
+        "Authorization": "Bearer nj_sk_YOUR_API_KEY",
+    },
+    json={
+        "prompt": "A drone shot soaring over a misty mountain range at golden hour",
+        "model": "veo-3.1",
+        "duration": 8,
+        "aspect_ratio": "16:9",
+    },
+)
+
+data = response.json()
+print(data["request_id"])
+```
+
+```javascript JavaScript
+const response = await fetch("https://ninjachat.ai/api/v1/video", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer nj_sk_YOUR_API_KEY",
+  },
+  body: JSON.stringify({
+    prompt: "A drone shot soaring over a misty mountain range at golden hour",
+    model: "veo-3.1",
+    duration: 8,
+    aspect_ratio: "16:9",
+  }),
+});
+
+const data = await response.json();
+console.log(data.request_id);
+```
+
+</CodeGroup>
+
+## Image-to-video
+
+Animate a reference image by passing `image_url`:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://ninjachat.ai/api/v1/video \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -d '{
+    "prompt": "Camera slowly pulls back, clouds drift across the sky",
+    "model": "veo-3.1",
+    "duration": 6,
+    "aspect_ratio": "16:9",
+    "image_url": "https://example.com/landscape.jpg"
+  }'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://ninjachat.ai/api/v1/video",
+    headers={
+        "Content-Type": "application/json",
+        "Authorization": "Bearer nj_sk_YOUR_API_KEY",
+    },
+    json={
+        "prompt": "Camera slowly pulls back, clouds drift across the sky",
+        "model": "veo-3.1",
+        "duration": 6,
+        "aspect_ratio": "16:9",
+        "image_url": "https://example.com/landscape.jpg",
+    },
+)
+
+data = response.json()
+print(data["request_id"])
+```
+
+```javascript JavaScript
+const response = await fetch("https://ninjachat.ai/api/v1/video", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer nj_sk_YOUR_API_KEY",
+  },
+  body: JSON.stringify({
+    prompt: "Camera slowly pulls back, clouds drift across the sky",
+    model: "veo-3.1",
+    duration: 6,
+    aspect_ratio: "16:9",
+    image_url: "https://example.com/landscape.jpg",
+  }),
+});
+
+const data = await response.json();
+console.log(data.request_id);
+```
+
+</CodeGroup>
+
+## Polling for completion
+
+After submitting, poll the status endpoint until the video is ready:
+
+<CodeGroup>
+
+```python Python
+import time
+import requests
+
+# After submitting a video job...
+request_id = data["request_id"]
+
+while True:
+    status = requests.get(
+        f"https://ninjachat.ai/api/v1/video/status?request_id={request_id}",
+        headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
+    ).json()
+
+    if status["status"] == "completed":
+        print(f"Video ready: {status['result']['video_url']}")
+        break
+    elif status["status"] == "failed":
+        print(f"Failed: {status.get('error')}")
+        break
+
+    print(f"Processing... {status.get('progress', 0)}%")
+    time.sleep(10)
+```
+
+```javascript JavaScript
+// After submitting a video job...
+const requestId = data.request_id;
+
+while (true) {
+  const statusRes = await fetch(
+    `https://ninjachat.ai/api/v1/video/status?request_id=${encodeURIComponent(requestId)}`,
+    { headers: { "Authorization": "Bearer nj_sk_YOUR_API_KEY" } }
+  );
+  const status = await statusRes.json();
+
+  if (status.status === "completed") {
+    console.log("Video ready:", status.result.video_url);
+    break;
+  } else if (status.status === "failed") {
+    console.error("Failed:", status.error);
+    break;
+  }
+
+  console.log(`Processing... ${status.progress || 0}%`);
+  await new Promise(r => setTimeout(r, 10000));
+}
+```
+
+</CodeGroup>
+
+## Request IDs
+
+The `request_id` format tells you which model was used:
+
+| Prefix | Model | Example |
+|---|---|---|
+| `seedance2:` | Seedance 2 | `seedance2:abc123def456` |
+| `gemini-veo:` | Veo 3.1 / Veo 3.1 Fast | `gemini-veo:operations/generate-video-abc123` |
+
+Always pass the full `request_id` (including prefix) to the status endpoint. URL-encode it if passing as a query parameter.
+
+## Duration rules
+
+| Model | Allowed durations |
+|---|---|
+| Seedance 2 | Any integer from 5 to 15 |
+| Veo 3.1 | 4, 6, or 8 (other values snap to nearest) |
+| Veo 3.1 Fast | 4, 6, or 8 (other values snap to nearest) |
+
+## Model selection guide
+
+<CardGroup cols={3}>
+  <Card title="Seedance 2" icon="shield-halved">
+    Best for uncensored/unrestricted content. Longest durations (up to 15s). No content moderation.
+  </Card>
+  <Card title="Veo 3.1" icon="gem">
+    Best for premium quality. Cinematic scenes, marketing content, creative projects where quality matters most.
+  </Card>
+  <Card title="Veo 3.1 Fast" icon="bolt">
+    Best for speed. Prototyping, batch workflows, real-time applications. 2-3x faster than standard Veo 3.1.
+  </Card>
+</CardGroup>
+
+## Error handling
+
+If generation fails, you are **not charged**. Credits are automatically refunded. The status response will show:
+
+```json
+{
+  "request_id": "gemini-veo:operations/...",
+  "status": "failed",
+  "error": "Video generation failed"
+}
+```
+
+Common failure reasons:
+- Content blocked by safety filters (Veo models only — Seedance 2 has no filters)
+- Upstream service temporarily unavailable
+- Invalid image URL for image-to-video

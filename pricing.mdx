@@ -28,7 +28,17 @@ $5/month gives you API access, key management, dashboard, and rate limiting.
 | Chat (`/api/v1/chat`) | $0.006 (0.6 credits) |
 | Search (`/api/v1/search`) | $0.05 (5 credits) |
 | Images (`/api/v1/images`) | $0.08 per image (8 credits) |
-| Video (`/api/v1/video`) | $3.00 per video (300 credits) |
+| Video (`/api/v1/video`) | $3.00 per video (300 credits) — all models |
+
+### Video models
+
+All video models cost the same per generation:
+
+| Model | ID | Duration | Aspect Ratio | Speed |
+|---|---|---|---|---|
+| Seedance 2 (default) | `seedance-2` | 5–15s | Fixed | ~2 min |
+| Google Veo 3.1 | `veo-3.1` | 4, 6, or 8s | 16:9, 9:16 | ~3–5 min |
+| Veo 3.1 Fast | `veo-3.1-fast` | 4, 6, or 8s | 16:9, 9:16 | ~1–2 min |
 
 Credits are deducted before each request. If your balance is insufficient, you'll receive a `402` error. Add more credits from [Settings > API](https://www.ninjachat.ai/settings?tab=api).
 

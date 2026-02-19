@@ -464,7 +464,7 @@
       "post": {
         "operationId": "generateVideo",
         "summary": "Video Generation",
-        "description": "Start a video generation job using Seedance 2.0. Supports text-to-video and image-to-video. The request is charged $3.00 per video upon acceptance. Poll the status endpoint with the returned `request_id` to retrieve the result. Cost: $3.00 per video.",
+        "description": "Start a video generation job. Supports three models: **Seedance 2** (default, uncensored, 5–15s), **Google Veo 3.1** (premium cinematic quality, 4/6/8s), and **Veo 3.1 Fast** (speed-optimized, 4/6/8s). Supports text-to-video and image-to-video. Cost: $3.00 per video regardless of model. Poll the status endpoint with the returned `request_id` to retrieve the result.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -480,12 +480,24 @@
                     "maxLength": 4000,
                     "description": "Text description of the video to generate. Cannot be empty or whitespace-only."
                   },
+                  "model": {
+                    "type": "string",
+                    "enum": ["seedance-2", "veo-3.1", "veo-3.1-fast"],
+                    "default": "seedance-2",
+                    "description": "Video model to use. `seedance-2` (default) — uncensored, 5–15s duration. `veo-3.1` — Google's premium cinematic model, 4/6/8s. `veo-3.1-fast` — speed-optimized Veo, 4/6/8s."
+                  },
                   "duration": {
                     "type": "integer",
-                    "minimum": 5,
+                    "minimum": 4,
                     "maximum": 15,
-                    "default": 15,
-                    "description": "Video length in seconds (5–15)."
+                    "default": 8,
+                    "description": "Video length in seconds. Seedance 2: 5–15. Veo 3.1 / Veo 3.1 Fast: 4, 6, or 8 (invalid values snap to nearest allowed)."
+                  },
+                  "aspect_ratio": {
+                    "type": "string",
+                    "enum": ["16:9", "9:16"],
+                    "default": "16:9",
+                    "description": "Aspect ratio (Veo 3.1 models only). `16:9` for landscape, `9:16` for portrait. Ignored for Seedance 2."
                   },
                   "image_url": {
                     "type": "string",
@@ -494,9 +506,43 @@
                   }
                 }
               },
-              "example": {
-                "prompt": "A golden retriever running in a sunny park",
-                "duration": 10
+              "examples": {
+                "seedance": {
+                  "summary": "Seedance 2 (default)",
+                  "value": {
+                    "prompt": "A golden retriever running in a sunny park",
+                    "model": "seedance-2",
+                    "duration": 10
+                  }
+                },
+                "veo31": {
+                  "summary": "Google Veo 3.1",
+                  "value": {
+                    "prompt": "A drone shot soaring over a misty mountain range at golden hour, cinematic lighting",
+                    "model": "veo-3.1",
+                    "duration": 8,
+                    "aspect_ratio": "16:9"
+                  }
+                },
+                "veo31fast": {
+                  "summary": "Veo 3.1 Fast",
+                  "value": {
+                    "prompt": "A person walking through a neon-lit Tokyo alley at night, rain reflections",
+                    "model": "veo-3.1-fast",
+                    "duration": 6,
+                    "aspect_ratio": "9:16"
+                  }
+                },
+                "imageToVideo": {
+                  "summary": "Image-to-video with Veo 3.1",
+                  "value": {
+                    "prompt": "Camera slowly pulls back, clouds drift across the sky",
+                    "model": "veo-3.1",
+                    "duration": 6,
+                    "aspect_ratio": "16:9",
+                    "image_url": "https://example.com/landscape.jpg"
+                  }
+                }
               }
             }
           }
@@ -511,13 +557,16 @@
                   "properties": {
                     "request_id": {
                       "type": "string",
-                      "example": "seedance2:abc123",
-                      "description": "Unique job identifier. Use this to poll the status endpoint."
+                      "description": "Unique job identifier. Use this to poll the status endpoint. Prefixed with `seedance2:` for Seedance or `gemini-veo:` for Veo models."
                     },
-                    "model": { "type": "string", "example": "seedance-2" },
+                    "model": {
+                      "type": "string",
+                      "enum": ["seedance-2", "veo-3.1", "veo-3.1-fast"],
+                      "description": "The model used for this generation."
+                    },
                     "message": {
                       "type": "string",
-                      "example": "Video generation started. Poll GET /api/v1/video/status?request_id=seedance2:abc123 for progress."
+                      "example": "Poll GET /api/v1/video/status?request_id=... for completion."
                     },
                     "cost": {
                       "type": "object",
@@ -526,14 +575,44 @@
                         "per_video": { "type": "string", "example": "$3.00" }
                       }
                     },
-                    "balance": { "type": "string", "example": "$39.00", "description": "Remaining credit balance after this charge." }
+                    "balance": { "type": "string", "example": "$39.00", "description": "Remaining credit balance after this charge." },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "latency_ms": { "type": "integer", "description": "Request latency in milliseconds." }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "seedance": {
+                    "summary": "Seedance 2 response",
+                    "value": {
+                      "request_id": "seedance2:abc123def456",
+                      "model": "seedance-2",
+                      "message": "Poll GET /api/v1/video/status?request_id=seedance2%3Aabc123def456 for completion.",
+                      "cost": { "this_request": "$3.00", "per_video": "$3.00" },
+                      "balance": "$39.00",
+                      "metadata": { "latency_ms": 1240 }
+                    }
+                  },
+                  "veo": {
+                    "summary": "Veo 3.1 response",
+                    "value": {
+                      "request_id": "gemini-veo:operations/generate-video-abc123",
+                      "model": "veo-3.1",
+                      "message": "Poll GET /api/v1/video/status?request_id=gemini-veo%3Aoperations%2Fgenerate-video-abc123 for completion.",
+                      "cost": { "this_request": "$3.00", "per_video": "$3.00" },
+                      "balance": "$39.00",
+                      "metadata": { "latency_ms": 1842 }
+                    }
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Validation error (missing/invalid prompt, invalid duration, or invalid image_url).",
+            "description": "Validation error (missing/invalid prompt, invalid duration, invalid model, or invalid image_url).",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "401": {
@@ -563,7 +642,7 @@
       "get": {
         "operationId": "getVideoStatus",
         "summary": "Video Generation Status",
-        "description": "Check the status of a video generation job created by `POST /api/v1/video`. Poll this endpoint until `status` is `completed` or `failed`. Recommended polling interval: every 15–30 seconds. No additional charge for polling.",
+        "description": "Check the status of a video generation job created by `POST /api/v1/video`. Poll this endpoint until `status` is `completed` or `failed`. Recommended polling interval: every 10–30 seconds. No additional charge for polling. Works with all video models (Seedance 2, Veo 3.1, Veo 3.1 Fast).",
         "tags": ["Endpoints"],
         "parameters": [
           {
@@ -571,8 +650,17 @@
             "in": "query",
             "required": true,
             "schema": { "type": "string" },
-            "description": "The `request_id` returned from `POST /api/v1/video` (e.g. `seedance2:abc123`).",
-            "example": "seedance2:abc123"
+            "description": "The `request_id` returned from `POST /api/v1/video`. Prefixed with `seedance2:` for Seedance jobs or `gemini-veo:` for Veo jobs.",
+            "examples": {
+              "seedance": {
+                "summary": "Seedance 2 job",
+                "value": "seedance2:abc123def456"
+              },
+              "veo": {
+                "summary": "Veo 3.1 job",
+                "value": "gemini-veo:operations/generate-video-abc123"
+              }
+            }
           }
         ],
         "responses": {
@@ -583,7 +671,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "request_id": { "type": "string", "example": "seedance2:abc123" },
+                    "request_id": { "type": "string", "description": "The original request ID." },
                     "status": {
                       "type": "string",
                       "enum": ["processing", "completed", "failed"],
@@ -600,13 +688,39 @@
                       "properties": {
                         "video_url": {
                           "type": "string",
-                          "description": "URL of the generated video. Only present when status is `completed`."
+                          "description": "CDN-hosted URL of the generated MP4 video. Only present when status is `completed`."
                         }
                       }
                     },
                     "error": {
                       "type": "string",
                       "description": "Error description. Only present when status is `failed`."
+                    }
+                  }
+                },
+                "examples": {
+                  "processing": {
+                    "summary": "Processing",
+                    "value": {
+                      "request_id": "gemini-veo:operations/generate-video-abc123",
+                      "status": "processing",
+                      "progress": 45
+                    }
+                  },
+                  "completed": {
+                    "summary": "Completed",
+                    "value": {
+                      "request_id": "gemini-veo:operations/generate-video-abc123",
+                      "status": "completed",
+                      "result": { "video_url": "https://cdn.ninjachat.ai/videos/api-veo_1708300000000.mp4" }
+                    }
+                  },
+                  "failed": {
+                    "summary": "Failed",
+                    "value": {
+                      "request_id": "gemini-veo:operations/generate-video-abc123",
+                      "status": "failed",
+                      "error": "Video generation failed"
                     }
                   }
                 }
