@@ -1,49 +1,110 @@
 ---
 title: "Best Practices"
-description: "Recommendations for building reliable integrations with the NinjaChat API."
+description: "Ship to production with confidence. Key patterns for reliability and cost."
 ---
 
-## Store keys securely
-
-Never commit API keys to source control or expose them in client-side code. Use environment variables or a secrets manager.
+## 1. Use environment variables
 
 ```bash
 export NINJACHAT_API_KEY="nj_sk_YOUR_API_KEY"
 ```
 
-## Handle rate limits gracefully
-
-Check the `Retry-After` header on 429 responses and implement exponential backoff. See [Pricing](/pricing) for rate limit details.
-
-## Monitor your credit balance
-
-Every response includes a `cost` field showing what the request cost. Keep an eye on your balance from [Settings > API](https://www.ninjachat.ai/settings?tab=api) and add credits before running out — requests with insufficient credits return a `402` error.
-
-## Keep your subscription active
-
-API requests require both an active $5/month subscription and sufficient credits. If your subscription lapses, requests return a `403` error.
-
-## Use streaming for chat
-
-For user-facing applications, set `stream: true` in chat requests to display responses as they generate. This provides a better user experience than waiting for the full response.
-
-```json
-{
-  "messages": [{"role": "user", "content": "Hello!"}],
-  "stream": true
-}
+```python
+import os
+HEADERS = {"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"}
 ```
 
-## Write specific image prompts
+Never hardcode keys. Add `.env` to `.gitignore`.
 
-Include style, lighting, detail level, and composition keywords for better image generation results:
+## 2. Pick the right model for the job
 
-```json
-{
-  "prompt": "A cyberpunk cityscape at night with neon signs and rain, photorealistic, 8k detail"
-}
+Don't use a $0.015 model for simple tasks:
+
+```python
+def smart_chat(task, message):
+    models = {
+        "classify": "deepseek-v3",       # $0.003 — simple tasks
+        "chat":     "gpt-5",             # $0.006 — general use
+        "code":     "claude-sonnet-4.6",  # $0.015 — when quality matters
+        "fast":     "gemini-2.5-flash",   # $0.003 — lowest latency
+    }
+    r = requests.post("https://ninjachat.ai/api/v1/chat",
+        headers=HEADERS,
+        json={"model": models[task], "messages": [{"role": "user", "content": message}]}
+    )
+    return r.json()["message"]["content"]
 ```
 
-## Rotate keys periodically
+## 3. Use streaming for chat UIs
 
-Create new keys and revoke old ones on a regular schedule. If a key is compromised, [revoke it immediately](https://www.ninjachat.ai/settings?tab=api).
+Users hate waiting for a full response. Stream it:
+
+```python
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers=HEADERS,
+    json={
+        "model": "gpt-5",
+        "messages": [{"role": "user", "content": "Tell me a story"}],
+        "stream": True
+    },
+    stream=True
+)
+for line in r.iter_lines():
+    if line and line.decode().startswith("data: ") and line.decode() != "data: [DONE]":
+        import json
+        token = json.loads(line.decode()[6:]).get("choices", [{}])[0].get("delta", {}).get("content", "")
+        print(token, end="", flush=True)
+```
+
+## 4. Retry on 429s and 5xx
+
+```python
+import time
+
+def reliable_call(url, headers, json, retries=3):
+    for i in range(retries):
+        r = requests.post(url, headers=headers, json=json)
+        if r.status_code == 200:
+            return r.json()
+        if r.status_code in (429, 500, 502, 503):
+            time.sleep(int(r.headers.get("Retry-After", 2 ** i)))
+            continue
+        r.raise_for_status()
+    raise Exception("Max retries")
+```
+
+## 5. Monitor costs
+
+Every response tells you what it cost. Log it:
+
+```python
+data = r.json()
+print(f"Model: {data['model']}, Cost: {data['cost']['this_request']}, Latency: {data['metadata']['latency_ms']}ms")
+```
+
+Check your balance programmatically:
+
+```python
+r = requests.get("https://ninjachat.ai/api/api-keys", headers=HEADERS)
+print(r.json()["billing"]["balanceFormatted"])
+```
+
+## 6. Proxy for browser apps
+
+Never put your API key in frontend code:
+
+```python
+# Your backend handles the API key
+@app.post("/api/chat")
+def proxy(req):
+    return requests.post("https://ninjachat.ai/api/v1/chat",
+        headers=HEADERS,  # Server-side only
+        json={"model": "gpt-5", "messages": req.json["messages"]}
+    ).json()
+```
+
+## 7. Use separate keys per environment
+
+- `dev-key` for development
+- `prod-key` for production
+- Revoke one without affecting the other

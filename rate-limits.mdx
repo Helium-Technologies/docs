@@ -1,0 +1,78 @@
+---
+title: "Rate Limits"
+description: "Rate limits per endpoint and how to handle 429 responses."
+---
+
+## Limits
+
+| Endpoint | Rate limit |
+|---|---|
+| `POST /api/v1/chat` | 60 req/min |
+| `POST /api/v1/search` | 60 req/min |
+| `POST /api/v1/images` | 30 req/min |
+| `POST /api/v1/video` | 2 req/min |
+| `GET /api/v1/video/status` | Unlimited (free) |
+
+## Response headers
+
+Every response includes:
+
+| Header | What it tells you |
+|---|---|
+| `X-RateLimit-Limit` | Max requests in current window |
+| `X-RateLimit-Remaining` | How many you have left |
+| `X-RateLimit-Reset` | Seconds until window resets |
+| `Retry-After` | Seconds to wait (only on 429s) |
+
+## When you hit a limit
+
+You get a `429` response:
+
+```json
+{ "error": "rate_limit_exceeded", "message": "Rate limit exceeded" }
+```
+
+## Retry code
+
+<CodeGroup>
+
+```python Python — exponential backoff
+import time, requests
+
+def call_with_retry(url, headers, json, max_retries=3):
+    for attempt in range(max_retries):
+        r = requests.post(url, headers=headers, json=json)
+        if r.status_code == 200:
+            return r.json()
+        if r.status_code == 429:
+            wait = int(r.headers.get("Retry-After", 2 ** attempt))
+            time.sleep(wait)
+            continue
+        r.raise_for_status()
+    raise Exception("Max retries exceeded")
+```
+
+```javascript Node.js — exponential backoff
+async function callWithRetry(url, options, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    const r = await fetch(url, options);
+    if (r.ok) return r.json();
+    if (r.status === 429) {
+      const wait = parseInt(r.headers.get("Retry-After") || 2 ** i);
+      await new Promise(r => setTimeout(r, wait * 1000));
+      continue;
+    }
+    throw new Error(`${r.status}: ${await r.text()}`);
+  }
+  throw new Error("Max retries exceeded");
+}
+```
+
+</CodeGroup>
+
+## Tips
+
+- **Space out batch requests** — add a small delay between calls instead of firing them all at once
+- **Video polling doesn't count** — poll as often as you want (every 10s recommended)
+- **Images have a lower limit** (30/min) because they're more expensive to generate
+- **Video is 2/min** because each generation uses significant compute

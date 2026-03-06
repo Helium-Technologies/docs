@@ -18,22 +18,30 @@
             "pages": [
               "index",
               "quickstart",
-              "authentication",
-              "models"
+              "authentication"
+            ]
+          },
+          {
+            "group": "Models & Pricing",
+            "pages": [
+              "models",
+              "pricing"
             ]
           },
           {
             "group": "Guides",
             "pages": [
+              "chat",
               "image-generation",
-              "video-generation"
+              "video-generation",
+              "search"
             ]
           },
           {
-            "group": "Concepts",
+            "group": "Reference",
             "pages": [
-              "pricing",
               "error-handling",
+              "rate-limits",
               "best-practices"
             ]
           }
@@ -78,7 +86,7 @@
           "icon": "microchip"
         },
         {
-          "anchor": "Dashboard",
+          "anchor": "Get API Key",
           "href": "https://www.ninjachat.ai/settings?tab=api",
           "icon": "key"
         }

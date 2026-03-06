@@ -1,133 +1,103 @@
 ---
 title: "Pricing"
-description: "Per-model API pricing, credit packs, and rate limits for 30+ AI models."
+description: "Per-request pricing. No token counting. Every response tells you what it cost."
 ---
 
-API access requires a **$5/month base subscription** plus prepaid credits. Each API call deducts from your credit balance based on the model used.
+## The short version
 
-Subscribe and add credits from [Settings > API](https://www.ninjachat.ai/settings?tab=api).
-
-## Base subscription
-
-$5/month gives you API access, key management, dashboard, and rate limiting.
-
-## Credit packs
-
-| Pack | Price |
+| What | Cost |
 |---|---|
-| 1,000 credits | $10 |
-| 2,500 credits | $25 |
-| 10,000 credits | $100 |
+| API subscription | $5/month |
+| Chat (budget models) | $0.003/request |
+| Chat (standard models) | $0.006/request |
+| Chat (premium models) | $0.015/request |
+| Images | $0.03 – $0.10/image |
+| Video | $3.00/video |
+| Search | $0.05/query |
 
-1 credit = 1 cent. Credits never expire.
+No token counting. No complicated tiers. Every response includes the exact cost:
 
-## Chat model pricing
+```json
+{ "cost": { "this_request": "$0.006" } }
+```
 
-All chat models use `POST /api/v1/chat`. Cost depends on the model tier:
+## Credits
 
-### Premium tier — $0.015/request (1.5 credits)
+Buy credits upfront. 1 credit = $0.01. Credits never expire.
 
-| Model | ID |
-|---|---|
-| Claude Sonnet 4.6 | `claude-sonnet-4.6` |
-
-### Standard tier — $0.006/request (0.6 credits)
-
-| Model | ID |
-|---|---|
-| GPT-5 | `gpt-5` |
-| O3 Mini | `o3-mini` |
-| Claude Sonnet 4.5 | `claude-sonnet-4.5` |
-| Claude Opus 4.6 | `claude-opus-4.6` |
-| Claude Haiku 4.5 | `claude-haiku-4.5` |
-| Gemini 2.5 Pro | `gemini-2.5-pro` |
-| Gemini 3 Pro | `gemini-3-pro` |
-| Gemini 3.1 Pro | `gemini-3.1-pro` |
-| Grok 4 | `grok-4` |
-| Kimi K2 | `kimi-k2` |
-
-### Budget tier — $0.003/request (0.3 credits)
-
-| Model | ID |
-|---|---|
-| GPT-5 Mini | `gpt-5-mini` |
-| Gemini 2.5 Flash | `gemini-2.5-flash` |
-| Gemini 3 Flash | `gemini-3-flash` |
-| Llama 4 Scout | `llama-4-scout` |
-| DeepSeek V3 | `deepseek-v3` |
-| Mistral Large | `mistral-large` |
-| QWQ 32B | `qwq-32b` |
-| GLM-5 | `glm-5` |
-| MiniMax M2.5 | `minimax-m2.5` |
-
-See all models with descriptions on the [Models page](/models).
-
-## Image model pricing
-
-All image models use `POST /api/v1/images`:
-
-| Model | ID | Cost per image |
+| Pack | Price | What you get |
 |---|---|---|
-| FLUX Pro Ultra | `flux-pro-ultra` | $0.10 (10 credits) |
-| Recraft V3 | `recraft-v3` | $0.08 (8 credits) |
-| Google Imagen 4 | `google-imagen-4` | $0.08 (8 credits) |
-| FLUX Dev | `flux-dev` | $0.05 (5 credits) |
-| Stable Diffusion 3 | `stable-diffusion-3` | $0.05 (5 credits) |
-| FLUX Schnell | `flux-schnell` | $0.03 (3 credits) |
+| 1,000 credits | $10 | ~1,666 budget chats, or ~333 images, or 3 videos |
+| 2,500 credits | $25 | ~4,166 budget chats, or ~833 images, or 8 videos |
+| 10,000 credits | $100 | ~16,666 budget chats, or ~3,333 images, or 33 videos |
 
-See the [Image Generation guide](/image-generation) for details.
+[Add credits →](https://www.ninjachat.ai/settings?tab=api)
 
-## Video model pricing
+---
 
-All video models use `POST /api/v1/video` and cost **$3.00 per video** (300 credits):
+## All model costs
 
-| Model | ID | Duration | Speed |
-|---|---|---|---|
-| Seedance 2 | `seedance-2` | 5–15s | ~1-2 min |
-| Kling Video | `kling-video` | 5–10s | ~3-4 min |
-| Google Veo 2 | `google-veo-2` | 5–8s | ~40s |
-| Google Veo 3.1 | `veo-3.1` | 4, 6, or 8s | ~3–5 min |
-| Veo 3.1 Fast | `veo-3.1-fast` | 4, 6, or 8s | ~1–2 min |
+### Chat — `POST /api/v1/chat`
 
-See the [Video Generation guide](/video-generation) for details.
+**$0.015/req (premium):** `claude-sonnet-4.6`
 
-## Search pricing
+**$0.006/req (standard):** `gpt-5` `o3-mini` `claude-sonnet-4.5` `claude-opus-4.6` `claude-haiku-4.5` `gemini-2.5-pro` `gemini-3-pro` `gemini-3.1-pro` `grok-4` `kimi-k2`
 
-| Endpoint | Cost per request |
+**$0.003/req (budget):** `gpt-5-mini` `gemini-2.5-flash` `gemini-3-flash` `llama-4-scout` `deepseek-v3` `mistral-large` `qwq-32b` `glm-5` `minimax-m2.5`
+
+### Images — `POST /api/v1/images`
+
+| Model | Cost |
 |---|---|
-| Web Search (`/api/v1/search`) | $0.05 (5 credits) |
+| `flux-pro-ultra` | $0.10/img |
+| `recraft-v3` | $0.08/img |
+| `google-imagen-4` | $0.08/img |
+| `flux-dev` | $0.05/img |
+| `stable-diffusion-3` | $0.05/img |
+| `flux-schnell` | $0.03/img |
 
-Credits are deducted before each request. If your balance is insufficient, you'll receive a `402` error. Add more credits from [Settings > API](https://www.ninjachat.ai/settings?tab=api).
+Generating `n` images = `n` × per-image cost.
+
+### Video — `POST /api/v1/video`
+
+**$3.00/video — all models.** Failed generations are refunded automatically.
+
+### Search — `POST /api/v1/search`
+
+**$0.05/query.**
+
+---
+
+## What happens when credits run out?
+
+You get a `402` error:
+
+```json
+{ "error": "insufficient_credits", "message": "Insufficient credits." }
+```
+
+No request goes through. [Add more credits](https://www.ninjachat.ai/settings?tab=api) and try again.
+
+## Check your balance
+
+From code:
+
+```python
+r = requests.get("https://ninjachat.ai/api/api-keys",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"})
+print(r.json()["billing"]["balanceFormatted"])  # → "$42.50"
+```
+
+Or from your [dashboard](https://www.ninjachat.ai/settings?tab=api).
 
 ## Rate limits
 
-All endpoints share a single rate limit of **60 requests per minute**. Image generation uses half the rate limit (30 req/min). Video generation uses a stricter limit of **2 requests per minute** due to its higher compute cost. Polling the video status endpoint does not count toward the video rate limit.
-
-## Rate limit headers
-
-All responses include these headers so you can monitor your rate limit status:
-
-| Header | Description |
+| Endpoint | Limit |
 |---|---|
-| `X-RateLimit-Limit` | Max requests allowed in the current window |
-| `X-RateLimit-Remaining` | Requests remaining in the current window |
-| `X-RateLimit-Reset` | Seconds until the rate limit window resets |
-| `Retry-After` | Seconds to wait before retrying (only on 429 responses) |
+| Chat | 60 req/min |
+| Search | 60 req/min |
+| Images | 30 req/min |
+| Video submit | 2 req/min |
+| Video polling | Unlimited |
 
-## Handling rate limits
-
-When you exceed your rate limit, the API returns a `429` status code. Use the `Retry-After` header to determine when to retry:
-
-```python
-import time
-import requests
-
-response = requests.post("https://ninjachat.ai/api/v1/chat", ...)
-
-if response.status_code == 429:
-    retry_after = int(response.headers.get("Retry-After", 60))
-    time.sleep(retry_after)
-    # Retry the request
-```
-
-For production applications, implement exponential backoff to handle rate limits gracefully.
+See [Rate Limits](/rate-limits) for details and retry code.

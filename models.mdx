@@ -1,115 +1,112 @@
 ---
 title: "Available Models"
-description: "Browse all 30+ AI models available through the NinjaChat API — chat, image, and video generation."
+description: "All 30+ models with IDs, pricing, and recommendations."
 ---
 
-The NinjaChat API gives you access to 30+ AI models through a unified interface. One API key, one endpoint per type, just change the `model` parameter.
+One endpoint per type. Switch models by changing one parameter. Your code stays the same.
 
-<Tip>
-  Explore all models interactively on the [API Models page](https://www.ninjachat.ai/api-models) or test them live in the [API Playground](https://www.ninjachat.ai/api-playground).
-</Tip>
+## Which model should I use?
 
-## Chat Models
-
-All chat models use the same `POST /api/v1/chat` endpoint. Switch models by changing the `model` parameter — no code changes needed.
-
-### Premium tier — $0.015/request
-
-| Model | ID | Provider | Best for |
+| I need... | Use this | Cost | Model ID |
 |---|---|---|---|
-| [Claude Sonnet 4.6](https://www.ninjachat.ai/claude-sonnet-4-6-api) | `claude-sonnet-4.6` | Anthropic | Top-tier coding, nuanced analysis, complex instructions |
-
-### Standard tier — $0.006/request
-
-| Model | ID | Provider | Best for |
-|---|---|---|---|
-| [GPT-5](https://www.ninjachat.ai/gpt-5-api) | `gpt-5` | OpenAI | General-purpose, creative writing, broad knowledge |
-| [O3 Mini](https://www.ninjachat.ai/o3-mini-api) | `o3-mini` | OpenAI | Chain-of-thought reasoning, math, logic |
-| [Claude Sonnet 4.5](https://www.ninjachat.ai/claude-sonnet-4-5-api) | `claude-sonnet-4.5` | Anthropic | Coding, analysis, 200K context window |
-| [Claude Opus 4.6](https://www.ninjachat.ai/claude-opus-api) | `claude-opus-4.6` | Anthropic | Maximum intelligence, deep research, complex tasks |
-| [Claude Haiku 4.5](https://www.ninjachat.ai/claude-haiku-api) | `claude-haiku-4.5` | Anthropic | Fast classification, extraction, high-volume tasks |
-| [Gemini 2.5 Pro](https://www.ninjachat.ai/gemini-2-5-pro-api) | `gemini-2.5-pro` | Google | Enterprise reliability, structured data analysis |
-| [Gemini 3 Pro](https://www.ninjachat.ai/gemini-3-pro-api) | `gemini-3-pro` | Google | Next-gen reasoning, multi-modal understanding |
-| [Gemini 3.1 Pro](https://www.ninjachat.ai/gemini-3-1-pro-api) | `gemini-3.1-pro` | Google | Most advanced Gemini, cutting-edge reasoning |
-| [Grok 4](https://www.ninjachat.ai/grok-4-api) | `grok-4` | xAI | Direct responses, real-time knowledge |
-| [Kimi K2](https://www.ninjachat.ai/kimi-api) | `kimi-k2` | Moonshot AI | Coding, instruction following |
-
-### Budget tier — $0.003/request
-
-| Model | ID | Provider | Best for |
-|---|---|---|---|
-| [GPT-5 Mini](https://www.ninjachat.ai/gpt-5-mini-api) | `gpt-5-mini` | OpenAI | Fast, cost-efficient, high-volume chat |
-| [Gemini 2.5 Flash](https://www.ninjachat.ai/gemini-2-5-flash-api) | `gemini-2.5-flash` | Google | Ultra-fast responses, real-time applications |
-| [Gemini 3 Flash](https://www.ninjachat.ai/gemini-3-flash-api) | `gemini-3-flash` | Google | Latest fast model, improved over 2.5 Flash |
-| [Llama 4 Scout](https://www.ninjachat.ai/llama-4-api) | `llama-4-scout` | Meta | Open-source, multilingual, cost-efficient |
-| [DeepSeek V3](https://www.ninjachat.ai/deepseek-api) | `deepseek-v3` | DeepSeek | Coding, math, technical analysis |
-| [Mistral Large](https://www.ninjachat.ai/mistral-api) | `mistral-large` | Mistral AI | European languages, multilingual tasks |
-| [QWQ 32B](https://www.ninjachat.ai/qwq-api) | `qwq-32b` | Alibaba | Mathematical reasoning, logic puzzles |
-| [GLM-5](https://www.ninjachat.ai/glm-5-api) | `glm-5` | Zhipu AI | Bilingual Chinese/English |
-| [MiniMax M2.5](https://www.ninjachat.ai/minimax-api) | `minimax-m2.5` | MiniMax | Creative writing, content generation |
-
-### Flagship tier — $0.03/request
-
-| Model | ID | Provider | Best for |
-|---|---|---|---|
-| [Claude Opus 4.6](https://www.ninjachat.ai/claude-opus-api) | `claude-opus-4.6` | Anthropic | Maximum quality, deep research, expert-level coding |
+| General-purpose chat | GPT-5 | $0.006 | `gpt-5` |
+| Best code generation | Claude Sonnet 4.6 | $0.015 | `claude-sonnet-4.6` |
+| Cheapest chat | DeepSeek V3 | $0.003 | `deepseek-v3` |
+| Fastest chat | Gemini 2.5 Flash | $0.003 | `gemini-2.5-flash` |
+| Long documents (200K) | Claude Sonnet 4.5 | $0.006 | `claude-sonnet-4.5` |
+| Math & reasoning | O3 Mini | $0.006 | `o3-mini` |
+| Best image quality | FLUX Pro Ultra | $0.10/img | `flux-pro-ultra` |
+| Cheapest images | FLUX Schnell | $0.03/img | `flux-schnell` |
+| Fastest video | Google Veo 2 | $3.00 | `google-veo-2` |
+| Longest video (15s) | Seedance 2 | $3.00 | `seedance-2` |
 
 ---
 
-## Image Models
+## Chat Models — `POST /api/v1/chat`
 
-All image models use `POST /api/v1/images`. Specify the model with the `model` parameter.
-
-| Model | ID | Provider | Cost | Speed | Best for |
-|---|---|---|---|---|---|
-| [FLUX Pro Ultra](https://www.ninjachat.ai/flux-api) | `flux-pro-ultra` | Black Forest Labs | $0.10/img | ~8s | Highest quality, maximum detail |
-| [FLUX Dev](https://www.ninjachat.ai/flux-dev-api) | `flux-dev` | Black Forest Labs | $0.05/img | ~3s | Balanced quality/cost, iteration |
-| [FLUX Schnell](https://www.ninjachat.ai/flux-schnell-api) | `flux-schnell` | Black Forest Labs | $0.03/img | <2s | Real-time, batch processing |
-| [Recraft V3](https://www.ninjachat.ai/recraft-api) | `recraft-v3` | Recraft AI | $0.08/img | ~5s | Design assets, illustrations |
-| [Stable Diffusion 3](https://www.ninjachat.ai/stable-diffusion-api) | `stable-diffusion-3` | Stability AI | $0.05/img | ~10s | Versatile, strong prompt adherence |
-| [Google Imagen 4](https://www.ninjachat.ai/imagen-4-api) | `google-imagen-4` | Google | $0.08/img | ~15s | Photorealism, text rendering |
-
----
-
-## Video Models
-
-All video models use `POST /api/v1/video`. All cost **$3.00 per video**. See the [Video Generation guide](/video-generation) for details.
-
-| Model | ID | Provider | Duration | Speed | Best for |
-|---|---|---|---|---|---|
-| [Seedance 2](https://www.ninjachat.ai/seedance-video-api) | `seedance-2` | ByteDance | 5–15s | ~1-2 min | Unrestricted content, longest duration |
-| [Kling Video](https://www.ninjachat.ai/kling-video-api) | `kling-video` | Kuaishou | 5–10s | ~3-4 min | Motion quality, scene coherence |
-| [Google Veo 2](https://www.ninjachat.ai/veo-2-api) | `google-veo-2` | Google | 5–8s | ~40s | Fast, high-quality cinematic |
-| Google Veo 3.1 | `veo-3.1` | Google | 4, 6, 8s | ~3-5 min | Premium cinematic quality |
-| Veo 3.1 Fast | `veo-3.1-fast` | Google | 4, 6, 8s | ~1-2 min | Speed-optimized Veo |
-
----
-
-## Switching between models
-
-All models within a type share the same endpoint and request format. Switch by changing `model`:
-
-```python
-import requests
-
-headers = {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer nj_sk_YOUR_API_KEY",
-}
-
-# Use GPT-5
-requests.post("https://ninjachat.ai/api/v1/chat", headers=headers, json={
-    "model": "gpt-5",
-    "messages": [{"role": "user", "content": "Hello!"}]
-})
-
-# Switch to Claude — same code, different model
-requests.post("https://ninjachat.ai/api/v1/chat", headers=headers, json={
-    "model": "claude-sonnet-4.6",
-    "messages": [{"role": "user", "content": "Hello!"}]
-})
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "MODEL_ID", "messages": [{"role": "user", "content": "Hello"}]}'
 ```
 
-<Note>
-  The `model` parameter is optional for chat and images. If omitted, the API uses a default model. We recommend always specifying the model explicitly.
-</Note>
+### $0.015/request — Premium
+
+| Model | ID | Provider | Best for |
+|---|---|---|---|
+| [Claude Sonnet 4.6](https://www.ninjachat.ai/claude-sonnet-4-6-api) | `claude-sonnet-4.6` | Anthropic | Code generation, complex instructions, nuanced analysis |
+
+### $0.006/request — Standard
+
+| Model | ID | Provider | Best for |
+|---|---|---|---|
+| [GPT-5](https://www.ninjachat.ai/gpt-5-api) | `gpt-5` | OpenAI | General-purpose, creative writing |
+| [O3 Mini](https://www.ninjachat.ai/o3-mini-api) | `o3-mini` | OpenAI | Chain-of-thought reasoning, math |
+| [Claude Sonnet 4.5](https://www.ninjachat.ai/claude-sonnet-4-5-api) | `claude-sonnet-4.5` | Anthropic | Coding, 200K context window |
+| [Claude Opus 4.6](https://www.ninjachat.ai/claude-opus-api) | `claude-opus-4.6` | Anthropic | Deep research, complex tasks |
+| [Claude Haiku 4.5](https://www.ninjachat.ai/claude-haiku-api) | `claude-haiku-4.5` | Anthropic | Fast classification, extraction |
+| [Gemini 2.5 Pro](https://www.ninjachat.ai/gemini-2-5-pro-api) | `gemini-2.5-pro` | Google | Structured data analysis |
+| [Gemini 3 Pro](https://www.ninjachat.ai/gemini-3-pro-api) | `gemini-3-pro` | Google | Multi-modal reasoning |
+| [Gemini 3.1 Pro](https://www.ninjachat.ai/gemini-3-1-pro-api) | `gemini-3.1-pro` | Google | Cutting-edge reasoning |
+| [Grok 4](https://www.ninjachat.ai/grok-4-api) | `grok-4` | xAI | Direct, real-time knowledge |
+| [Kimi K2](https://www.ninjachat.ai/kimi-api) | `kimi-k2` | Moonshot AI | Coding, instruction following |
+
+### $0.003/request — Budget
+
+| Model | ID | Provider | Best for |
+|---|---|---|---|
+| [GPT-5 Mini](https://www.ninjachat.ai/gpt-5-mini-api) | `gpt-5-mini` | OpenAI | Fast, high-volume chat |
+| [Gemini 2.5 Flash](https://www.ninjachat.ai/gemini-2-5-flash-api) | `gemini-2.5-flash` | Google | Ultra-fast, real-time |
+| [Gemini 3 Flash](https://www.ninjachat.ai/gemini-3-flash-api) | `gemini-3-flash` | Google | Fast + improved quality |
+| [Llama 4 Scout](https://www.ninjachat.ai/llama-4-api) | `llama-4-scout` | Meta | Multilingual, open-source |
+| [DeepSeek V3](https://www.ninjachat.ai/deepseek-api) | `deepseek-v3` | DeepSeek | Coding, math, technical |
+| [Mistral Large](https://www.ninjachat.ai/mistral-api) | `mistral-large` | Mistral AI | European languages |
+| [QWQ 32B](https://www.ninjachat.ai/qwq-api) | `qwq-32b` | Alibaba | Math reasoning, logic |
+| [GLM-5](https://www.ninjachat.ai/glm-5-api) | `glm-5` | Zhipu AI | Chinese/English bilingual |
+| [MiniMax M2.5](https://www.ninjachat.ai/minimax-api) | `minimax-m2.5` | MiniMax | Creative writing |
+
+---
+
+## Image Models — `POST /api/v1/images`
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "MODEL_ID", "prompt": "A sunset over mountains, photorealistic"}'
+```
+
+| Model | ID | Cost | Speed | Best for |
+|---|---|---|---|---|
+| [FLUX Pro Ultra](https://www.ninjachat.ai/flux-api) | `flux-pro-ultra` | $0.10/img | ~8s | Highest quality |
+| [Recraft V3](https://www.ninjachat.ai/recraft-api) | `recraft-v3` | $0.08/img | ~5s | Design, illustrations |
+| [Google Imagen 4](https://www.ninjachat.ai/imagen-4-api) | `google-imagen-4` | $0.08/img | ~15s | Photorealism, text in images |
+| [FLUX Dev](https://www.ninjachat.ai/flux-dev-api) | `flux-dev` | $0.05/img | ~3s | Good value, iteration |
+| [Stable Diffusion 3](https://www.ninjachat.ai/stable-diffusion-api) | `stable-diffusion-3` | $0.05/img | ~10s | Versatile, all styles |
+| [FLUX Schnell](https://www.ninjachat.ai/flux-schnell-api) | `flux-schnell` | $0.03/img | <2s | Fastest, batch jobs |
+
+[Image Generation guide →](/image-generation)
+
+---
+
+## Video Models — `POST /api/v1/video`
+
+All video models cost **$3.00/video**. Video is async — [see the guide](/video-generation) for polling code.
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/video \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "MODEL_ID", "prompt": "A drone shot over mountains at sunset", "duration": 5}'
+```
+
+| Model | ID | Duration | Speed | Best for |
+|---|---|---|---|---|
+| [Seedance 2](https://www.ninjachat.ai/seedance-video-api) | `seedance-2` | 5–15s | ~1-2 min | Unrestricted, longest clips |
+| [Kling Video](https://www.ninjachat.ai/kling-video-api) | `kling-video` | 5–10s | ~3-4 min | Motion quality |
+| [Google Veo 2](https://www.ninjachat.ai/veo-2-api) | `google-veo-2` | 5–8s | ~40s | Fastest + high quality |
+| Google Veo 3.1 | `veo-3.1` | 4, 6, 8s | ~3-5 min | Premium cinematic |
+| Veo 3.1 Fast | `veo-3.1-fast` | 4, 6, 8s | ~1-2 min | Speed-optimized |
+
+[Video Generation guide →](/video-generation)

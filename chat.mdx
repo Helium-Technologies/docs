@@ -1,0 +1,212 @@
+---
+title: "Chat Completions"
+description: "Generate text with 20 LLMs. Request format, response format, streaming, and examples."
+---
+
+## Request
+
+```bash
+POST https://ninjachat.ai/api/v1/chat
+Authorization: Bearer nj_sk_YOUR_API_KEY
+Content-Type: application/json
+```
+
+```json
+{
+  "model": "gpt-5",
+  "messages": [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Explain quantum computing in one paragraph."}
+  ],
+  "temperature": 0.7,
+  "max_tokens": 2048
+}
+```
+
+## Response
+
+```json
+{
+  "model": "gpt-5",
+  "message": {
+    "role": "assistant",
+    "content": "Quantum computing harnesses quantum mechanical phenomena..."
+  },
+  "usage": {
+    "prompt_tokens": 24,
+    "completion_tokens": 87,
+    "total_tokens": 111
+  },
+  "cost": {
+    "this_request": "$0.006"
+  },
+  "metadata": {
+    "latency_ms": 1243
+  }
+}
+```
+
+Your text is in `message.content`. That's all you need.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `model` | string | No | `gpt-5` | Model ID. See [all models](/models). |
+| `messages` | array | **Yes** | — | Conversation messages (1–50). Each has `role` and `content`. |
+| `temperature` | number | No | 0.7 | 0 = deterministic, 2 = very creative. |
+| `max_tokens` | integer | No | 2048 | Max response length (1–4096). |
+| `stream` | boolean | No | false | Stream response token-by-token via SSE. |
+
+### Message roles
+
+| Role | Purpose | Example |
+|---|---|---|
+| `system` | Set behavior/personality | "You are a Python expert. Be concise." |
+| `user` | The human's message | "Write a function to sort a list." |
+| `assistant` | Previous AI responses (for multi-turn) | "Here's a sort function: ..." |
+
+## Full working examples
+
+<CodeGroup>
+
+```python Python
+import os, requests
+
+def chat(model, message, system=None):
+    messages = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": message})
+
+    r = requests.post("https://ninjachat.ai/api/v1/chat",
+        headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+        json={"model": model, "messages": messages}
+    )
+    r.raise_for_status()
+    return r.json()["message"]["content"]
+
+# Basic usage
+print(chat("gpt-5", "What is 2+2?"))
+
+# With system prompt
+print(chat("claude-sonnet-4.6", "Review this code: def f(x): return x+1",
+    system="You are a senior Python developer. Be concise."))
+
+# Budget model for classification
+print(chat("deepseek-v3", "Classify as positive/negative: 'Great product!'"))
+```
+
+```javascript Node.js
+async function chat(model, message, system) {
+  const messages = [];
+  if (system) messages.push({ role: "system", content: system });
+  messages.push({ role: "user", content: message });
+
+  const r = await fetch("https://ninjachat.ai/api/v1/chat", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ model, messages }),
+  });
+  if (!r.ok) throw new Error(`${r.status}: ${await r.text()}`);
+  return (await r.json()).message.content;
+}
+
+console.log(await chat("gpt-5", "What is 2+2?"));
+console.log(await chat("claude-sonnet-4.6", "Review this code: def f(x): return x+1",
+    "You are a senior Python developer. Be concise."));
+```
+
+</CodeGroup>
+
+## Multi-turn conversations
+
+Pass the full conversation history in `messages`:
+
+```python
+messages = [
+    {"role": "system", "content": "You are a helpful tutor."},
+    {"role": "user", "content": "What is photosynthesis?"},
+    {"role": "assistant", "content": "Photosynthesis is the process by which plants convert sunlight..."},
+    {"role": "user", "content": "How efficient is it compared to solar panels?"},
+]
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "gpt-5", "messages": messages}
+)
+print(r.json()["message"]["content"])
+```
+
+## Streaming
+
+Set `stream: true` to get tokens as they're generated (SSE format). Better UX for chatbots.
+
+<CodeGroup>
+
+```python Python (streaming)
+import os, requests, json
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={
+        "model": "gpt-5",
+        "messages": [{"role": "user", "content": "Write a haiku about coding"}],
+        "stream": True
+    },
+    stream=True
+)
+
+for line in r.iter_lines():
+    if not line:
+        continue
+    text = line.decode("utf-8")
+    if text.startswith("data: ") and text != "data: [DONE]":
+        chunk = json.loads(text[6:])
+        token = chunk.get("choices", [{}])[0].get("delta", {}).get("content", "")
+        print(token, end="", flush=True)
+print()
+```
+
+```javascript Node.js (streaming)
+const r = await fetch("https://ninjachat.ai/api/v1/chat", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "gpt-5",
+    messages: [{ role: "user", content: "Write a haiku about coding" }],
+    stream: true,
+  }),
+});
+
+const reader = r.body.getReader();
+const decoder = new TextDecoder();
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  for (const line of decoder.decode(value).split("\n")) {
+    if (line.startsWith("data: ") && line !== "data: [DONE]") {
+      const token = JSON.parse(line.slice(6)).choices?.[0]?.delta?.content || "";
+      process.stdout.write(token);
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+## Models & pricing
+
+| Tier | Cost | Models |
+|---|---|---|
+| Premium | $0.015/req | `claude-sonnet-4.6` |
+| Standard | $0.006/req | `gpt-5` `o3-mini` `claude-sonnet-4.5` `claude-opus-4.6` `claude-haiku-4.5` `gemini-2.5-pro` `gemini-3-pro` `gemini-3.1-pro` `grok-4` `kimi-k2` |
+| Budget | $0.003/req | `gpt-5-mini` `gemini-2.5-flash` `gemini-3-flash` `llama-4-scout` `deepseek-v3` `mistral-large` `qwq-32b` `glm-5` `minimax-m2.5` |
+
+[All model details →](/models)

@@ -1,0 +1,155 @@
+---
+title: "Web Search"
+description: "Search the web with AI-synthesized answers. $0.05 per query."
+---
+
+## Request
+
+```bash
+POST https://ninjachat.ai/api/v1/search
+Authorization: Bearer nj_sk_YOUR_API_KEY
+Content-Type: application/json
+```
+
+```json
+{
+  "query": "latest developments in AI safety",
+  "include_answer": true,
+  "max_results": 10
+}
+```
+
+## Response
+
+```json
+{
+  "query": "latest developments in AI safety",
+  "answer": "Recent developments in AI safety include...",
+  "sources": [
+    {
+      "url": "https://example.com/article",
+      "title": "AI Safety Progress in 2026",
+      "content": "Summary of the article...",
+      "published_date": "2026-03-01"
+    }
+  ],
+  "follow_up_questions": [
+    "What are the key AI safety organizations?",
+    "How does RLHF improve AI safety?"
+  ],
+  "images": [],
+  "cost": { "this_request": "$0.05" },
+  "metadata": {
+    "group": "web",
+    "search_depth": "basic",
+    "results_count": 10,
+    "latency_ms": 2341
+  }
+}
+```
+
+The AI answer is in `answer`. Sources are in `sources[]`.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `query` | string | **Yes** | — | Search query. Max 2,000 chars. |
+| `group` | string | No | `web` | `web`, `academic`, or `news` |
+| `max_results` | integer | No | 10 | Number of sources (1–20) |
+| `search_depth` | string | No | `basic` | `basic` (fast) or `advanced` (deeper) |
+| `topic` | string | No | `general` | `general`, `news`, or `finance` |
+| `include_answer` | boolean | No | true | Generate an AI-synthesized answer |
+| `include_images` | boolean | No | false | Include image results |
+
+## Full working example
+
+<CodeGroup>
+
+```python Python
+import os, requests
+
+HEADERS = {"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"}
+
+def search(query, group="web", depth="basic"):
+    r = requests.post("https://ninjachat.ai/api/v1/search",
+        headers=HEADERS,
+        json={
+            "query": query,
+            "group": group,
+            "search_depth": depth,
+            "include_answer": True,
+        }
+    )
+    r.raise_for_status()
+    return r.json()
+
+# Web search
+result = search("best Python web frameworks 2026")
+print(result["answer"])
+for src in result["sources"][:3]:
+    print(f"  - {src['title']}: {src['url']}")
+
+# Academic search
+result = search("transformer architecture improvements", group="academic")
+print(result["answer"])
+
+# News search
+result = search("AI regulation", group="news")
+print(result["answer"])
+```
+
+```javascript Node.js
+async function search(query, group = "web", depth = "basic") {
+  const r = await fetch("https://ninjachat.ai/api/v1/search", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query, group, search_depth: depth, include_answer: true,
+    }),
+  });
+  if (!r.ok) throw new Error(`${r.status}: ${await r.text()}`);
+  return r.json();
+}
+
+const result = await search("best Python web frameworks 2026");
+console.log(result.answer);
+result.sources.slice(0, 3).forEach(s => console.log(`  - ${s.title}: ${s.url}`));
+```
+
+</CodeGroup>
+
+## Search groups
+
+| Group | What it searches | Use for |
+|---|---|---|
+| `web` | General web | Default. Most use cases. |
+| `academic` | Academic papers, research | RAG, research tools, citations |
+| `news` | Recent news articles | News aggregation, current events |
+
+## Use with RAG
+
+Combine search with chat for retrieval-augmented generation:
+
+```python
+# 1. Search for context
+results = search("What is quantum computing?")
+
+# 2. Feed to a chat model with sources as context
+context = "\n".join(f"- {s['title']}: {s['content']}" for s in results["sources"][:5])
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers=HEADERS,
+    json={
+        "model": "gpt-5",
+        "messages": [
+            {"role": "system", "content": f"Answer using these sources:\n{context}"},
+            {"role": "user", "content": "Explain quantum computing with citations"},
+        ]
+    }
+)
+print(r.json()["message"]["content"])
+```

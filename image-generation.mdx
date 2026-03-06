@@ -1,199 +1,164 @@
 ---
 title: "Image Generation"
-description: "Generate images with 6 AI models — FLUX Pro Ultra, FLUX Dev, FLUX Schnell, Recraft V3, Stable Diffusion 3, and Google Imagen 4."
+description: "Generate images with 6 models. Request format, response format, and examples."
 ---
 
-The image generation API supports 6 models through a single endpoint. Send a prompt, get back image URLs.
+## Request
 
-## Available models
+```bash
+POST https://ninjachat.ai/api/v1/images
+Authorization: Bearer nj_sk_YOUR_API_KEY
+Content-Type: application/json
+```
+
+```json
+{
+  "model": "flux-schnell",
+  "prompt": "A golden retriever puppy in autumn leaves, soft lighting, photorealistic",
+  "size": "1920x1920",
+  "n": 1
+}
+```
+
+## Response
+
+```json
+{
+  "model": "flux-schnell",
+  "images": [
+    {
+      "url": "https://cdn.example.com/generated-abc123.webp",
+      "revised_prompt": "A golden retriever puppy in autumn leaves..."
+    }
+  ],
+  "usage": { "images_generated": 1 },
+  "cost": {
+    "this_request": "$0.03",
+    "per_image": "$0.03",
+    "images": 1
+  },
+  "metadata": { "latency_ms": 1847, "size": "1920x1920" }
+}
+```
+
+Your image URL is in `images[0].url`. Download it or display it directly.
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `prompt` | string | **Yes** | — | What you want. Be specific — style, lighting, composition. Max 4,000 chars. |
+| `model` | string | No | `flux-pro-ultra` | Which model. See table below. |
+| `size` | string | No | `1920x1920` | `1920x1920` (square), `2560x1440` (landscape), `1440x2560` (portrait) |
+| `n` | integer | No | 1 | Number of images (1–4). Each billed separately. |
+| `image` | string | No | — | Reference image URL for image-to-image. Must be public HTTPS. |
+
+## Models
 
 | Model | ID | Cost | Speed | Best for |
 |---|---|---|---|---|
-| FLUX Pro Ultra | `flux-pro-ultra` | $0.10/img | ~8s | Highest quality, maximum detail |
-| FLUX Dev | `flux-dev` | $0.05/img | ~3s | Balanced quality/cost, iteration |
-| FLUX Schnell | `flux-schnell` | $0.03/img | <2s | Real-time, batch processing |
-| Recraft V3 | `recraft-v3` | $0.08/img | ~5s | Design assets, illustrations |
-| Stable Diffusion 3 | `stable-diffusion-3` | $0.05/img | ~10s | Versatile, strong prompt adherence |
+| FLUX Pro Ultra | `flux-pro-ultra` | $0.10/img | ~8s | Highest quality |
+| Recraft V3 | `recraft-v3` | $0.08/img | ~5s | Design, illustrations |
 | Google Imagen 4 | `google-imagen-4` | $0.08/img | ~15s | Photorealism, text rendering |
+| FLUX Dev | `flux-dev` | $0.05/img | ~3s | Good value, development |
+| Stable Diffusion 3 | `stable-diffusion-3` | $0.05/img | ~10s | Versatile, all styles |
+| FLUX Schnell | `flux-schnell` | $0.03/img | <2s | Fastest, batch processing |
 
-<Tip>
-  Browse all image models with live examples on the [API Models page](https://www.ninjachat.ai/api-models) or test them in the [API Playground](https://www.ninjachat.ai/api-playground).
-</Tip>
-
-## Text-to-image
-
-Generate an image from a text prompt:
+## Full working examples
 
 <CodeGroup>
 
-```bash cURL
-curl -X POST https://ninjachat.ai/api/v1/images \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
-  -d '{
-    "prompt": "A cyberpunk cityscape at night with neon signs and rain, photorealistic",
-    "model": "flux-pro-ultra",
-    "size": "2560x1440",
-    "n": 1
-  }'
-```
-
 ```python Python
-import requests
+import os, requests
 
-response = requests.post(
-    "https://ninjachat.ai/api/v1/images",
-    headers={
-        "Content-Type": "application/json",
-        "Authorization": "Bearer nj_sk_YOUR_API_KEY",
-    },
-    json={
-        "prompt": "A cyberpunk cityscape at night with neon signs and rain, photorealistic",
-        "model": "flux-pro-ultra",
-        "size": "2560x1440",
-        "n": 1,
-    },
-)
+HEADERS = {"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"}
 
-data = response.json()
-print(data["images"][0]["url"])
+def generate_image(prompt, model="flux-schnell", size="1920x1920"):
+    r = requests.post("https://ninjachat.ai/api/v1/images",
+        headers=HEADERS,
+        json={"model": model, "prompt": prompt, "size": size}
+    )
+    r.raise_for_status()
+    return r.json()["images"][0]["url"]
+
+# Quick draft ($0.03, <2 seconds)
+url = generate_image("A mountain landscape at sunset")
+print(url)
+
+# High quality final ($0.10, ~8 seconds)
+url = generate_image("A mountain landscape at sunset, 8k, ultra detailed",
+    model="flux-pro-ultra", size="2560x1440")
+print(url)
 ```
 
-```javascript JavaScript
-const response = await fetch("https://ninjachat.ai/api/v1/images", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer nj_sk_YOUR_API_KEY",
-  },
-  body: JSON.stringify({
-    prompt: "A cyberpunk cityscape at night with neon signs and rain, photorealistic",
-    model: "flux-pro-ultra",
-    size: "2560x1440",
-    n: 1,
-  }),
-});
+```javascript Node.js
+async function generateImage(prompt, model = "flux-schnell", size = "1920x1920") {
+  const r = await fetch("https://ninjachat.ai/api/v1/images", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ model, prompt, size }),
+  });
+  if (!r.ok) throw new Error(`${r.status}: ${await r.text()}`);
+  return (await r.json()).images[0].url;
+}
 
-const data = await response.json();
-console.log(data.images[0].url);
+const url = await generateImage("A mountain landscape at sunset");
+console.log(url);
 ```
 
 </CodeGroup>
 
-## Image-to-image editing
+## Image-to-image
 
-Pass a reference image URL with `image` to edit or transform an existing image:
+Transform an existing image by passing its URL:
 
-<CodeGroup>
+```python
+url = generate_image(
+    prompt="Turn this into a watercolor painting",
+    model="flux-dev",
+)
+# Wait — need to pass the image parameter:
 
-```bash cURL
-curl -X POST https://ninjachat.ai/api/v1/images \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
-  -d '{
-    "prompt": "Transform this photo into a watercolor painting",
-    "model": "flux-dev",
-    "image": "https://example.com/photo.jpg"
-  }'
-```
-
-```python Python
-response = requests.post(
-    "https://ninjachat.ai/api/v1/images",
-    headers={
-        "Content-Type": "application/json",
-        "Authorization": "Bearer nj_sk_YOUR_API_KEY",
-    },
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers=HEADERS,
     json={
-        "prompt": "Transform this photo into a watercolor painting",
         "model": "flux-dev",
-        "image": "https://example.com/photo.jpg",
-    },
+        "prompt": "Turn this into a watercolor painting with soft colors",
+        "image": "https://example.com/my-photo.jpg"  # Must be public HTTPS
+    }
 )
+print(r.json()["images"][0]["url"])
 ```
-
-</CodeGroup>
 
 ## Multiple images
 
-Generate up to 4 images in a single request with the `n` parameter:
-
-```bash
-curl -X POST https://ninjachat.ai/api/v1/images \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
-  -d '{
-    "prompt": "Logo design for a coffee shop, minimal, vector style",
-    "model": "recraft-v3",
-    "n": 4
-  }'
-```
-
-Each image is billed separately. Generating 4 images with `recraft-v3` costs 4 x $0.08 = $0.32.
-
-## Size options
-
-| Size | Aspect Ratio | Use case |
-|---|---|---|
-| `1920x1920` | 1:1 (square) | Social media posts, avatars |
-| `2560x1440` | 16:9 (landscape) | Wallpapers, banners, headers |
-| `1440x2560` | 9:16 (portrait) | Mobile wallpapers, stories |
-
-## Switching between models
-
-All image models share the same endpoint. Just change `model`:
+Generate up to 4 variations in one request:
 
 ```python
-import requests
-
-headers = {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer nj_sk_YOUR_API_KEY",
-}
-
-# Fast iteration with FLUX Schnell ($0.03/img, <2s)
-requests.post("https://ninjachat.ai/api/v1/images", headers=headers, json={
-    "model": "flux-schnell",
-    "prompt": "A mountain landscape at sunset",
-})
-
-# Final render with FLUX Pro Ultra ($0.10/img, highest quality)
-requests.post("https://ninjachat.ai/api/v1/images", headers=headers, json={
-    "model": "flux-pro-ultra",
-    "prompt": "A mountain landscape at sunset, 8k, ultra detailed",
-})
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers=HEADERS,
+    json={
+        "model": "recraft-v3",
+        "prompt": "Logo for a coffee shop called 'Bean There', minimal vector",
+        "n": 4
+    }
+)
+for i, img in enumerate(r.json()["images"]):
+    print(f"Variation {i+1}: {img['url']}")
+# Cost: 4 × $0.08 = $0.32
 ```
 
-## Model selection guide
+## Prompt tips
 
-<CardGroup cols={3}>
-  <Card title="FLUX Pro Ultra" icon="crown">
-    Best for final renders. Highest quality, maximum detail. Worth the premium for hero images and marketing materials.
-  </Card>
-  <Card title="FLUX Schnell" icon="bolt">
-    Best for speed. Under 2 seconds per image. Ideal for real-time applications, prototyping, and batch jobs.
-  </Card>
-  <Card title="Recraft V3" icon="palette">
-    Best for design. Excels at illustrations, icons, design assets with clean lines and consistent style.
-  </Card>
-</CardGroup>
+Be specific. Compare:
 
-<CardGroup cols={3}>
-  <Card title="Google Imagen 4" icon="camera">
-    Best for photorealism and text rendering. Strong at product photography and images containing readable text.
-  </Card>
-  <Card title="Stable Diffusion 3" icon="wand-magic-sparkles">
-    Best for versatility. Strong prompt adherence, good at a wide range of styles from photorealistic to artistic.
-  </Card>
-  <Card title="FLUX Dev" icon="code">
-    Best value. Balanced quality and cost at $0.05/img. Great for development and iteration before final renders.
-  </Card>
-</CardGroup>
+| Weak | Strong |
+|---|---|
+| `dog` | `Golden retriever puppy sitting in autumn leaves, soft golden hour lighting, shallow depth of field, photorealistic` |
+| `city` | `Cyberpunk cityscape at night, neon signs reflecting in rain puddles, aerial view, cinematic lighting, 8k` |
+| `logo` | `Minimal vector logo for a tech startup, geometric shapes, blue and white, clean lines, flat design` |
 
-## Error handling
-
-If generation fails, you are **not charged**. Common failure reasons:
-
-- Prompt blocked by safety filters (model-dependent)
-- Upstream service temporarily unavailable
-- Invalid reference image URL for image-to-image
+Include: **subject** + **style** + **lighting** + **composition** + **detail level**
