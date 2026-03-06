@@ -1,0 +1,199 @@
+---
+title: "Image Generation"
+description: "Generate images with 6 AI models — FLUX Pro Ultra, FLUX Dev, FLUX Schnell, Recraft V3, Stable Diffusion 3, and Google Imagen 4."
+---
+
+The image generation API supports 6 models through a single endpoint. Send a prompt, get back image URLs.
+
+## Available models
+
+| Model | ID | Cost | Speed | Best for |
+|---|---|---|---|---|
+| FLUX Pro Ultra | `flux-pro-ultra` | $0.10/img | ~8s | Highest quality, maximum detail |
+| FLUX Dev | `flux-dev` | $0.05/img | ~3s | Balanced quality/cost, iteration |
+| FLUX Schnell | `flux-schnell` | $0.03/img | <2s | Real-time, batch processing |
+| Recraft V3 | `recraft-v3` | $0.08/img | ~5s | Design assets, illustrations |
+| Stable Diffusion 3 | `stable-diffusion-3` | $0.05/img | ~10s | Versatile, strong prompt adherence |
+| Google Imagen 4 | `google-imagen-4` | $0.08/img | ~15s | Photorealism, text rendering |
+
+<Tip>
+  Browse all image models with live examples on the [API Models page](https://www.ninjachat.ai/api-models) or test them in the [API Playground](https://www.ninjachat.ai/api-playground).
+</Tip>
+
+## Text-to-image
+
+Generate an image from a text prompt:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -d '{
+    "prompt": "A cyberpunk cityscape at night with neon signs and rain, photorealistic",
+    "model": "flux-pro-ultra",
+    "size": "2560x1440",
+    "n": 1
+  }'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://ninjachat.ai/api/v1/images",
+    headers={
+        "Content-Type": "application/json",
+        "Authorization": "Bearer nj_sk_YOUR_API_KEY",
+    },
+    json={
+        "prompt": "A cyberpunk cityscape at night with neon signs and rain, photorealistic",
+        "model": "flux-pro-ultra",
+        "size": "2560x1440",
+        "n": 1,
+    },
+)
+
+data = response.json()
+print(data["images"][0]["url"])
+```
+
+```javascript JavaScript
+const response = await fetch("https://ninjachat.ai/api/v1/images", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer nj_sk_YOUR_API_KEY",
+  },
+  body: JSON.stringify({
+    prompt: "A cyberpunk cityscape at night with neon signs and rain, photorealistic",
+    model: "flux-pro-ultra",
+    size: "2560x1440",
+    n: 1,
+  }),
+});
+
+const data = await response.json();
+console.log(data.images[0].url);
+```
+
+</CodeGroup>
+
+## Image-to-image editing
+
+Pass a reference image URL with `image` to edit or transform an existing image:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -d '{
+    "prompt": "Transform this photo into a watercolor painting",
+    "model": "flux-dev",
+    "image": "https://example.com/photo.jpg"
+  }'
+```
+
+```python Python
+response = requests.post(
+    "https://ninjachat.ai/api/v1/images",
+    headers={
+        "Content-Type": "application/json",
+        "Authorization": "Bearer nj_sk_YOUR_API_KEY",
+    },
+    json={
+        "prompt": "Transform this photo into a watercolor painting",
+        "model": "flux-dev",
+        "image": "https://example.com/photo.jpg",
+    },
+)
+```
+
+</CodeGroup>
+
+## Multiple images
+
+Generate up to 4 images in a single request with the `n` parameter:
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -d '{
+    "prompt": "Logo design for a coffee shop, minimal, vector style",
+    "model": "recraft-v3",
+    "n": 4
+  }'
+```
+
+Each image is billed separately. Generating 4 images with `recraft-v3` costs 4 x $0.08 = $0.32.
+
+## Size options
+
+| Size | Aspect Ratio | Use case |
+|---|---|---|
+| `1920x1920` | 1:1 (square) | Social media posts, avatars |
+| `2560x1440` | 16:9 (landscape) | Wallpapers, banners, headers |
+| `1440x2560` | 9:16 (portrait) | Mobile wallpapers, stories |
+
+## Switching between models
+
+All image models share the same endpoint. Just change `model`:
+
+```python
+import requests
+
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer nj_sk_YOUR_API_KEY",
+}
+
+# Fast iteration with FLUX Schnell ($0.03/img, <2s)
+requests.post("https://ninjachat.ai/api/v1/images", headers=headers, json={
+    "model": "flux-schnell",
+    "prompt": "A mountain landscape at sunset",
+})
+
+# Final render with FLUX Pro Ultra ($0.10/img, highest quality)
+requests.post("https://ninjachat.ai/api/v1/images", headers=headers, json={
+    "model": "flux-pro-ultra",
+    "prompt": "A mountain landscape at sunset, 8k, ultra detailed",
+})
+```
+
+## Model selection guide
+
+<CardGroup cols={3}>
+  <Card title="FLUX Pro Ultra" icon="crown">
+    Best for final renders. Highest quality, maximum detail. Worth the premium for hero images and marketing materials.
+  </Card>
+  <Card title="FLUX Schnell" icon="bolt">
+    Best for speed. Under 2 seconds per image. Ideal for real-time applications, prototyping, and batch jobs.
+  </Card>
+  <Card title="Recraft V3" icon="palette">
+    Best for design. Excels at illustrations, icons, design assets with clean lines and consistent style.
+  </Card>
+</CardGroup>
+
+<CardGroup cols={3}>
+  <Card title="Google Imagen 4" icon="camera">
+    Best for photorealism and text rendering. Strong at product photography and images containing readable text.
+  </Card>
+  <Card title="Stable Diffusion 3" icon="wand-magic-sparkles">
+    Best for versatility. Strong prompt adherence, good at a wide range of styles from photorealistic to artistic.
+  </Card>
+  <Card title="FLUX Dev" icon="code">
+    Best value. Balanced quality and cost at $0.05/img. Great for development and iteration before final renders.
+  </Card>
+</CardGroup>
+
+## Error handling
+
+If generation fails, you are **not charged**. Common failure reasons:
+
+- Prompt blocked by safety filters (model-dependent)
+- Upstream service temporarily unavailable
+- Invalid reference image URL for image-to-image

@@ -1,9 +1,9 @@
 ---
 title: "Pricing"
-description: "Understand API pricing, credits, and rate limits."
+description: "Per-model API pricing, credit packs, and rate limits for 30+ AI models."
 ---
 
-API access requires a **$5/month base subscription** plus prepaid credits. Each API call deducts from your credit balance.
+API access requires a **$5/month base subscription** plus prepaid credits. Each API call deducts from your credit balance based on the model used.
 
 Subscribe and add credits from [Settings > API](https://www.ninjachat.ai/settings?tab=api).
 
@@ -21,24 +21,81 @@ $5/month gives you API access, key management, dashboard, and rate limiting.
 
 1 credit = 1 cent. Credits never expire.
 
-## Per-request costs
+## Chat model pricing
+
+All chat models use `POST /api/v1/chat`. Cost depends on the model tier:
+
+### Premium tier — $0.015/request (1.5 credits)
+
+| Model | ID |
+|---|---|
+| Claude Sonnet 4.6 | `claude-sonnet-4.6` |
+
+### Standard tier — $0.006/request (0.6 credits)
+
+| Model | ID |
+|---|---|
+| GPT-5 | `gpt-5` |
+| O3 Mini | `o3-mini` |
+| Claude Sonnet 4.5 | `claude-sonnet-4.5` |
+| Claude Opus 4.6 | `claude-opus-4.6` |
+| Claude Haiku 4.5 | `claude-haiku-4.5` |
+| Gemini 2.5 Pro | `gemini-2.5-pro` |
+| Gemini 3 Pro | `gemini-3-pro` |
+| Gemini 3.1 Pro | `gemini-3.1-pro` |
+| Grok 4 | `grok-4` |
+| Kimi K2 | `kimi-k2` |
+
+### Budget tier — $0.003/request (0.3 credits)
+
+| Model | ID |
+|---|---|
+| GPT-5 Mini | `gpt-5-mini` |
+| Gemini 2.5 Flash | `gemini-2.5-flash` |
+| Gemini 3 Flash | `gemini-3-flash` |
+| Llama 4 Scout | `llama-4-scout` |
+| DeepSeek V3 | `deepseek-v3` |
+| Mistral Large | `mistral-large` |
+| QWQ 32B | `qwq-32b` |
+| GLM-5 | `glm-5` |
+| MiniMax M2.5 | `minimax-m2.5` |
+
+See all models with descriptions on the [Models page](/models).
+
+## Image model pricing
+
+All image models use `POST /api/v1/images`:
+
+| Model | ID | Cost per image |
+|---|---|---|
+| FLUX Pro Ultra | `flux-pro-ultra` | $0.10 (10 credits) |
+| Recraft V3 | `recraft-v3` | $0.08 (8 credits) |
+| Google Imagen 4 | `google-imagen-4` | $0.08 (8 credits) |
+| FLUX Dev | `flux-dev` | $0.05 (5 credits) |
+| Stable Diffusion 3 | `stable-diffusion-3` | $0.05 (5 credits) |
+| FLUX Schnell | `flux-schnell` | $0.03 (3 credits) |
+
+See the [Image Generation guide](/image-generation) for details.
+
+## Video model pricing
+
+All video models use `POST /api/v1/video` and cost **$3.00 per video** (300 credits):
+
+| Model | ID | Duration | Speed |
+|---|---|---|---|
+| Seedance 2 | `seedance-2` | 5–15s | ~1-2 min |
+| Kling Video | `kling-video` | 5–10s | ~3-4 min |
+| Google Veo 2 | `google-veo-2` | 5–8s | ~40s |
+| Google Veo 3.1 | `veo-3.1` | 4, 6, or 8s | ~3–5 min |
+| Veo 3.1 Fast | `veo-3.1-fast` | 4, 6, or 8s | ~1–2 min |
+
+See the [Video Generation guide](/video-generation) for details.
+
+## Search pricing
 
 | Endpoint | Cost per request |
 |---|---|
-| Chat (`/api/v1/chat`) | $0.006 (0.6 credits) |
-| Search (`/api/v1/search`) | $0.05 (5 credits) |
-| Images (`/api/v1/images`) | $0.08 per image (8 credits) |
-| Video (`/api/v1/video`) | $3.00 per video (300 credits) — all models |
-
-### Video models
-
-All video models cost the same per generation:
-
-| Model | ID | Duration | Aspect Ratio | Speed |
-|---|---|---|---|---|
-| Seedance 2 (default) | `seedance-2` | 5–15s | Fixed | ~2 min |
-| Google Veo 3.1 | `veo-3.1` | 4, 6, or 8s | 16:9, 9:16 | ~3–5 min |
-| Veo 3.1 Fast | `veo-3.1-fast` | 4, 6, or 8s | 16:9, 9:16 | ~1–2 min |
+| Web Search (`/api/v1/search`) | $0.05 (5 credits) |
 
 Credits are deducted before each request. If your balance is insufficient, you'll receive a `402` error. Add more credits from [Settings > API](https://www.ninjachat.ai/settings?tab=api).
 

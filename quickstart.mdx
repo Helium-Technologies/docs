@@ -1,6 +1,6 @@
 ---
 title: "Quick Start"
-description: "Make your first NinjaChat API call in minutes."
+description: "Make your first NinjaChat API call in minutes — access 30+ AI models with one API key."
 ---
 
 ## Prerequisites
@@ -25,7 +25,10 @@ From the same [settings page](https://www.ninjachat.ai/settings?tab=api), create
 curl -X POST https://ninjachat.ai/api/v1/chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
-  -d '{"messages": [{"role": "user", "content": "Hello!"}]}'
+  -d '{
+    "model": "gpt-5",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
 ```
 
 ```python Python
@@ -38,6 +41,7 @@ response = requests.post(
         "Authorization": "Bearer nj_sk_YOUR_API_KEY",
     },
     json={
+        "model": "gpt-5",
         "messages": [
             {"role": "user", "content": "Hello!"}
         ]
@@ -55,6 +59,7 @@ const response = await fetch("https://ninjachat.ai/api/v1/chat", {
     "Authorization": "Bearer nj_sk_YOUR_API_KEY",
   },
   body: JSON.stringify({
+    model: "gpt-5",
     messages: [
       { role: "user", content: "Hello!" }
     ],
@@ -67,20 +72,46 @@ console.log(data.message.content);
 
 </CodeGroup>
 
-## 4. Explore the API
+## 4. Switch models
+
+The `model` parameter lets you switch between 30+ AI models without changing any other code:
+
+```python
+# Use Claude for coding tasks
+requests.post("https://ninjachat.ai/api/v1/chat", headers=headers, json={
+    "model": "claude-sonnet-4.6",
+    "messages": [{"role": "user", "content": "Write a Python quicksort"}]
+})
+
+# Use Gemini for analysis
+requests.post("https://ninjachat.ai/api/v1/chat", headers=headers, json={
+    "model": "gemini-3.1-pro",
+    "messages": [{"role": "user", "content": "Analyze this dataset..."}]
+})
+
+# Use a budget model for high-volume tasks
+requests.post("https://ninjachat.ai/api/v1/chat", headers=headers, json={
+    "model": "deepseek-v3",
+    "messages": [{"role": "user", "content": "Classify this text..."}]
+})
+```
+
+See all [available models](/models) with pricing and capabilities.
+
+## 5. Explore the API
 
 <CardGroup cols={2}>
+  <Card title="All Models" icon="microchip" href="/models">
+    Browse 30+ chat, image, and video models.
+  </Card>
   <Card title="Chat" icon="message" href="/api-reference/endpoints/chat-completions">
-    Text completions with streaming support.
+    20+ LLMs with streaming support.
   </Card>
-  <Card title="Search" icon="magnifying-glass" href="/api-reference/endpoints/web-search">
-    Web, academic, and news search.
+  <Card title="Images" icon="image" href="/image-generation">
+    6 image models from $0.03 to $0.10 per image.
   </Card>
-  <Card title="Images" icon="image" href="/api-reference/endpoints/image-generation">
-    Text-to-image and image-to-image generation.
-  </Card>
-  <Card title="Video" icon="video" href="/api-reference/endpoints/video-generation">
-    Text-to-video and image-to-video generation.
+  <Card title="Video" icon="video" href="/video-generation">
+    5 video models — text-to-video and image-to-video.
   </Card>
 </CardGroup>
 

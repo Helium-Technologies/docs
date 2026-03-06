@@ -3,7 +3,7 @@
   "info": {
     "title": "NinjaChat API",
     "version": "1.0.0",
-    "description": "AI chat, web search, image generation, and video generation API. All models are uncensored with no content filters."
+    "description": "Access 30+ AI models through a unified API — chat, image generation, video generation, and web search. One API key, one endpoint per type, just change the `model` parameter."
   },
   "servers": [
     {
@@ -82,7 +82,7 @@
       "post": {
         "operationId": "createChatCompletion",
         "summary": "Chat Completions",
-        "description": "Generate AI text completions. Supports both standard and streaming responses. Cost: $0.006 per request.",
+        "description": "Generate AI text completions using 20+ LLM models. Supports both standard and streaming responses. Cost varies by model tier — see the `model` parameter for pricing details.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -94,9 +94,30 @@
                 "properties": {
                   "model": {
                     "type": "string",
-                    "default": "ninja-1",
-                    "enum": ["ninja-1"],
-                    "description": "Model to use."
+                    "default": "gpt-5",
+                    "enum": [
+                      "gpt-5",
+                      "gpt-5-mini",
+                      "o3-mini",
+                      "claude-sonnet-4.5",
+                      "claude-sonnet-4.6",
+                      "claude-haiku-4.5",
+                      "claude-opus-4.6",
+                      "gemini-2.5-pro",
+                      "gemini-2.5-flash",
+                      "gemini-3-pro",
+                      "gemini-3-flash",
+                      "gemini-3.1-pro",
+                      "grok-4",
+                      "kimi-k2",
+                      "llama-4-scout",
+                      "deepseek-v3",
+                      "mistral-large",
+                      "qwq-32b",
+                      "glm-5",
+                      "minimax-m2.5"
+                    ],
+                    "description": "Model to use. **Premium ($0.015/req):** `claude-sonnet-4.6`. **Standard ($0.006/req):** `gpt-5`, `o3-mini`, `claude-sonnet-4.5`, `claude-opus-4.6`, `claude-haiku-4.5`, `gemini-2.5-pro`, `gemini-3-pro`, `gemini-3.1-pro`, `grok-4`, `kimi-k2`. **Budget ($0.003/req):** `gpt-5-mini`, `gemini-2.5-flash`, `gemini-3-flash`, `llama-4-scout`, `deepseek-v3`, `mistral-large`, `qwq-32b`, `glm-5`, `minimax-m2.5`."
                   },
                   "messages": {
                     "type": "array",
@@ -128,14 +149,39 @@
                   }
                 }
               },
-              "example": {
-                "model": "ninja-1",
-                "messages": [
-                  { "role": "system", "content": "You are a helpful assistant." },
-                  { "role": "user", "content": "Hello, what can you do?" }
-                ],
-                "temperature": 0.7,
-                "max_tokens": 2048
+              "examples": {
+                "gpt5": {
+                  "summary": "GPT-5 (Standard)",
+                  "value": {
+                    "model": "gpt-5",
+                    "messages": [
+                      { "role": "system", "content": "You are a helpful assistant." },
+                      { "role": "user", "content": "Hello, what can you do?" }
+                    ],
+                    "temperature": 0.7,
+                    "max_tokens": 2048
+                  }
+                },
+                "claude": {
+                  "summary": "Claude Sonnet 4.6 (Premium)",
+                  "value": {
+                    "model": "claude-sonnet-4.6",
+                    "messages": [
+                      { "role": "user", "content": "Write a Python function to merge two sorted lists" }
+                    ],
+                    "temperature": 0.3,
+                    "max_tokens": 4096
+                  }
+                },
+                "budget": {
+                  "summary": "DeepSeek V3 (Budget)",
+                  "value": {
+                    "model": "deepseek-v3",
+                    "messages": [
+                      { "role": "user", "content": "Explain quantum computing in simple terms" }
+                    ]
+                  }
+                }
               }
             }
           }
@@ -148,7 +194,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "model": { "type": "string", "example": "ninja-1" },
+                    "model": { "type": "string", "example": "gpt-5" },
                     "message": {
                       "type": "object",
                       "properties": {
@@ -341,7 +387,7 @@
       "post": {
         "operationId": "generateImages",
         "summary": "Image Generation",
-        "description": "Generate images from text prompts. Supports text-to-image and image-to-image editing with a reference URL. Cost: $0.08 per image.",
+        "description": "Generate images from text prompts using 6 different models. Supports text-to-image and image-to-image editing with a reference URL. Cost varies by model — from $0.03 to $0.10 per image.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -359,9 +405,16 @@
                   },
                   "model": {
                     "type": "string",
-                    "default": "ninja-vision-1",
-                    "enum": ["ninja-vision-1"],
-                    "description": "Model to use."
+                    "default": "flux-pro-ultra",
+                    "enum": [
+                      "flux-pro-ultra",
+                      "flux-dev",
+                      "flux-schnell",
+                      "recraft-v3",
+                      "stable-diffusion-3",
+                      "google-imagen-4"
+                    ],
+                    "description": "Image model to use. **$0.10/img:** `flux-pro-ultra`. **$0.08/img:** `recraft-v3`, `google-imagen-4`. **$0.05/img:** `flux-dev`, `stable-diffusion-3`. **$0.03/img:** `flux-schnell`."
                   },
                   "size": {
                     "type": "string",
@@ -383,11 +436,32 @@
                   }
                 }
               },
-              "example": {
-                "model": "ninja-vision-1",
-                "prompt": "A cyberpunk cityscape at night with neon signs and rain, photorealistic, 8k detail",
-                "size": "2560x1440",
-                "n": 1
+              "examples": {
+                "flux-pro": {
+                  "summary": "FLUX Pro Ultra (highest quality)",
+                  "value": {
+                    "model": "flux-pro-ultra",
+                    "prompt": "A cyberpunk cityscape at night with neon signs and rain, photorealistic, 8k detail",
+                    "size": "2560x1440",
+                    "n": 1
+                  }
+                },
+                "flux-schnell": {
+                  "summary": "FLUX Schnell (fastest)",
+                  "value": {
+                    "model": "flux-schnell",
+                    "prompt": "A cute cat wearing sunglasses, cartoon style",
+                    "size": "1920x1920"
+                  }
+                },
+                "imagen4": {
+                  "summary": "Google Imagen 4",
+                  "value": {
+                    "model": "google-imagen-4",
+                    "prompt": "A photorealistic product shot of a luxury watch on marble",
+                    "size": "1920x1920"
+                  }
+                }
               }
             }
           }
@@ -400,7 +474,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "model": { "type": "string", "example": "ninja-vision-1" },
+                    "model": { "type": "string", "example": "flux-pro-ultra" },
                     "images": {
                       "type": "array",
                       "items": {
@@ -420,8 +494,8 @@
                     "cost": {
                       "type": "object",
                       "properties": {
-                        "this_request": { "type": "string", "example": "$0.08" },
-                        "per_image": { "type": "string", "example": "$0.08" },
+                        "this_request": { "type": "string", "example": "$0.10" },
+                        "per_image": { "type": "string", "example": "$0.10" },
                         "images": { "type": "integer", "example": 1 }
                       }
                     },
@@ -464,7 +538,7 @@
       "post": {
         "operationId": "generateVideo",
         "summary": "Video Generation",
-        "description": "Start a video generation job. Supports three models: **Seedance 2** (default, uncensored, 5–15s), **Google Veo 3.1** (premium cinematic quality, 4/6/8s), and **Veo 3.1 Fast** (speed-optimized, 4/6/8s). Supports text-to-video and image-to-video. Cost: $3.00 per video regardless of model. Poll the status endpoint with the returned `request_id` to retrieve the result.",
+        "description": "Start a video generation job. Supports 5 models: **Seedance 2** (default, uncensored, 5–15s), **Kling Video** (motion quality, 5–10s), **Google Veo 2** (fast cinematic, 5–8s), **Veo 3.1** (premium cinematic, 4/6/8s), and **Veo 3.1 Fast** (speed-optimized, 4/6/8s). Cost: $3.00 per video. Poll the status endpoint with the returned `request_id` to retrieve the result.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -482,27 +556,27 @@
                   },
                   "model": {
                     "type": "string",
-                    "enum": ["seedance-2", "veo-3.1", "veo-3.1-fast"],
+                    "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast"],
                     "default": "seedance-2",
-                    "description": "Video model to use. `seedance-2` (default) — uncensored, 5–15s duration. `veo-3.1` — Google's premium cinematic model, 4/6/8s. `veo-3.1-fast` — speed-optimized Veo, 4/6/8s."
+                    "description": "Video model to use. `seedance-2` (default) — uncensored, 5–15s. `kling-video` — motion quality, 5–10s. `google-veo-2` — fast cinematic, 5–8s. `veo-3.1` — premium cinematic, 4/6/8s. `veo-3.1-fast` — speed-optimized, 4/6/8s."
                   },
                   "duration": {
                     "type": "integer",
                     "minimum": 4,
                     "maximum": 15,
                     "default": 8,
-                    "description": "Video length in seconds. Seedance 2: 5–15. Veo 3.1 / Veo 3.1 Fast: 4, 6, or 8 (invalid values snap to nearest allowed)."
+                    "description": "Video length in seconds. Seedance 2: 5–15. Kling: 5–10. Veo 2: 5–8. Veo 3.1 / Veo 3.1 Fast: 4, 6, or 8."
                   },
                   "aspect_ratio": {
                     "type": "string",
                     "enum": ["16:9", "9:16"],
                     "default": "16:9",
-                    "description": "Aspect ratio (Veo 3.1 models only). `16:9` for landscape, `9:16` for portrait. Ignored for Seedance 2."
+                    "description": "Aspect ratio. `16:9` for landscape, `9:16` for portrait. Supported by Veo and Kling models. Ignored for Seedance 2."
                   },
                   "image_url": {
                     "type": "string",
                     "format": "uri",
-                    "description": "Public URL of a reference image for image-to-video generation. Must be an HTTP or HTTPS URL (no localhost, private IPs, or internal hosts). Omit for text-to-video."
+                    "description": "Public URL of a reference image for image-to-video generation. Must be an HTTP or HTTPS URL. Omit for text-to-video."
                   }
                 }
               },
@@ -513,6 +587,24 @@
                     "prompt": "A golden retriever running in a sunny park",
                     "model": "seedance-2",
                     "duration": 10
+                  }
+                },
+                "kling": {
+                  "summary": "Kling Video",
+                  "value": {
+                    "prompt": "A samurai draws a katana in a field of golden grass, cherry blossoms swirl in the wind",
+                    "model": "kling-video",
+                    "duration": 5,
+                    "aspect_ratio": "16:9"
+                  }
+                },
+                "veo2": {
+                  "summary": "Google Veo 2",
+                  "value": {
+                    "prompt": "Underwater camera glides through a bioluminescent coral reef at night",
+                    "model": "google-veo-2",
+                    "duration": 5,
+                    "aspect_ratio": "16:9"
                   }
                 },
                 "veo31": {
@@ -532,16 +624,6 @@
                     "duration": 6,
                     "aspect_ratio": "9:16"
                   }
-                },
-                "imageToVideo": {
-                  "summary": "Image-to-video with Veo 3.1",
-                  "value": {
-                    "prompt": "Camera slowly pulls back, clouds drift across the sky",
-                    "model": "veo-3.1",
-                    "duration": 6,
-                    "aspect_ratio": "16:9",
-                    "image_url": "https://example.com/landscape.jpg"
-                  }
                 }
               }
             }
@@ -557,11 +639,11 @@
                   "properties": {
                     "request_id": {
                       "type": "string",
-                      "description": "Unique job identifier. Use this to poll the status endpoint. Prefixed with `seedance2:` for Seedance or `gemini-veo:` for Veo models."
+                      "description": "Unique job identifier. Use this to poll the status endpoint."
                     },
                     "model": {
                       "type": "string",
-                      "enum": ["seedance-2", "veo-3.1", "veo-3.1-fast"],
+                      "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast"],
                       "description": "The model used for this generation."
                     },
                     "message": {
@@ -581,30 +663,6 @@
                       "properties": {
                         "latency_ms": { "type": "integer", "description": "Request latency in milliseconds." }
                       }
-                    }
-                  }
-                },
-                "examples": {
-                  "seedance": {
-                    "summary": "Seedance 2 response",
-                    "value": {
-                      "request_id": "seedance2:abc123def456",
-                      "model": "seedance-2",
-                      "message": "Poll GET /api/v1/video/status?request_id=seedance2%3Aabc123def456 for completion.",
-                      "cost": { "this_request": "$3.00", "per_video": "$3.00" },
-                      "balance": "$39.00",
-                      "metadata": { "latency_ms": 1240 }
-                    }
-                  },
-                  "veo": {
-                    "summary": "Veo 3.1 response",
-                    "value": {
-                      "request_id": "gemini-veo:operations/generate-video-abc123",
-                      "model": "veo-3.1",
-                      "message": "Poll GET /api/v1/video/status?request_id=gemini-veo%3Aoperations%2Fgenerate-video-abc123 for completion.",
-                      "cost": { "this_request": "$3.00", "per_video": "$3.00" },
-                      "balance": "$39.00",
-                      "metadata": { "latency_ms": 1842 }
                     }
                   }
                 }
@@ -642,7 +700,7 @@
       "get": {
         "operationId": "getVideoStatus",
         "summary": "Video Generation Status",
-        "description": "Check the status of a video generation job created by `POST /api/v1/video`. Poll this endpoint until `status` is `completed` or `failed`. Recommended polling interval: every 10–30 seconds. No additional charge for polling. Works with all video models (Seedance 2, Veo 3.1, Veo 3.1 Fast).",
+        "description": "Check the status of a video generation job created by `POST /api/v1/video`. Poll this endpoint until `status` is `completed` or `failed`. Recommended polling interval: every 10–30 seconds. No additional charge for polling. Works with all video models.",
         "tags": ["Endpoints"],
         "parameters": [
           {
@@ -650,7 +708,7 @@
             "in": "query",
             "required": true,
             "schema": { "type": "string" },
-            "description": "The `request_id` returned from `POST /api/v1/video`. Prefixed with `seedance2:` for Seedance jobs or `gemini-veo:` for Veo jobs.",
+            "description": "The `request_id` returned from `POST /api/v1/video`.",
             "examples": {
               "seedance": {
                 "summary": "Seedance 2 job",
