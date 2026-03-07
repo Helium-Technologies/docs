@@ -1,12 +1,13 @@
 ---
 title: "Seedance 2"
 sidebarTitle: "Seedance 2"
-description: "seedance-2 — $3.00/video. Longest clips, unrestricted."
+description: "seedance-2 — $3.00/video via NinjaChat API. Longest clips up to 15s with unrestricted content. No ByteDance account needed."
 ---
 
 | | |
 |---|---|
 | **Model ID** | `seedance-2` |
+| **Provider** | ByteDance |
 | **Cost** | $3.00/video |
 | **Duration** | 5-15s |
 | **Speed** | ~1-2 min |
@@ -18,7 +19,7 @@ description: "seedance-2 — $3.00/video. Longest clips, unrestricted."
 curl -X POST https://ninjachat.ai/api/v1/video \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model": "seedance-2", "prompt": "A drone shot over mountains at sunset", "duration": 5}'
+  -d '{"model": "seedance-2", "prompt": "A samurai drawing a katana in a field of golden grass, cherry blossoms swirling, cinematic slow motion", "duration": 10}'
 ```
 
 ```python
@@ -26,7 +27,11 @@ import requests, os
 
 r = requests.post("https://ninjachat.ai/api/v1/video",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
-    json={"model": "seedance-2", "prompt": "A drone shot over mountains at sunset", "duration": 5}
+    json={"model": "seedance-2", "prompt": "A samurai drawing a katana in a field of golden grass, cherry blossoms swirling, cinematic slow motion", "duration": 10}
 )
 print(f"Poll: {r.json()['request_id']}")
 ```
+
+---
+
+**Guides:** [Video Generation](/video-generation) | [All Models](/models) | [Pricing](/pricing) | [Error Handling](/error-handling)

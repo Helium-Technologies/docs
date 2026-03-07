@@ -3,7 +3,7 @@
   "info": {
     "title": "NinjaChat API",
     "version": "1.0.0",
-    "description": "Access 30+ AI models through a unified API — chat, image generation, video generation, and web search. One API key, one endpoint per type, just change the `model` parameter."
+    "description": "Access 40+ AI models through a unified API — chat, image generation, video generation, and web search. One API key, one endpoint per type, just change the `model` parameter."
   },
   "servers": [
     {
@@ -110,14 +110,18 @@
                       "gemini-3.1-pro",
                       "grok-4",
                       "kimi-k2",
+                      "kimi-k2.5",
                       "llama-4-scout",
+                      "llama-4-maverick",
                       "deepseek-v3",
                       "mistral-large",
                       "qwq-32b",
                       "glm-5",
-                      "minimax-m2.5"
+                      "minimax-m2.5",
+                      "ninja-1",
+                      "uncensored-ai"
                     ],
-                    "description": "Model to use. **Premium ($0.015/req):** `claude-sonnet-4.6`. **Standard ($0.006/req):** `gpt-5`, `o3-mini`, `claude-sonnet-4.5`, `claude-opus-4.6`, `claude-haiku-4.5`, `gemini-2.5-pro`, `gemini-3-pro`, `gemini-3.1-pro`, `grok-4`, `kimi-k2`. **Budget ($0.003/req):** `gpt-5-mini`, `gemini-2.5-flash`, `gemini-3-flash`, `llama-4-scout`, `deepseek-v3`, `mistral-large`, `qwq-32b`, `glm-5`, `minimax-m2.5`."
+                    "description": "Model to use. **Ultra ($0.03/req):** `claude-opus-4.6`. **Premium ($0.015/req):** `claude-sonnet-4.6`. **Standard ($0.006/req):** `gpt-5`, `o3-mini`, `claude-sonnet-4.5`, `claude-haiku-4.5`, `gemini-2.5-pro`, `gemini-3-pro`, `gemini-3.1-pro`, `grok-4`, `kimi-k2`, `mistral-large`, `llama-4-maverick`, `kimi-k2.5`. **Budget ($0.003/req):** `gpt-5-mini`, `gemini-2.5-flash`, `gemini-3-flash`, `llama-4-scout`, `deepseek-v3`, `qwq-32b`, `glm-5`, `minimax-m2.5`, `ninja-1`, `uncensored-ai`."
                   },
                   "messages": {
                     "type": "array",
@@ -401,16 +405,23 @@
                   },
                   "model": {
                     "type": "string",
-                    "default": "flux-pro-ultra",
+                    "default": "flux-2-klein",
                     "enum": [
-                      "flux-pro-ultra",
-                      "flux-dev",
-                      "flux-schnell",
+                      "flux-kontext-max",
+                      "flux-2-flex",
+                      "flux-1-pro-ultra",
                       "recraft-v3",
-                      "stable-diffusion-3",
-                      "google-imagen-4"
+                      "google-imagen-4",
+                      "nano-banana-pro",
+                      "seedream",
+                      "flux-2-pro",
+                      "flux-kontext-pro",
+                      "nano-banana-2",
+                      "flux-1-fill",
+                      "flux-2-klein",
+                      "nano-banana"
                     ],
-                    "description": "Image model to use. **$0.10/img:** `flux-pro-ultra`. **$0.08/img:** `recraft-v3`, `google-imagen-4`. **$0.05/img:** `flux-dev`, `stable-diffusion-3`. **$0.03/img:** `flux-schnell`."
+                    "description": "Image model to use. **$0.10/img:** `flux-kontext-max`. **$0.08/img:** `flux-2-flex`, `flux-1-pro-ultra`, `recraft-v3`, `google-imagen-4`, `nano-banana-pro`, `seedream`. **$0.05/img:** `flux-2-pro`, `flux-kontext-pro`, `nano-banana-2`, `flux-1-fill`. **$0.03/img:** `flux-2-klein`, `nano-banana`."
                   },
                   "size": {
                     "type": "string",
@@ -552,9 +563,9 @@
                   },
                   "model": {
                     "type": "string",
-                    "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast", "google-veo-3-fast"],
+                    "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast", "google-veo-3-fast", "runway-gen4.5", "runway-gen4-turbo"],
                     "default": "seedance-2",
-                    "description": "Video model to use. `seedance-2` (default) — uncensored, 5–15s. `kling-video` — motion quality, 5–10s. `google-veo-2` — fast cinematic, 5–8s. `veo-3.1` — premium cinematic ($5), 4/6/8s. `veo-3.1-fast` — speed-optimized, 4/6/8s. `google-veo-3-fast` — budget Veo, 4/6/8s."
+                    "description": "Video model to use. **$5.00/video:** `runway-gen4.5` (Runway flagship), `veo-3.1` (Google best quality). **$3.00/video:** `seedance-2` (longest clips, 5–15s), `kling-video` (motion quality, 5–10s), `google-veo-2` (fastest, ~40s), `veo-3.1-fast` (speed-optimized, 4/6/8s), `google-veo-3-fast` (budget Veo, 4/6/8s), `runway-gen4-turbo` (fast image-to-video, requires image_url)."
                   },
                   "duration": {
                     "type": "integer",

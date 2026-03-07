@@ -1,12 +1,13 @@
 ---
 title: "Runway Gen-4.5"
 sidebarTitle: "Runway Gen-4.5"
-description: "runway-gen4.5 — $5.00/video. Runway's flagship, text-to-video + image-to-video."
+description: "runway-gen4.5 — $5.00/video via NinjaChat API. Runway's flagship with cinematic text-to-video. No Runway account needed."
 ---
 
 | | |
 |---|---|
 | **Model ID** | `runway-gen4.5` |
+| **Provider** | Runway |
 | **Cost** | $5.00/video |
 | **Duration** | 5s or 10s |
 | **Speed** | ~1-3 min |
@@ -18,7 +19,7 @@ description: "runway-gen4.5 — $5.00/video. Runway's flagship, text-to-video + 
 curl -X POST https://ninjachat.ai/api/v1/video \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model": "runway-gen4.5", "prompt": "A drone shot over mountains at sunset, cinematic", "duration": 10}'
+  -d '{"model": "runway-gen4.5", "prompt": "A cinematic drone shot soaring over a vast turquoise ocean at golden hour, film grain", "duration": 10}'
 ```
 
 ```python
@@ -26,7 +27,11 @@ import requests, os
 
 r = requests.post("https://ninjachat.ai/api/v1/video",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
-    json={"model": "runway-gen4.5", "prompt": "A drone shot over mountains at sunset, cinematic", "duration": 10}
+    json={"model": "runway-gen4.5", "prompt": "A cinematic drone shot soaring over a vast turquoise ocean at golden hour, film grain", "duration": 10}
 )
 print(f"Poll: {r.json()['request_id']}")
 ```
+
+---
+
+**Guides:** [Video Generation](/video-generation) | [All Models](/models) | [Pricing](/pricing) | [Error Handling](/error-handling)

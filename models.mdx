@@ -1,7 +1,7 @@
 ---
 title: "All Models"
 sidebarTitle: "All Models"
-description: "All 30+ models with IDs, pricing, and recommendations."
+description: "All 40+ AI models with IDs, pricing, and recommendations. One API key, one endpoint."
 ---
 
 One API key, one endpoint per type. Just change the `model` parameter.
@@ -10,20 +10,20 @@ One API key, one endpoint per type. Just change the `model` parameter.
 
 | I want to... | Model | Cost | ID |
 |---|---|---|---|
-| Build a chatbot | GPT-5 | $0.006 | `gpt-5` |
-| Generate code | Claude Sonnet 4.6 | $0.015 | `claude-sonnet-4.6` |
-| Classify/extract text | DeepSeek V3 | $0.003 | `deepseek-v3` |
-| Analyze long documents | Claude Sonnet 4.5 | $0.006 | `claude-sonnet-4.5` |
-| Do math/reasoning | O3 Mini | $0.006 | `o3-mini` |
-| Get fastest responses | Gemini 2.5 Flash | $0.003 | `gemini-2.5-flash` |
-| Best quality (any task) | Claude Opus 4.6 | $0.03 | `claude-opus-4.6` |
-| Generate images | Nano Banana 2 | $0.05/img | `nano-banana-2` |
-| Generate images (budget) | FLUX.2 Klein | $0.03/img | `flux-2-klein` |
-| Generate best images | FLUX Kontext Max | $0.10/img | `flux-kontext-max` |
-| Edit/transform images | FLUX Kontext Pro | $0.05/img | `flux-kontext-pro` |
-| Generate video | Veo 3.1 Fast | $3.00 | `veo-3.1-fast` |
-| Generate best video | Veo 3.1 | $5.00 | `veo-3.1` |
-| Search the web | Web Search | $0.05 | — |
+| Build a chatbot | [GPT-5](/api-reference/models/chat/gpt-5) | $0.006 | `gpt-5` |
+| Generate code | [Claude Sonnet 4.6](/api-reference/models/chat/claude-sonnet-4-6) | $0.015 | `claude-sonnet-4.6` |
+| Classify/extract text | [DeepSeek V3](/api-reference/models/chat/deepseek-v3) | $0.003 | `deepseek-v3` |
+| Analyze long documents | [Claude Sonnet 4.5](/api-reference/models/chat/claude-sonnet-4-5) | $0.006 | `claude-sonnet-4.5` |
+| Do math/reasoning | [O3 Mini](/api-reference/models/chat/o3-mini) | $0.006 | `o3-mini` |
+| Get fastest responses | [Gemini 2.5 Flash](/api-reference/models/chat/gemini-2-5-flash) | $0.003 | `gemini-2.5-flash` |
+| Best quality (any task) | [Claude Opus 4.6](/api-reference/models/chat/claude-opus-4-6) | $0.03 | `claude-opus-4.6` |
+| Generate images | [Nano Banana 2](/api-reference/models/image/nano-banana-2) | $0.05/img | `nano-banana-2` |
+| Generate images (budget) | [FLUX.2 Klein](/api-reference/models/image/flux-2-klein) | $0.03/img | `flux-2-klein` |
+| Generate best images | [FLUX Kontext Max](/api-reference/models/image/flux-kontext-max) | $0.10/img | `flux-kontext-max` |
+| Edit/transform images | [FLUX Kontext Pro](/api-reference/models/image/flux-kontext-pro) | $0.05/img | `flux-kontext-pro` |
+| Generate video | [Veo 3.1 Fast](/api-reference/models/video/veo-3-1-fast) | $3.00/video | `veo-3.1-fast` |
+| Generate best video | [Veo 3.1](/api-reference/models/video/veo-3-1) | $5.00/video | `veo-3.1` |
+| Search the web | [Web Search](/search) | $0.05 | — |
 
 <Note>
 **Not sure?** Use `gpt-5` for general use. Switch to Claude for code or DeepSeek for budget workloads. See [Pricing](/pricing) for full cost breakdown.
@@ -31,17 +31,17 @@ One API key, one endpoint per type. Just change the `model` parameter.
 
 ---
 
-## Chat models — 20+ models
+## Chat models — 24 models
 
 Full guide with examples: [Chat →](/chat)
 
-**$0.03/req — Ultra:** `claude-opus-4.6`
+**$0.03/req — Ultra:** [`claude-opus-4.6`](/api-reference/models/chat/claude-opus-4-6)
 
-**$0.015/req — Premium:** `claude-sonnet-4.6`
+**$0.015/req — Premium:** [`claude-sonnet-4.6`](/api-reference/models/chat/claude-sonnet-4-6)
 
-**$0.006/req — Standard:** `gpt-5` `o3-mini` `claude-sonnet-4.5` `claude-haiku-4.5` `gemini-2.5-pro` `gemini-3-pro` `gemini-3.1-pro` `grok-4` `kimi-k2` `mistral-large` `llama-4-maverick` `kimi-k2.5`
+**$0.006/req — Standard:** [`gpt-5`](/api-reference/models/chat/gpt-5) [`o3-mini`](/api-reference/models/chat/o3-mini) [`claude-sonnet-4.5`](/api-reference/models/chat/claude-sonnet-4-5) [`claude-haiku-4.5`](/api-reference/models/chat/claude-haiku-4-5) [`gemini-2.5-pro`](/api-reference/models/chat/gemini-2-5-pro) [`gemini-3-pro`](/api-reference/models/chat/gemini-3-pro) [`gemini-3.1-pro`](/api-reference/models/chat/gemini-3-1-pro) [`grok-4`](/api-reference/models/chat/grok-4) [`kimi-k2`](/api-reference/models/chat/kimi-k2) [`mistral-large`](/api-reference/models/chat/mistral-large) [`llama-4-maverick`](/api-reference/models/chat/llama-4-maverick) [`kimi-k2.5`](/api-reference/models/chat/kimi-k2-5)
 
-**$0.003/req — Budget:** `gpt-5-mini` `gemini-2.5-flash` `gemini-3-flash` `llama-4-scout` `deepseek-v3` `qwq-32b` `glm-5` `minimax-m2.5` `ninja-1` `uncensored-ai`
+**$0.003/req — Budget:** [`gpt-5-mini`](/api-reference/models/chat/gpt-5-mini) [`gemini-2.5-flash`](/api-reference/models/chat/gemini-2-5-flash) [`gemini-3-flash`](/api-reference/models/chat/gemini-3-flash) [`llama-4-scout`](/api-reference/models/chat/llama-4-scout) [`deepseek-v3`](/api-reference/models/chat/deepseek-v3) [`qwq-32b`](/api-reference/models/chat/qwq-32b) [`glm-5`](/api-reference/models/chat/glm-5) [`minimax-m2.5`](/api-reference/models/chat/minimax-m2-5) [`ninja-1`](/api-reference/models/chat/ninja-1) [`uncensored-ai`](/api-reference/models/chat/uncensored-ai)
 
 ---
 
@@ -51,19 +51,19 @@ Full guide with examples: [Images →](/image-generation)
 
 | Model | ID | Cost |
 |---|---|---|
-| FLUX Kontext Max | `flux-kontext-max` | $0.10/img |
-| FLUX.2 Flex | `flux-2-flex` | $0.08/img |
-| FLUX.1 Pro Ultra | `flux-1-pro-ultra` | $0.08/img |
-| Recraft V3 | `recraft-v3` | $0.08/img |
-| Google Imagen 4 | `google-imagen-4` | $0.08/img |
-| Nano Banana Pro | `nano-banana-pro` | $0.08/img |
-| Seedream | `seedream` | $0.08/img |
-| FLUX.2 Pro | `flux-2-pro` | $0.05/img |
-| FLUX Kontext Pro | `flux-kontext-pro` | $0.05/img |
-| Nano Banana 2 | `nano-banana-2` | $0.05/img |
-| FLUX.1 Fill | `flux-1-fill` | $0.05/img |
-| FLUX.2 Klein | `flux-2-klein` | $0.03/img |
-| Nano Banana | `nano-banana` | $0.03/img |
+| [FLUX Kontext Max](/api-reference/models/image/flux-kontext-max) | `flux-kontext-max` | $0.10/img |
+| [FLUX.2 Flex](/api-reference/models/image/flux-2-flex) | `flux-2-flex` | $0.08/img |
+| [FLUX.1 Pro Ultra](/api-reference/models/image/flux-1-pro-ultra) | `flux-1-pro-ultra` | $0.08/img |
+| [Recraft V3](/api-reference/models/image/recraft-v3) | `recraft-v3` | $0.08/img |
+| [Google Imagen 4](/api-reference/models/image/google-imagen-4) | `google-imagen-4` | $0.08/img |
+| [Nano Banana Pro](/api-reference/models/image/nano-banana-pro) | `nano-banana-pro` | $0.08/img |
+| [Seedream](/api-reference/models/image/seedream) | `seedream` | $0.08/img |
+| [FLUX.2 Pro](/api-reference/models/image/flux-2-pro) | `flux-2-pro` | $0.05/img |
+| [FLUX Kontext Pro](/api-reference/models/image/flux-kontext-pro) | `flux-kontext-pro` | $0.05/img |
+| [Nano Banana 2](/api-reference/models/image/nano-banana-2) | `nano-banana-2` | $0.05/img |
+| [FLUX.1 Fill](/api-reference/models/image/flux-1-fill) | `flux-1-fill` | $0.05/img |
+| [FLUX.2 Klein](/api-reference/models/image/flux-2-klein) | `flux-2-klein` | $0.03/img |
+| [Nano Banana](/api-reference/models/image/nano-banana) | `nano-banana` | $0.03/img |
 
 ---
 
@@ -73,14 +73,14 @@ Full guide with examples: [Video →](/video-generation)
 
 | Model | ID | Cost |
 |---|---|---|
-| Runway Gen-4.5 | `runway-gen4.5` | $5.00/video |
-| Runway Gen-4 Turbo | `runway-gen4-turbo` | $3.00/video |
-| Veo 3.1 | `veo-3.1` | $5.00 |
-| Seedance 2 | `seedance-2` | $3.00 |
-| Kling Video | `kling-video` | $3.00 |
-| Google Veo 2 | `google-veo-2` | $3.00 |
-| Veo 3.1 Fast | `veo-3.1-fast` | $3.00 |
-| Veo 3 Fast | `google-veo-3-fast` | $3.00 |
+| [Runway Gen-4.5](/api-reference/models/video/runway-gen4-5) | `runway-gen4.5` | $5.00/video |
+| [Veo 3.1](/api-reference/models/video/veo-3-1) | `veo-3.1` | $5.00/video |
+| [Runway Gen-4 Turbo](/api-reference/models/video/runway-gen4-turbo) | `runway-gen4-turbo` | $3.00/video |
+| [Seedance 2](/api-reference/models/video/seedance-2) | `seedance-2` | $3.00/video |
+| [Kling Video](/api-reference/models/video/kling-video) | `kling-video` | $3.00/video |
+| [Google Veo 2](/api-reference/models/video/google-veo-2) | `google-veo-2` | $3.00/video |
+| [Veo 3.1 Fast](/api-reference/models/video/veo-3-1-fast) | `veo-3.1-fast` | $3.00/video |
+| [Veo 3 Fast](/api-reference/models/video/google-veo-3-fast) | `google-veo-3-fast` | $3.00/video |
 
 ---
 

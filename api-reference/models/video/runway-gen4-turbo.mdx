@@ -1,12 +1,13 @@
 ---
 title: "Runway Gen-4 Turbo"
 sidebarTitle: "Runway Gen-4 Turbo"
-description: "runway-gen4-turbo — $3.00/video. Fast image-to-video generation."
+description: "runway-gen4-turbo — $3.00/video via NinjaChat API. Fast image-to-video for product demos and animation. No Runway account needed."
 ---
 
 | | |
 |---|---|
 | **Model ID** | `runway-gen4-turbo` |
+| **Provider** | Runway |
 | **Cost** | $3.00/video |
 | **Duration** | 5s or 10s |
 | **Speed** | ~30-60s |
@@ -36,3 +37,7 @@ r = requests.post("https://ninjachat.ai/api/v1/video",
 )
 print(f"Poll: {r.json()['request_id']}")
 ```
+
+---
+
+**Guides:** [Video Generation](/video-generation) | [All Models](/models) | [Pricing](/pricing) | [Error Handling](/error-handling)
