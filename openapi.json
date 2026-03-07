@@ -82,7 +82,7 @@
       "post": {
         "operationId": "createChatCompletion",
         "summary": "Chat Completions",
-        "description": "Generate AI text completions using 20+ LLM models. Supports both standard and streaming responses. Cost varies by model tier — see the `model` parameter for pricing details.",
+        "description": "Generate AI text completions using 24 LLM models. Supports both standard and streaming responses. Cost varies by model tier — see the `model` parameter for pricing details.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -444,19 +444,19 @@
                 }
               },
               "examples": {
-                "flux-pro": {
-                  "summary": "FLUX Pro Ultra (highest quality)",
+                "flux-1-pro-ultra": {
+                  "summary": "FLUX.1 Pro Ultra (highest quality)",
                   "value": {
-                    "model": "flux-pro-ultra",
+                    "model": "flux-1-pro-ultra",
                     "prompt": "A cyberpunk cityscape at night with neon signs and rain, photorealistic, 8k detail",
                     "size": "2560x1440",
                     "n": 1
                   }
                 },
-                "flux-schnell": {
-                  "summary": "FLUX Schnell (fastest)",
+                "flux-2-klein": {
+                  "summary": "FLUX.2 Klein (fastest)",
                   "value": {
-                    "model": "flux-schnell",
+                    "model": "flux-2-klein",
                     "prompt": "A cute cat wearing sunglasses, cartoon style",
                     "size": "1920x1920"
                   }
@@ -481,7 +481,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "model": { "type": "string", "example": "flux-pro-ultra" },
+                    "model": { "type": "string", "example": "flux-1-pro-ultra" },
                     "images": {
                       "type": "array",
                       "items": {
@@ -659,7 +659,7 @@
                     },
                     "model": {
                       "type": "string",
-                      "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast", "google-veo-3-fast"],
+                      "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast", "google-veo-3-fast", "runway-gen4.5", "runway-gen4-turbo"],
                       "description": "The model used for this generation."
                     },
                     "message": {
