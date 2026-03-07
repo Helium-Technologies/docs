@@ -1,0 +1,32 @@
+---
+title: "Google Veo 2"
+sidebarTitle: "Google Veo 2"
+description: "google-veo-2 — $3.00/video. Fastest + high quality."
+---
+
+| | |
+|---|---|
+| **Model ID** | `google-veo-2` |
+| **Cost** | $3.00/video |
+| **Duration** | 5-8s |
+| **Speed** | ~40s |
+| **Best for** | Fastest + high quality |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/video \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "google-veo-2", "prompt": "A drone shot over mountains at sunset", "duration": 5}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/video",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "google-veo-2", "prompt": "A drone shot over mountains at sunset", "duration": 5}
+)
+print(f"Poll: {r.json()['request_id']}")
+```

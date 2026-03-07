@@ -1,0 +1,32 @@
+---
+title: "Llama 4 Scout"
+sidebarTitle: "Llama 4 Scout"
+description: "llama-4-scout — $0.003/req (budget). Multilingual, open-source."
+---
+
+| | |
+|---|---|
+| **Model ID** | `llama-4-scout` |
+| **Provider** | Meta |
+| **Cost** | $0.003/req |
+| **Tier** | Budget |
+| **Best for** | Multilingual, open-source |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "llama-4-scout", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "llama-4-scout", "messages": [{"role": "user", "content": "Hello!"}]}
+)
+print(r.json()["message"]["content"])
+```

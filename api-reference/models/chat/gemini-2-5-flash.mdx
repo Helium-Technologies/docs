@@ -1,0 +1,32 @@
+---
+title: "Gemini 2.5 Flash"
+sidebarTitle: "Gemini 2.5 Flash"
+description: "gemini-2.5-flash — $0.003/req (budget). Ultra-fast, real-time."
+---
+
+| | |
+|---|---|
+| **Model ID** | `gemini-2.5-flash` |
+| **Provider** | Google |
+| **Cost** | $0.003/req |
+| **Tier** | Budget |
+| **Best for** | Ultra-fast, real-time |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gemini-2.5-flash", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "gemini-2.5-flash", "messages": [{"role": "user", "content": "Hello!"}]}
+)
+print(r.json()["message"]["content"])
+```

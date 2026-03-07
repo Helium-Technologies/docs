@@ -1,0 +1,32 @@
+---
+title: "Gemini 3.1 Pro"
+sidebarTitle: "Gemini 3.1 Pro"
+description: "gemini-3.1-pro — $0.006/req (standard). Cutting-edge reasoning."
+---
+
+| | |
+|---|---|
+| **Model ID** | `gemini-3.1-pro` |
+| **Provider** | Google |
+| **Cost** | $0.006/req |
+| **Tier** | Standard |
+| **Best for** | Cutting-edge reasoning |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gemini-3.1-pro", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "gemini-3.1-pro", "messages": [{"role": "user", "content": "Hello!"}]}
+)
+print(r.json()["message"]["content"])
+```

@@ -1,0 +1,31 @@
+---
+title: "Seedream"
+sidebarTitle: "Seedream"
+description: "seedream — $0.08/img. Realistic, artistic styles."
+---
+
+| | |
+|---|---|
+| **Model ID** | `seedream` |
+| **Cost** | $0.08/img |
+| **Speed** | ~8s |
+| **Best for** | Realistic, artistic styles |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "seedream", "prompt": "A sunset over mountains, photorealistic"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "seedream", "prompt": "A sunset over mountains, photorealistic"}
+)
+print(r.json()["images"][0]["url"])
+```

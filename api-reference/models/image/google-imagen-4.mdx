@@ -1,0 +1,31 @@
+---
+title: "Google Imagen 4"
+sidebarTitle: "Google Imagen 4"
+description: "google-imagen-4 — $0.08/img. Photorealism, text in images."
+---
+
+| | |
+|---|---|
+| **Model ID** | `google-imagen-4` |
+| **Cost** | $0.08/img |
+| **Speed** | ~15s |
+| **Best for** | Photorealism, text in images |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "google-imagen-4", "prompt": "A sunset over mountains, photorealistic"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "google-imagen-4", "prompt": "A sunset over mountains, photorealistic"}
+)
+print(r.json()["images"][0]["url"])
+```

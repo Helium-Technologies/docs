@@ -1,0 +1,32 @@
+---
+title: "Kling Video"
+sidebarTitle: "Kling Video"
+description: "kling-video — $3.00/video. Motion quality, coherence."
+---
+
+| | |
+|---|---|
+| **Model ID** | `kling-video` |
+| **Cost** | $3.00/video |
+| **Duration** | 5-10s |
+| **Speed** | ~3-4 min |
+| **Best for** | Motion quality, coherence |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/video \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "kling-video", "prompt": "A drone shot over mountains at sunset", "duration": 5}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/video",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "kling-video", "prompt": "A drone shot over mountains at sunset", "duration": 5}
+)
+print(f"Poll: {r.json()['request_id']}")
+```

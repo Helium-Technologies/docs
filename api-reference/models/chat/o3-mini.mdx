@@ -1,0 +1,32 @@
+---
+title: "o3-mini"
+sidebarTitle: "o3-mini"
+description: "o3-mini — $0.006/req (standard). Chain-of-thought reasoning, math."
+---
+
+| | |
+|---|---|
+| **Model ID** | `o3-mini` |
+| **Provider** | OpenAI |
+| **Cost** | $0.006/req |
+| **Tier** | Standard |
+| **Best for** | Chain-of-thought reasoning, math |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "o3-mini", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "o3-mini", "messages": [{"role": "user", "content": "Hello!"}]}
+)
+print(r.json()["message"]["content"])
+```

@@ -72,6 +72,58 @@
               "GET /api/api-keys/transactions",
               "GET /api/api-keys/logs"
             ]
+          },
+          {
+            "group": "Chat Models",
+            "pages": [
+              "api-reference/models/chat/gpt-5",
+              "api-reference/models/chat/gpt-5-mini",
+              "api-reference/models/chat/claude-opus-4-6",
+              "api-reference/models/chat/claude-sonnet-4-6",
+              "api-reference/models/chat/claude-sonnet-4-5",
+              "api-reference/models/chat/claude-haiku-4-5",
+              "api-reference/models/chat/o3-mini",
+              "api-reference/models/chat/gemini-2-5-pro",
+              "api-reference/models/chat/gemini-2-5-flash",
+              "api-reference/models/chat/gemini-3-pro",
+              "api-reference/models/chat/gemini-3-1-pro",
+              "api-reference/models/chat/gemini-3-flash",
+              "api-reference/models/chat/grok-4",
+              "api-reference/models/chat/deepseek-v3",
+              "api-reference/models/chat/kimi-k2",
+              "api-reference/models/chat/kimi-k2-5",
+              "api-reference/models/chat/mistral-large",
+              "api-reference/models/chat/llama-4-maverick",
+              "api-reference/models/chat/llama-4-scout",
+              "api-reference/models/chat/qwq-32b",
+              "api-reference/models/chat/glm-5",
+              "api-reference/models/chat/minimax-m2-5",
+              "api-reference/models/chat/ninja-1",
+              "api-reference/models/chat/uncensored-ai"
+            ]
+          },
+          {
+            "group": "Image Models",
+            "pages": [
+              "api-reference/models/image/flux-pro-ultra",
+              "api-reference/models/image/recraft-v3",
+              "api-reference/models/image/google-imagen-4",
+              "api-reference/models/image/seedream",
+              "api-reference/models/image/flux-dev",
+              "api-reference/models/image/stable-diffusion-3",
+              "api-reference/models/image/flux-schnell"
+            ]
+          },
+          {
+            "group": "Video Models",
+            "pages": [
+              "api-reference/models/video/veo-3-1",
+              "api-reference/models/video/veo-3-1-fast",
+              "api-reference/models/video/seedance-2",
+              "api-reference/models/video/kling-video",
+              "api-reference/models/video/google-veo-2",
+              "api-reference/models/video/google-veo-3-fast"
+            ]
           }
         ]
       }

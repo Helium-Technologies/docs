@@ -1,0 +1,32 @@
+---
+title: "Kimi K2.5"
+sidebarTitle: "Kimi K2.5"
+description: "kimi-k2.5 — $0.006/req (standard). Advanced reasoning, coding."
+---
+
+| | |
+|---|---|
+| **Model ID** | `kimi-k2.5` |
+| **Provider** | Moonshot AI |
+| **Cost** | $0.006/req |
+| **Tier** | Standard |
+| **Best for** | Advanced reasoning, coding |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "kimi-k2.5", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "kimi-k2.5", "messages": [{"role": "user", "content": "Hello!"}]}
+)
+print(r.json()["message"]["content"])
+```

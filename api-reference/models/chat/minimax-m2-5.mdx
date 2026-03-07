@@ -1,0 +1,32 @@
+---
+title: "MiniMax M2.5"
+sidebarTitle: "MiniMax M2.5"
+description: "minimax-m2.5 — $0.003/req (budget). Creative writing."
+---
+
+| | |
+|---|---|
+| **Model ID** | `minimax-m2.5` |
+| **Provider** | MiniMax |
+| **Cost** | $0.003/req |
+| **Tier** | Budget |
+| **Best for** | Creative writing |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "minimax-m2.5", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "minimax-m2.5", "messages": [{"role": "user", "content": "Hello!"}]}
+)
+print(r.json()["message"]["content"])
+```

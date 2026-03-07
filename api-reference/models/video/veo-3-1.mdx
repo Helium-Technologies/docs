@@ -1,0 +1,32 @@
+---
+title: "Veo 3.1"
+sidebarTitle: "Veo 3.1"
+description: "veo-3.1 — $5.00/video. Best quality."
+---
+
+| | |
+|---|---|
+| **Model ID** | `veo-3.1` |
+| **Cost** | $5.00/video |
+| **Duration** | 4/6/8s |
+| **Speed** | ~3-5 min |
+| **Best for** | Best quality |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/video \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "veo-3.1", "prompt": "A drone shot over mountains at sunset", "duration": 5}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/video",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "veo-3.1", "prompt": "A drone shot over mountains at sunset", "duration": 5}
+)
+print(f"Poll: {r.json()['request_id']}")
+```

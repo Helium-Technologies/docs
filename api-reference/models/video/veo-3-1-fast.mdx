@@ -1,0 +1,32 @@
+---
+title: "Veo 3.1 Fast"
+sidebarTitle: "Veo 3.1 Fast"
+description: "veo-3.1-fast — $3.00/video. Speed-optimized."
+---
+
+| | |
+|---|---|
+| **Model ID** | `veo-3.1-fast` |
+| **Cost** | $3.00/video |
+| **Duration** | 4/6/8s |
+| **Speed** | ~1-2 min |
+| **Best for** | Speed-optimized |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/video \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "veo-3.1-fast", "prompt": "A drone shot over mountains at sunset", "duration": 5}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/video",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "veo-3.1-fast", "prompt": "A drone shot over mountains at sunset", "duration": 5}
+)
+print(f"Poll: {r.json()['request_id']}")
+```

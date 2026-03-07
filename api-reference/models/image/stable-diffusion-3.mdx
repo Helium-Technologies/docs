@@ -1,0 +1,31 @@
+---
+title: "Stable Diffusion 3"
+sidebarTitle: "Stable Diffusion 3"
+description: "stable-diffusion-3 — $0.05/img. Versatile, all styles."
+---
+
+| | |
+|---|---|
+| **Model ID** | `stable-diffusion-3` |
+| **Cost** | $0.05/img |
+| **Speed** | ~10s |
+| **Best for** | Versatile, all styles |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "stable-diffusion-3", "prompt": "A sunset over mountains, photorealistic"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "stable-diffusion-3", "prompt": "A sunset over mountains, photorealistic"}
+)
+print(r.json()["images"][0]["url"])
+```

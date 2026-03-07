@@ -1,0 +1,32 @@
+---
+title: "Ninja 1"
+sidebarTitle: "Ninja 1"
+description: "ninja-1 — $0.003/req (budget). Free general-purpose."
+---
+
+| | |
+|---|---|
+| **Model ID** | `ninja-1` |
+| **Provider** | NinjaChat |
+| **Cost** | $0.003/req |
+| **Tier** | Budget |
+| **Best for** | Free general-purpose |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "ninja-1", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "ninja-1", "messages": [{"role": "user", "content": "Hello!"}]}
+)
+print(r.json()["message"]["content"])
+```
