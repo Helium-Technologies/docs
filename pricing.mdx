@@ -7,12 +7,12 @@ description: "Per-request pricing. No token counting. Every response tells you w
 
 | What | Cost |
 |---|---|
-| API subscription | $5/month |
 | Chat (budget models) | $0.003/request |
 | Chat (standard models) | $0.006/request |
 | Chat (premium models) | $0.015/request |
+| Chat (ultra models) | $0.03/request |
 | Images | $0.03 – $0.10/image |
-| Video | $3.00/video |
+| Video | $3.00 – $5.00/video |
 | Search | $0.05/query |
 
 No token counting. No complicated tiers. Every response includes the exact cost:
@@ -33,17 +33,30 @@ Buy credits upfront. 1 credit = $0.01. Credits never expire.
 
 [Add credits →](https://www.ninjachat.ai/settings?tab=api)
 
+### Example: Building a chatbot
+
+A chatbot handling **100 conversations/day** with GPT-5 ($0.006/request):
+- Daily cost: 100 × $0.006 = **$0.60/day**
+- Monthly cost: ~**$18/month**
+- Recommended pack: **$25** (covers ~6 weeks)
+
+A high-volume classifier using DeepSeek V3 ($0.003/request):
+- 10,000 requests/day: **$30/day**
+- Recommended pack: **$100** (covers ~3 days)
+
 ---
 
 ## All model costs
 
 ### Chat — `POST /api/v1/chat`
 
+**$0.03/req (ultra):** `claude-opus-4.6`
+
 **$0.015/req (premium):** `claude-sonnet-4.6`
 
-**$0.006/req (standard):** `gpt-5` `o3-mini` `claude-sonnet-4.5` `claude-opus-4.6` `claude-haiku-4.5` `gemini-2.5-pro` `gemini-3-pro` `gemini-3.1-pro` `grok-4` `kimi-k2`
+**$0.006/req (standard):** `gpt-5` `o3-mini` `claude-sonnet-4.5` `claude-haiku-4.5` `gemini-2.5-pro` `gemini-3-pro` `gemini-3.1-pro` `grok-4` `kimi-k2` `mistral-large` `llama-4-maverick` `kimi-k2.5`
 
-**$0.003/req (budget):** `gpt-5-mini` `gemini-2.5-flash` `gemini-3-flash` `llama-4-scout` `deepseek-v3` `mistral-large` `qwq-32b` `glm-5` `minimax-m2.5`
+**$0.003/req (budget):** `gpt-5-mini` `gemini-2.5-flash` `gemini-3-flash` `llama-4-scout` `deepseek-v3` `qwq-32b` `glm-5` `minimax-m2.5` `ninja-1` `uncensored-ai`
 
 ### Images — `POST /api/v1/images`
 
@@ -52,6 +65,7 @@ Buy credits upfront. 1 credit = $0.01. Credits never expire.
 | `flux-pro-ultra` | $0.10/img |
 | `recraft-v3` | $0.08/img |
 | `google-imagen-4` | $0.08/img |
+| `seedream` | $0.08/img |
 | `flux-dev` | $0.05/img |
 | `stable-diffusion-3` | $0.05/img |
 | `flux-schnell` | $0.03/img |
@@ -60,7 +74,12 @@ Generating `n` images = `n` × per-image cost.
 
 ### Video — `POST /api/v1/video`
 
-**$3.00/video — all models.** Failed generations are refunded automatically.
+| Model | Cost |
+|---|---|
+| `veo-3.1` | $5.00/video |
+| `seedance-2` `kling-video` `google-veo-2` `veo-3.1-fast` `google-veo-3-fast` | $3.00/video |
+
+Failed generations are refunded automatically.
 
 ### Search — `POST /api/v1/search`
 

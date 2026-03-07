@@ -3,6 +3,10 @@ title: "Chat Completions"
 description: "Generate text with 20 LLMs. Request format, response format, streaming, and examples."
 ---
 
+<Tip>
+**Which chat model?** Start with `gpt-5` ($0.006) for general use. Use `claude-sonnet-4.6` ($0.015) for code. Use `deepseek-v3` ($0.003) for budget. [Compare all →](/models)
+</Tip>
+
 ## Request
 
 ```bash
@@ -205,8 +209,13 @@ while (true) {
 
 | Tier | Cost | Models |
 |---|---|---|
+| Ultra | $0.03/req | `claude-opus-4.6` |
 | Premium | $0.015/req | `claude-sonnet-4.6` |
-| Standard | $0.006/req | `gpt-5` `o3-mini` `claude-sonnet-4.5` `claude-opus-4.6` `claude-haiku-4.5` `gemini-2.5-pro` `gemini-3-pro` `gemini-3.1-pro` `grok-4` `kimi-k2` |
-| Budget | $0.003/req | `gpt-5-mini` `gemini-2.5-flash` `gemini-3-flash` `llama-4-scout` `deepseek-v3` `mistral-large` `qwq-32b` `glm-5` `minimax-m2.5` |
+| Standard | $0.006/req | `gpt-5` `o3-mini` `claude-sonnet-4.5` `claude-haiku-4.5` `gemini-2.5-pro` `gemini-3-pro` `gemini-3.1-pro` `grok-4` `kimi-k2` `mistral-large` `llama-4-maverick` `kimi-k2.5` |
+| Budget | $0.003/req | `gpt-5-mini` `gemini-2.5-flash` `gemini-3-flash` `llama-4-scout` `deepseek-v3` `qwq-32b` `glm-5` `minimax-m2.5` `ninja-1` `uncensored-ai` |
 
 [All model details →](/models)
+
+<Tip>
+Not ready to write code? [Try this in the API Playground →](https://www.ninjachat.ai/api-playground)
+</Tip>

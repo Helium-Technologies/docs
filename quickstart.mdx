@@ -5,10 +5,11 @@ description: "From zero to working API call in 60 seconds."
 
 ## 1. Get an API key
 
-Go to [Settings > API](https://www.ninjachat.ai/settings?tab=api):
-1. Subscribe ($5/month)
-2. Add credits ($10 minimum — that's 1,666 chat requests)
-3. Click "Create API Key" and copy it (starts with `nj_sk_`, shown once)
+Go to [Settings → API](https://www.ninjachat.ai/settings?tab=api):
+1. Pick a credit pack ($10, $25, or $100) — $10 gets you ~1,600 chat requests
+2. Click **Create API Key**, give it a name, and copy it immediately (starts with `nj_sk_`, shown once)
+
+No subscription required. Credits never expire.
 
 ## 2. Make a request
 
@@ -100,7 +101,7 @@ Same endpoint, same code. Just change `"model"`:
 {"model": "gemini-3.1-pro", "messages": [...]}
 ```
 
-See all [20 chat models, 6 image models, and 5 video models →](/models)
+See all [20+ chat models, 7 image models, and 6 video models →](/models)
 
 ---
 
@@ -130,7 +131,7 @@ r = requests.post("https://ninjachat.ai/api/v1/images",
 print(r.json()["images"][0]["url"])
 ```
 
-```python Video ($3.00/vid — async)
+```python Video ($3.00–$5.00/vid — async)
 # Step 1: Submit
 r = requests.post("https://ninjachat.ai/api/v1/video",
     headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},

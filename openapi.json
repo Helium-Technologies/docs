@@ -234,10 +234,6 @@
             "description": "Insufficient credits.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
-          "403": {
-            "description": "No active API subscription.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
-          },
           "429": {
             "description": "Rate limit exceeded.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
@@ -556,9 +552,9 @@
                   },
                   "model": {
                     "type": "string",
-                    "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast"],
+                    "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast", "google-veo-3-fast"],
                     "default": "seedance-2",
-                    "description": "Video model to use. `seedance-2` (default) — uncensored, 5–15s. `kling-video` — motion quality, 5–10s. `google-veo-2` — fast cinematic, 5–8s. `veo-3.1` — premium cinematic, 4/6/8s. `veo-3.1-fast` — speed-optimized, 4/6/8s."
+                    "description": "Video model to use. `seedance-2` (default) — uncensored, 5–15s. `kling-video` — motion quality, 5–10s. `google-veo-2` — fast cinematic, 5–8s. `veo-3.1` — premium cinematic ($5), 4/6/8s. `veo-3.1-fast` — speed-optimized, 4/6/8s. `google-veo-3-fast` — budget Veo, 4/6/8s."
                   },
                   "duration": {
                     "type": "integer",
@@ -624,6 +620,15 @@
                     "duration": 6,
                     "aspect_ratio": "9:16"
                   }
+                },
+                "veo-3-fast": {
+                  "summary": "Google Veo 3 Fast",
+                  "value": {
+                    "prompt": "A cat watching birds from a sunny window ledge, gentle breeze",
+                    "model": "google-veo-3-fast",
+                    "duration": 4,
+                    "aspect_ratio": "16:9"
+                  }
                 }
               }
             }
@@ -643,7 +648,7 @@
                     },
                     "model": {
                       "type": "string",
-                      "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast"],
+                      "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast", "google-veo-3-fast"],
                       "description": "The model used for this generation."
                     },
                     "message": {
@@ -679,10 +684,6 @@
           },
           "402": {
             "description": "Insufficient credits.",
-            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
-          },
-          "403": {
-            "description": "No active API subscription.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "429": {
@@ -839,7 +840,7 @@
                     "billing": {
                       "type": "object",
                       "properties": {
-                        "isSubscribed": { "type": "boolean" },
+                        "hasCredits": { "type": "boolean" },
                         "balanceCents": { "type": "integer", "description": "Remaining balance in cents." },
                         "balanceFormatted": { "type": "string", "example": "$42.50" },
                         "rateLimit": {

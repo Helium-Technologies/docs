@@ -3,6 +3,10 @@ title: "Video Generation"
 description: "Generate videos with 5 models. Async with polling — full end-to-end code included."
 ---
 
+<Tip>
+**Which video model?** Start with `veo-3.1-fast` ($3.00, good balance). Use `veo-3.1` ($5.00) for best quality. Use `seedance-2` ($3.00) for longest clips (up to 15s). [Compare all →](/models)
+</Tip>
+
 Video generation is **async**: submit a job → poll for status → get an MP4 URL.
 
 ## Complete example (copy-paste-run)
@@ -148,15 +152,16 @@ Polling is **free** — no credits, no rate limit.
 
 Failed jobs are **not charged** — credits refunded automatically.
 
-## Models — all $3.00/video
+## Models
 
 | Model | ID | Duration | Speed | Best for |
 |---|---|---|---|---|
 | Seedance 2 | `seedance-2` | 5–15s | ~1-2 min | Unrestricted content, longest clips |
 | Kling Video | `kling-video` | 5–10s | ~3-4 min | Motion quality, coherence |
-| Google Veo 2 | `google-veo-2` | 5–8s | ~40s | Fastest + high quality |
-| Veo 3.1 | `veo-3.1` | 4, 6, 8s | ~3-5 min | Premium cinematic |
-| Veo 3.1 Fast | `veo-3.1-fast` | 4, 6, 8s | ~1-2 min | Speed-optimized |
+| Google Veo 2 | `google-veo-2` | 5–8s | ~40s | $3.00 — Fastest + high quality |
+| Veo 3.1 | `veo-3.1` | 4, 6, 8s | ~3-5 min | $5.00 — Best quality |
+| Veo 3.1 Fast | `veo-3.1-fast` | 4, 6, 8s | ~1-2 min | $3.00 — Speed-optimized |
+| Veo 3 Fast | `google-veo-3-fast` | 4, 6, 8s | ~1-2 min | $3.00 — Budget Veo |
 
 ### Duration limits
 
@@ -167,6 +172,7 @@ Failed jobs are **not charged** — credits refunded automatically.
 | `google-veo-2` | 5 to 8 (any integer) |
 | `veo-3.1` | 4, 6, or 8 only |
 | `veo-3.1-fast` | 4, 6, or 8 only |
+| `google-veo-3-fast` | 4, 6, or 8 only |
 
 ## Image-to-video
 
@@ -190,3 +196,7 @@ r = requests.post(f"{API}/api/v1/video", headers=HEADERS, json={
 | `ocean` | `Underwater camera glides through a coral reef, bioluminescent creatures pulse with light, slow motion, nature documentary` |
 
 Include: **camera movement** + **subject action** + **style** + **lighting**
+
+<Tip>
+Not ready to write code? [Try this in the API Playground →](https://www.ninjachat.ai/api-playground)
+</Tip>

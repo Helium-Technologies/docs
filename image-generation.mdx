@@ -3,6 +3,10 @@ title: "Image Generation"
 description: "Generate images with 6 models. Request format, response format, and examples."
 ---
 
+<Tip>
+**Which image model?** Start with `flux-schnell` ($0.03, fastest). Use `flux-pro-ultra` ($0.10) for best quality. [Compare all →](/models)
+</Tip>
+
 ## Request
 
 ```bash
@@ -60,6 +64,7 @@ Your image URL is in `images[0].url`. Download it or display it directly.
 | FLUX Pro Ultra | `flux-pro-ultra` | $0.10/img | ~8s | Highest quality |
 | Recraft V3 | `recraft-v3` | $0.08/img | ~5s | Design, illustrations |
 | Google Imagen 4 | `google-imagen-4` | $0.08/img | ~15s | Photorealism, text rendering |
+| Seedream | `seedream` | $0.08/img | ~8s | Realistic, artistic styles |
 | FLUX Dev | `flux-dev` | $0.05/img | ~3s | Good value, development |
 | Stable Diffusion 3 | `stable-diffusion-3` | $0.05/img | ~10s | Versatile, all styles |
 | FLUX Schnell | `flux-schnell` | $0.03/img | <2s | Fastest, batch processing |
@@ -116,12 +121,6 @@ console.log(url);
 Transform an existing image by passing its URL:
 
 ```python
-url = generate_image(
-    prompt="Turn this into a watercolor painting",
-    model="flux-dev",
-)
-# Wait — need to pass the image parameter:
-
 r = requests.post("https://ninjachat.ai/api/v1/images",
     headers=HEADERS,
     json={
@@ -162,3 +161,7 @@ Be specific. Compare:
 | `logo` | `Minimal vector logo for a tech startup, geometric shapes, blue and white, clean lines, flat design` |
 
 Include: **subject** + **style** + **lighting** + **composition** + **detail level**
+
+<Tip>
+Not ready to write code? [Try this in the API Playground →](https://www.ninjachat.ai/api-playground)
+</Tip>

@@ -21,7 +21,6 @@ All errors return JSON with an `error` code and `message`:
 | 401 | `missing_api_key` | No auth header | Add `Authorization: Bearer nj_sk_...` |
 | 401 | `invalid_api_key` | Bad or revoked key | Check key starts with `nj_sk_` |
 | 402 | `insufficient_credits` | Out of credits | [Add credits](https://www.ninjachat.ai/settings?tab=api) |
-| 403 | `subscription_required` | No API subscription | [Subscribe ($5/mo)](https://www.ninjachat.ai/settings?tab=api) |
 | 429 | `rate_limit_exceeded` | Too many requests | Wait `Retry-After` seconds |
 | 502 | `generation_failed` | Upstream failed | Retry — **not charged** |
 | 500 | `internal_error` | Server error | Retry |
@@ -107,6 +106,16 @@ async function chat(model, message, retries = 3) {
 
 </CodeGroup>
 
+## Common mistakes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `validation_error` on model | Typo in model ID (e.g. `gpt5` instead of `gpt-5`) | Check [available models](/models) for exact IDs |
+| `validation_error` on messages | Missing `role` or `content` field | Each message needs `{"role": "user", "content": "..."}` |
+| `insufficient_credits` | Balance is $0.00 | [Add credits](https://www.ninjachat.ai/settings?tab=api) |
+| `invalid_api_key` | Key revoked or copied incorrectly | Keys start with `nj_sk_`. Create a new one in [Settings](https://www.ninjachat.ai/settings?tab=api) |
+| Empty streaming response | Not reading SSE stream correctly | See [streaming example](/chat#streaming) |
+
 ## Quick debug
 
 ```bash
@@ -123,4 +132,3 @@ curl -s -o /dev/null -w "%{http_code}" \
 | `200` | Working |
 | `401` | Bad API key |
 | `402` | No credits |
-| `403` | No subscription |

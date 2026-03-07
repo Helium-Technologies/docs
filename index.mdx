@@ -16,16 +16,16 @@ One API key gives you GPT-5, Claude, Gemini, FLUX, Imagen, Veo, and 25+ more mod
 
 | Endpoint | What it does | Cost | Guide |
 |---|---|---|---|
-| `POST /api/v1/chat` | Text generation with 20 LLMs | $0.003 – $0.015/req | [Chat guide](/chat) |
-| `POST /api/v1/images` | Image generation with 6 models | $0.03 – $0.10/img | [Image guide](/image-generation) |
-| `POST /api/v1/video` | Video generation with 5 models | $3.00/video | [Video guide](/video-generation) |
+| `POST /api/v1/chat` | Text generation with 20+ LLMs | $0.003 – $0.03/req | [Chat guide](/chat) |
+| `POST /api/v1/images` | Image generation with 7 models | $0.03 – $0.10/img | [Image guide](/image-generation) |
+| `POST /api/v1/video` | Video generation with 6 models | $3.00–$5.00/video | [Video guide](/video-generation) |
 | `POST /api/v1/search` | Web search + AI answers | $0.05/query | [Search guide](/search) |
 
 ## Get started
 
 <Steps>
   <Step title="Get an API key (1 min)">
-    [Settings > API](https://www.ninjachat.ai/settings?tab=api) → Subscribe ($5/mo) → Add credits ($10 min) → Create key
+    [Settings > API](https://www.ninjachat.ai/settings?tab=api) → Add credits ($10 min) → Create key
   </Step>
   <Step title="Make a request (30 sec)">
     Copy the curl above, replace `nj_sk_YOUR_API_KEY`, run it. [Full quickstart →](/quickstart)
@@ -48,6 +48,12 @@ Content-Type: application/json
 ```
 
 **Chat and images** return results immediately. **Video** is async — you submit a job and [poll for the result](/video-generation).
+
+Not ready to write code? Try the [API Playground](https://www.ninjachat.ai/api-playground) to send requests from your browser.
+
+<Tip>
+**Want to try before coding?** The [API Playground](https://www.ninjachat.ai/api-playground) lets you test all models in your browser — no code required.
+</Tip>
 
 Every response includes a `cost` field so you always know exactly what you paid:
 
