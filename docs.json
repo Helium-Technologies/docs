@@ -148,7 +148,7 @@
       "anchors": [
         {
           "anchor": "Dashboard",
-          "href": "https://www.ninjachat.ai/settings?tab=api",
+          "href": "https://www.ninjachat.ai/developers",
           "icon": "gauge"
         }
       ]
@@ -169,7 +169,7 @@
     "primary": {
       "type": "button",
       "label": "Get API Key",
-      "href": "https://www.ninjachat.ai/settings?tab=api"
+      "href": "https://www.ninjachat.ai/developers/keys"
     }
   },
   "contextual": {

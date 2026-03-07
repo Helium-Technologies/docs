@@ -32,7 +32,7 @@ Buy credits upfront. 1 credit = $0.01. Credits never expire.
 | 2,500 credits | $25 | ~4,166 budget chats, or ~833 images, or 8 videos |
 | 10,000 credits | $100 | ~16,666 budget chats, or ~3,333 images, or 33 videos |
 
-[Add credits →](https://www.ninjachat.ai/settings?tab=api)
+[Add credits →](https://www.ninjachat.ai/developers/billing)
 
 ### Example: Building a chatbot
 
@@ -104,7 +104,7 @@ You get a `402` error:
 { "error": "insufficient_credits", "message": "Insufficient credits." }
 ```
 
-No request goes through. [Add more credits](https://www.ninjachat.ai/settings?tab=api) and try again.
+No request goes through. [Add more credits](https://www.ninjachat.ai/developers/billing) and try again.
 
 ## Check your balance
 
@@ -116,7 +116,7 @@ r = requests.get("https://ninjachat.ai/api/api-keys",
 print(r.json()["billing"]["balanceFormatted"])  # → "$42.50"
 ```
 
-Or from your [dashboard](https://www.ninjachat.ai/settings?tab=api).
+Or from your [Developers dashboard](https://www.ninjachat.ai/developers).
 
 ## Low-balance warnings
 
