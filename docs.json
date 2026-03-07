@@ -14,7 +14,7 @@
         "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting Started",
+            "group": "Get Started",
             "pages": [
               "index",
               "quickstart",
@@ -22,19 +22,14 @@
             ]
           },
           {
-            "group": "Models & Pricing",
-            "pages": [
-              "models",
-              "pricing"
-            ]
-          },
-          {
-            "group": "Guides",
+            "group": "API",
             "pages": [
               "chat",
               "image-generation",
               "video-generation",
-              "search"
+              "search",
+              "models",
+              "pricing"
             ]
           },
           {
@@ -68,6 +63,14 @@
               "GET /api/api-keys",
               "POST /api/api-keys",
               "DELETE /api/api-keys"
+            ]
+          },
+          {
+            "group": "Billing & Usage",
+            "openapi": "openapi.json",
+            "pages": [
+              "GET /api/api-keys/transactions",
+              "GET /api/api-keys/logs"
             ]
           }
         ]

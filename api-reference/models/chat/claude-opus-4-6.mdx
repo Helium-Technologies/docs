@@ -1,0 +1,32 @@
+---
+title: "Claude Opus 4.6"
+sidebarTitle: "Claude Opus 4.6"
+description: "claude-opus-4.6 — $0.03/req (ultra). Deep research, complex tasks, highest quality."
+---
+
+| | |
+|---|---|
+| **Model ID** | `claude-opus-4.6` |
+| **Provider** | Anthropic |
+| **Cost** | $0.03/req |
+| **Tier** | Ultra |
+| **Best for** | Deep research, complex tasks, highest quality |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "claude-opus-4.6", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "claude-opus-4.6", "messages": [{"role": "user", "content": "Hello!"}]}
+)
+print(r.json()["message"]["content"])
+```

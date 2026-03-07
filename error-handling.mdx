@@ -116,6 +116,21 @@ async function chat(model, message, retries = 3) {
 | `invalid_api_key` | Key revoked or copied incorrectly | Keys start with `nj_sk_`. Create a new one in [Settings](https://www.ninjachat.ai/settings?tab=api) |
 | Empty streaming response | Not reading SSE stream correctly | See [streaming example](/chat#streaming) |
 
+## Proactive warnings
+
+You don't have to wait for a `402` error. Every response includes a `balance_warning` when your balance drops below $5.00:
+
+```json
+{
+  "balance_warning": {
+    "warning": "low_balance",
+    "threshold": "Balance is $3.50. Consider adding credits soon."
+  }
+}
+```
+
+Check for `balance_warning` in responses and alert yourself before running out. See [Pricing](/pricing#low-balance-warnings) for details.
+
 ## Quick debug
 
 ```bash

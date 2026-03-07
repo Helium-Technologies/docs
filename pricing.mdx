@@ -1,5 +1,6 @@
 ---
-title: "Pricing"
+title: "Pricing & Credits"
+sidebarTitle: "Pricing & Credits"
 description: "Per-request pricing. No token counting. Every response tells you what it cost."
 ---
 
@@ -108,6 +109,74 @@ print(r.json()["billing"]["balanceFormatted"])  # → "$42.50"
 ```
 
 Or from your [dashboard](https://www.ninjachat.ai/settings?tab=api).
+
+## Low-balance warnings
+
+When your balance drops below $5.00, every API response includes a `balance_warning` field:
+
+```json
+{
+  "message": { "role": "assistant", "content": "..." },
+  "cost": { "this_request": "$0.006" },
+  "balance": "$3.50",
+  "balance_warning": {
+    "warning": "low_balance",
+    "threshold": "Balance is $3.50. Consider adding credits soon."
+  }
+}
+```
+
+At $1.00 or less, the warning becomes `"critical_low_balance"`. Use this to trigger alerts in your app before hitting `insufficient_credits`.
+
+## Purchase history
+
+View all past credit purchases:
+
+```python
+r = requests.get("https://ninjachat.ai/api/api-keys/transactions",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"})
+
+for t in r.json()["transactions"]:
+    print(f"{t['timestamp']} — {t['amount']} ({t['type']})")
+```
+
+Supports `limit` and `offset` query params for pagination.
+
+## Usage logs
+
+Get per-request usage logs with filtering:
+
+```python
+# Recent logs
+r = requests.get("https://ninjachat.ai/api/api-keys/logs",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    params={"limit": 50, "group": "chat"})
+
+for log in r.json()["logs"]:
+    print(f"{log['timestamp']} — {log['model']} — {log['statusCode']} — {log['latencyMs']}ms")
+```
+
+### Filter options
+
+| Param | Description | Example |
+|---|---|---|
+| `group` | Endpoint type | `chat`, `search`, `images`, `video` |
+| `model` | Model ID | `gpt-5`, `flux-schnell` |
+| `status` | HTTP status code | `200`, `402` |
+| `from` | Start date (ISO) | `2026-03-01T00:00:00Z` |
+| `to` | End date (ISO) | `2026-03-06T23:59:59Z` |
+| `limit` | Results per page (max 500) | `100` |
+| `offset` | Pagination offset | `100` |
+
+### CSV export
+
+Add `format=csv` to download as a spreadsheet:
+
+```bash
+curl "https://ninjachat.ai/api/api-keys/logs?format=csv&from=2026-03-01" \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -o usage.csv
+```
 
 ## Rate limits
 

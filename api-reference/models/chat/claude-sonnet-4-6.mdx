@@ -1,0 +1,32 @@
+---
+title: "Claude Sonnet 4.6"
+sidebarTitle: "Claude Sonnet 4.6"
+description: "claude-sonnet-4.6 — $0.015/req (premium). Code generation, complex instructions, nuanced analysis."
+---
+
+| | |
+|---|---|
+| **Model ID** | `claude-sonnet-4.6` |
+| **Provider** | Anthropic |
+| **Cost** | $0.015/req |
+| **Tier** | Premium |
+| **Best for** | Code generation, complex instructions, nuanced analysis |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "claude-sonnet-4.6", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "claude-sonnet-4.6", "messages": [{"role": "user", "content": "Hello!"}]}
+)
+print(r.json()["message"]["content"])
+```

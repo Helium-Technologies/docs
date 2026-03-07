@@ -80,13 +80,35 @@ Every response tells you what it cost. Log it:
 ```python
 data = r.json()
 print(f"Model: {data['model']}, Cost: {data['cost']['this_request']}, Latency: {data['metadata']['latency_ms']}ms")
+
+# React to low-balance warnings before hitting $0
+if "balance_warning" in data:
+    print(f"⚠️ {data['balance_warning']['threshold']}")
 ```
 
-Check your balance programmatically:
+Check your balance and usage programmatically:
 
 ```python
+# Current balance
 r = requests.get("https://ninjachat.ai/api/api-keys", headers=HEADERS)
 print(r.json()["billing"]["balanceFormatted"])
+
+# Per-request logs (filterable by model, date, status)
+r = requests.get("https://ninjachat.ai/api/api-keys/logs",
+    headers=HEADERS, params={"group": "chat", "limit": 50})
+for log in r.json()["logs"]:
+    print(f"{log['model']} — {log['latencyMs']}ms — {log['statusCode']}")
+
+# Export usage as CSV for accounting
+r = requests.get("https://ninjachat.ai/api/api-keys/logs?format=csv&from=2026-03-01",
+    headers=HEADERS)
+with open("usage.csv", "w") as f:
+    f.write(r.text)
+
+# Purchase history
+r = requests.get("https://ninjachat.ai/api/api-keys/transactions", headers=HEADERS)
+for t in r.json()["transactions"]:
+    print(f"{t['timestamp']} — {t['amount']}")
 ```
 
 ## 6. Proxy for browser apps

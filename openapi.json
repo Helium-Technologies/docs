@@ -976,6 +976,168 @@
           }
         }
       }
+    },
+    "/api/api-keys/transactions": {
+      "get": {
+        "operationId": "listTransactions",
+        "summary": "Credit Purchase History",
+        "description": "List all credit purchases for the authenticated user, ordered by most recent first.",
+        "tags": ["Management"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 50, "maximum": 200 },
+            "description": "Number of records to return."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 },
+            "description": "Pagination offset."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "transactions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "amount": { "type": "string", "example": "$25.00" },
+                          "amountCents": { "type": "integer", "example": 2500 },
+                          "type": { "type": "string", "example": "credit_purchase" },
+                          "status": { "type": "string", "example": "completed" },
+                          "timestamp": { "type": "string", "format": "date-time" }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "integer" },
+                        "limit": { "type": "integer" },
+                        "offset": { "type": "integer" },
+                        "hasMore": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/api-keys/logs": {
+      "get": {
+        "operationId": "listUsageLogs",
+        "summary": "Per-Request Usage Logs",
+        "description": "Get granular per-request usage logs with filtering. Supports CSV export via format=csv.",
+        "tags": ["Management"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 100, "maximum": 500 },
+            "description": "Number of records to return."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 },
+            "description": "Pagination offset."
+          },
+          {
+            "name": "group",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["chat", "search", "images", "video"] },
+            "description": "Filter by endpoint type."
+          },
+          {
+            "name": "model",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "Filter by model ID (e.g. gpt-5)."
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "type": "integer" },
+            "description": "Filter by HTTP status code (e.g. 200)."
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Start date (ISO 8601)."
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "End date (ISO 8601)."
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["json", "csv"], "default": "json" },
+            "description": "Response format. Use csv for spreadsheet export."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usage logs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "logs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "timestamp": { "type": "string", "format": "date-time" },
+                          "endpoint": { "type": "string", "example": "/api/v1/chat" },
+                          "group": { "type": "string", "example": "chat" },
+                          "model": { "type": "string", "example": "gpt-5" },
+                          "statusCode": { "type": "integer", "example": 200 },
+                          "tokensUsed": { "type": "integer", "nullable": true },
+                          "latencyMs": { "type": "integer", "example": 842 }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "total": { "type": "integer" },
+                        "limit": { "type": "integer" },
+                        "offset": { "type": "integer" },
+                        "hasMore": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
     }
   }
 }
