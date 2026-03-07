@@ -1,0 +1,45 @@
+---
+title: "FLUX.1 Pro Ultra"
+sidebarTitle: "FLUX.1 Pro Ultra"
+description: "flux-1-pro-ultra — $0.08/img. Ultra-high resolution up to 4MP."
+---
+
+| | |
+|---|---|
+| **Model ID** | `flux-1-pro-ultra` |
+| **Provider** | Black Forest Labs |
+| **Cost** | $0.08/img |
+| **Tier** | Premium |
+| **Speed** | ~8-15s |
+| **Best for** | Ultra-high resolution, print materials, large-format output |
+
+## Description
+
+Black Forest Labs' ultra-high resolution model from the FLUX.1 family. Generates images up to 4 megapixels (2048x2048) with exceptional quality — ideal for print and large-format output.
+
+## Features
+
+- Ultra-high resolution (up to 4MP)
+- Up to 2048x2048 output
+- Exceptional quality
+- Multiple aspect ratios
+- Print-ready output
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "flux-1-pro-ultra", "prompt": "A sunset over mountains, photorealistic, ultra detailed"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "flux-1-pro-ultra", "prompt": "A sunset over mountains, photorealistic, ultra detailed"}
+)
+print(r.json()["images"][0]["url"])
+```

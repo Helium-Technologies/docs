@@ -1,0 +1,38 @@
+---
+title: "Runway Gen-4 Turbo"
+sidebarTitle: "Runway Gen-4 Turbo"
+description: "runway-gen4-turbo — $3.00/video. Fast image-to-video generation."
+---
+
+| | |
+|---|---|
+| **Model ID** | `runway-gen4-turbo` |
+| **Cost** | $3.00/video |
+| **Duration** | 5s or 10s |
+| **Speed** | ~30-60s |
+| **Best for** | Fast image animation, product demos |
+| **Note** | Requires `image_url` parameter |
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/video \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "runway-gen4-turbo", "prompt": "Camera slowly pulls back, clouds drift", "duration": 5, "image_url": "https://example.com/photo.jpg"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/video",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={
+        "model": "runway-gen4-turbo",
+        "prompt": "Camera slowly pulls back, clouds drift",
+        "duration": 5,
+        "image_url": "https://example.com/photo.jpg"
+    }
+)
+print(f"Poll: {r.json()['request_id']}")
+```

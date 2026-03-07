@@ -110,19 +110,27 @@
                 "group": "Image Models",
                 "icon": "image",
                 "pages": [
-                  "api-reference/models/image/flux-pro-ultra",
+                  "api-reference/models/image/flux-kontext-max",
+                  "api-reference/models/image/flux-2-flex",
+                  "api-reference/models/image/flux-1-pro-ultra",
                   "api-reference/models/image/recraft-v3",
                   "api-reference/models/image/google-imagen-4",
+                  "api-reference/models/image/nano-banana-pro",
                   "api-reference/models/image/seedream",
-                  "api-reference/models/image/flux-dev",
-                  "api-reference/models/image/stable-diffusion-3",
-                  "api-reference/models/image/flux-schnell"
+                  "api-reference/models/image/flux-2-pro",
+                  "api-reference/models/image/flux-kontext-pro",
+                  "api-reference/models/image/nano-banana-2",
+                  "api-reference/models/image/flux-1-fill",
+                  "api-reference/models/image/flux-2-klein",
+                  "api-reference/models/image/nano-banana"
                 ]
               },
               {
                 "group": "Video Models",
                 "icon": "video",
                 "pages": [
+                  "api-reference/models/video/runway-gen4-5",
+                  "api-reference/models/video/runway-gen4-turbo",
                   "api-reference/models/video/veo-3-1",
                   "api-reference/models/video/veo-3-1-fast",
                   "api-reference/models/video/seedance-2",
@@ -139,19 +147,9 @@
     "global": {
       "anchors": [
         {
-          "anchor": "API Playground",
-          "href": "https://www.ninjachat.ai/api-playground",
-          "icon": "play"
-        },
-        {
-          "anchor": "All Models",
-          "href": "https://www.ninjachat.ai/api-models",
-          "icon": "microchip"
-        },
-        {
-          "anchor": "Get API Key",
+          "anchor": "Dashboard",
           "href": "https://www.ninjachat.ai/settings?tab=api",
-          "icon": "key"
+          "icon": "gauge"
         }
       ]
     }
@@ -193,9 +191,6 @@
     "baseUrl": "https://ninjachat.ai",
     "auth": {
       "method": "bearer"
-    },
-    "playground": {
-      "display": "interactive"
     },
     "examples": {
       "languages": ["curl", "python", "javascript"],

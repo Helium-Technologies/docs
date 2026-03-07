@@ -1,0 +1,43 @@
+---
+title: "Nano Banana"
+sidebarTitle: "Nano Banana"
+description: "nano-banana — $0.03/img. Fast image generation, high-volume tasks."
+---
+
+| | |
+|---|---|
+| **Model ID** | `nano-banana` |
+| **Provider** | Google |
+| **Cost** | $0.03/img |
+| **Tier** | Budget |
+| **Speed** | Fast |
+| **Best for** | Fast image generation, high-volume tasks |
+
+## Description
+
+Google's efficient image generation model (Gemini 2.5 Flash Image). Optimized for speed and high-volume, low-latency image generation tasks.
+
+## Features
+
+- Text-to-image
+- Image editing
+- Aspect ratios: 1:1, 16:9, 9:16, 3:4, 4:3
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "nano-banana", "prompt": "A sunset over mountains, photorealistic"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "nano-banana", "prompt": "A sunset over mountains, photorealistic"}
+)
+print(r.json()["images"][0]["url"])
+```

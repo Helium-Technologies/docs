@@ -1,0 +1,49 @@
+---
+title: "FLUX.1 Fill"
+sidebarTitle: "FLUX.1 Fill"
+description: "flux-1-fill — $0.05/img. AI inpainting, outpainting, and image extension."
+---
+
+| | |
+|---|---|
+| **Model ID** | `flux-1-fill` |
+| **Provider** | Black Forest Labs |
+| **Cost** | $0.05/img |
+| **Tier** | Standard |
+| **Speed** | ~5s |
+| **Best for** | Inpainting, outpainting, image extension, object removal |
+
+## Description
+
+Black Forest Labs' specialized model for inpainting, outpainting, and image extension. Generates content-aware fills that blend seamlessly with the original image.
+
+## Features
+
+- Inpainting (fill masked areas)
+- Outpainting (extend beyond borders)
+- Image extension
+- Content-aware fill
+- Seamless blending
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "flux-1-fill", "prompt": "Remove the person and fill with background", "image": "https://example.com/photo.jpg"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={
+        "model": "flux-1-fill",
+        "prompt": "Remove the person and fill with background",
+        "image": "https://example.com/photo.jpg"
+    }
+)
+print(r.json()["images"][0]["url"])
+```

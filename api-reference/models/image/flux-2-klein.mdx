@@ -1,0 +1,44 @@
+---
+title: "FLUX.2 Klein"
+sidebarTitle: "FLUX.2 Klein"
+description: "flux-2-klein — $0.03/img. Fastest FLUX.2 model, budget-friendly."
+---
+
+| | |
+|---|---|
+| **Model ID** | `flux-2-klein` |
+| **Provider** | Black Forest Labs |
+| **Cost** | $0.03/img |
+| **Tier** | Budget |
+| **Speed** | <2s |
+| **Best for** | Fast generation, batch processing, previews |
+
+## Description
+
+Black Forest Labs' fastest FLUX.2 model with 9 billion parameters. Optimized for speed and cost-efficiency — ideal for real-time applications, previews, and high-volume batch processing.
+
+## Features
+
+- Text-to-image generation
+- Ultra-fast (<2s) generation
+- Multiple aspect ratios
+- Custom width/height support
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "flux-2-klein", "prompt": "A sunset over mountains, photorealistic"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "flux-2-klein", "prompt": "A sunset over mountains, photorealistic"}
+)
+print(r.json()["images"][0]["url"])
+```

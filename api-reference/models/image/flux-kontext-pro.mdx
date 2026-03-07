@@ -1,0 +1,49 @@
+---
+title: "FLUX Kontext Pro"
+sidebarTitle: "FLUX Kontext Pro"
+description: "flux-kontext-pro — $0.05/img. Context-aware image editing and transformation."
+---
+
+| | |
+|---|---|
+| **Model ID** | `flux-kontext-pro` |
+| **Provider** | Black Forest Labs |
+| **Cost** | $0.05/img |
+| **Tier** | Standard |
+| **Speed** | ~5s |
+| **Best for** | Image editing, style transfer, transformations |
+
+## Description
+
+Black Forest Labs' context-aware image editing model. Edit and transform images with text instructions while preserving context. Ideal for style transfer, object manipulation, and scene transformation.
+
+## Features
+
+- Context-aware editing
+- Image transformation
+- Text-guided editing
+- Style transfer
+- Object manipulation
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "flux-kontext-pro", "prompt": "Make this watercolor style", "image": "https://example.com/photo.jpg"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={
+        "model": "flux-kontext-pro",
+        "prompt": "Make this watercolor style",
+        "image": "https://example.com/photo.jpg"
+    }
+)
+print(r.json()["images"][0]["url"])
+```

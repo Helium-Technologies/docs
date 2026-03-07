@@ -1,0 +1,45 @@
+---
+title: "FLUX.2 Pro"
+sidebarTitle: "FLUX.2 Pro"
+description: "flux-2-pro — $0.05/img. Balanced quality, speed, and cost."
+---
+
+| | |
+|---|---|
+| **Model ID** | `flux-2-pro` |
+| **Provider** | Black Forest Labs |
+| **Cost** | $0.05/img |
+| **Tier** | Standard |
+| **Speed** | ~3-5s |
+| **Best for** | Production apps, balanced quality/speed |
+
+## Description
+
+Black Forest Labs' balanced FLUX.2 model. The best mix of quality, speed, and cost — recommended for most production applications.
+
+## Features
+
+- High quality output
+- Fast generation
+- Strong prompt adherence
+- Multiple aspect ratios
+- Custom width/height support
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "flux-2-pro", "prompt": "A sunset over mountains, photorealistic"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "flux-2-pro", "prompt": "A sunset over mountains, photorealistic"}
+)
+print(r.json()["images"][0]["url"])
+```

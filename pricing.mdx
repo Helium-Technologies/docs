@@ -63,13 +63,19 @@ A high-volume classifier using DeepSeek V3 ($0.003/request):
 
 | Model | Cost |
 |---|---|
-| `flux-pro-ultra` | $0.10/img |
+| `flux-kontext-max` | $0.10/img |
+| `flux-2-flex` | $0.08/img |
+| `flux-1-pro-ultra` | $0.08/img |
 | `recraft-v3` | $0.08/img |
 | `google-imagen-4` | $0.08/img |
+| `nano-banana-pro` | $0.08/img |
 | `seedream` | $0.08/img |
-| `flux-dev` | $0.05/img |
-| `stable-diffusion-3` | $0.05/img |
-| `flux-schnell` | $0.03/img |
+| `flux-2-pro` | $0.05/img |
+| `flux-kontext-pro` | $0.05/img |
+| `nano-banana-2` | $0.05/img |
+| `flux-1-fill` | $0.05/img |
+| `flux-2-klein` | $0.03/img |
+| `nano-banana` | $0.03/img |
 
 Generating `n` images = `n` × per-image cost.
 
@@ -77,6 +83,8 @@ Generating `n` images = `n` × per-image cost.
 
 | Model | Cost |
 |---|---|
+| `runway-gen4.5` | $5.00/video |
+| `runway-gen4-turbo` | $3.00/video |
 | `veo-3.1` | $5.00/video |
 | `seedance-2` `kling-video` `google-veo-2` `veo-3.1-fast` `google-veo-3-fast` | $3.00/video |
 
@@ -161,7 +169,7 @@ for log in r.json()["logs"]:
 | Param | Description | Example |
 |---|---|---|
 | `group` | Endpoint type | `chat`, `search`, `images`, `video` |
-| `model` | Model ID | `gpt-5`, `flux-schnell` |
+| `model` | Model ID | `gpt-5`, `flux-2-klein` |
 | `status` | HTTP status code | `200`, `402` |
 | `from` | Start date (ISO) | `2026-03-01T00:00:00Z` |
 | `to` | End date (ISO) | `2026-03-06T23:59:59Z` |

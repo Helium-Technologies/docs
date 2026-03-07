@@ -5,11 +5,11 @@ description: "From zero to working API call in 60 seconds."
 
 ## 1. Get an API key
 
-Go to [Settings → API](https://www.ninjachat.ai/settings?tab=api):
-1. Pick a credit pack ($10, $25, or $100) — $10 gets you ~1,600 chat requests
+Go to your [Dashboard](https://www.ninjachat.ai/settings?tab=api):
+1. Add credits to your account
 2. Click **Create API Key**, give it a name, and copy it immediately (starts with `nj_sk_`, shown once)
 
-No subscription required. Credits never expire.
+No subscription required. Pay only for what you use.
 
 ## 2. Make a request
 
@@ -79,7 +79,7 @@ console.log(data.message.content);
 }
 ```
 
-That's it. You just called GPT-5 for $0.006.
+That's it. You just called GPT-5 with one request.
 
 ---
 
@@ -88,20 +88,20 @@ That's it. You just called GPT-5 for $0.006.
 Same endpoint, same code. Just change `"model"`:
 
 ```python
-# GPT-5 — general purpose ($0.006/req)
+# GPT-5 — general purpose
 {"model": "gpt-5", "messages": [...]}
 
-# Claude Sonnet 4.6 — best for code ($0.015/req)
+# Claude Sonnet 4.6 — best for code
 {"model": "claude-sonnet-4.6", "messages": [...]}
 
-# DeepSeek V3 — cheapest ($0.003/req)
+# DeepSeek V3 — fast and lightweight
 {"model": "deepseek-v3", "messages": [...]}
 
-# Gemini 3.1 Pro — advanced reasoning ($0.006/req)
+# Gemini 3.1 Pro — advanced reasoning
 {"model": "gemini-3.1-pro", "messages": [...]}
 ```
 
-See all [20+ chat models, 7 image models, and 6 video models →](/models)
+See all [20+ chat models, 13 image models, and 8 video models →](/models)
 
 ---
 
@@ -109,7 +109,7 @@ See all [20+ chat models, 7 image models, and 6 video models →](/models)
 
 <CodeGroup>
 
-```python Chat ($0.003–$0.015/req)
+```python Chat
 r = requests.post("https://ninjachat.ai/api/v1/chat",
     headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
     json={
@@ -120,18 +120,18 @@ r = requests.post("https://ninjachat.ai/api/v1/chat",
 print(r.json()["message"]["content"])
 ```
 
-```python Images ($0.03–$0.10/img)
+```python Images
 r = requests.post("https://ninjachat.ai/api/v1/images",
     headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
     json={
-        "model": "flux-schnell",
+        "model": "flux-2-klein",
         "prompt": "A cute robot drinking coffee, cartoon style"
     }
 )
 print(r.json()["images"][0]["url"])
 ```
 
-```python Video ($3.00–$5.00/vid — async)
+```python Video
 # Step 1: Submit
 r = requests.post("https://ninjachat.ai/api/v1/video",
     headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
@@ -159,7 +159,7 @@ while True:
     time.sleep(10)
 ```
 
-```python Search ($0.05/query)
+```python Search
 r = requests.post("https://ninjachat.ai/api/v1/search",
     headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
     json={
@@ -184,4 +184,3 @@ print(r.json()["answer"])
 | Generate videos | [Video Generation guide](/video-generation) |
 | Use web search | [Search guide](/search) |
 | Handle errors properly | [Error Handling](/error-handling) |
-| Test without code | [API Playground](https://www.ninjachat.ai/api-playground) |

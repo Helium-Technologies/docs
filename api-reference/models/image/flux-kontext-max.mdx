@@ -1,0 +1,49 @@
+---
+title: "FLUX Kontext Max"
+sidebarTitle: "FLUX Kontext Max"
+description: "flux-kontext-max — $0.10/img. Premium context-aware editing with maximum fidelity."
+---
+
+| | |
+|---|---|
+| **Model ID** | `flux-kontext-max` |
+| **Provider** | Black Forest Labs |
+| **Cost** | $0.10/img |
+| **Tier** | Ultra |
+| **Speed** | ~5-15s |
+| **Best for** | Complex edits, premium transformations, maximum fidelity |
+
+## Description
+
+Black Forest Labs' premium context-aware image editing model. Maximum fidelity editing with precise control over complex multi-element transformations.
+
+## Features
+
+- Maximum fidelity editing
+- Precise control
+- Complex multi-element transformations
+- Premium output quality
+- Text-guided editing
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "flux-kontext-max", "prompt": "Transform into oil painting style", "image": "https://example.com/photo.jpg"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={
+        "model": "flux-kontext-max",
+        "prompt": "Transform into oil painting style",
+        "image": "https://example.com/photo.jpg"
+    }
+)
+print(r.json()["images"][0]["url"])
+```

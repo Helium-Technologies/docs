@@ -17,14 +17,16 @@ One API key, one endpoint per type. Just change the `model` parameter.
 | Do math/reasoning | O3 Mini | $0.006 | `o3-mini` |
 | Get fastest responses | Gemini 2.5 Flash | $0.003 | `gemini-2.5-flash` |
 | Best quality (any task) | Claude Opus 4.6 | $0.03 | `claude-opus-4.6` |
-| Generate images | FLUX Schnell | $0.03/img | `flux-schnell` |
-| Generate best images | FLUX Pro Ultra | $0.10/img | `flux-pro-ultra` |
+| Generate images | Nano Banana 2 | $0.05/img | `nano-banana-2` |
+| Generate images (budget) | FLUX.2 Klein | $0.03/img | `flux-2-klein` |
+| Generate best images | FLUX Kontext Max | $0.10/img | `flux-kontext-max` |
+| Edit/transform images | FLUX Kontext Pro | $0.05/img | `flux-kontext-pro` |
 | Generate video | Veo 3.1 Fast | $3.00 | `veo-3.1-fast` |
 | Generate best video | Veo 3.1 | $5.00 | `veo-3.1` |
 | Search the web | Web Search | $0.05 | — |
 
 <Note>
-**Not sure?** Use `gpt-5` ($0.006). It handles most tasks well. Switch to Claude for code or DeepSeek for budget. [Try all models in the Playground →](https://www.ninjachat.ai/api-playground)
+**Not sure?** Use `gpt-5` for general use. Switch to Claude for code or DeepSeek for budget workloads. See [Pricing](/pricing) for full cost breakdown.
 </Note>
 
 ---
@@ -43,28 +45,36 @@ Full guide with examples: [Chat →](/chat)
 
 ---
 
-## Image models — 7 models
+## Image models — 13 models
 
 Full guide with examples: [Images →](/image-generation)
 
 | Model | ID | Cost |
 |---|---|---|
-| FLUX Pro Ultra | `flux-pro-ultra` | $0.10/img |
+| FLUX Kontext Max | `flux-kontext-max` | $0.10/img |
+| FLUX.2 Flex | `flux-2-flex` | $0.08/img |
+| FLUX.1 Pro Ultra | `flux-1-pro-ultra` | $0.08/img |
 | Recraft V3 | `recraft-v3` | $0.08/img |
 | Google Imagen 4 | `google-imagen-4` | $0.08/img |
+| Nano Banana Pro | `nano-banana-pro` | $0.08/img |
 | Seedream | `seedream` | $0.08/img |
-| FLUX Dev | `flux-dev` | $0.05/img |
-| Stable Diffusion 3 | `stable-diffusion-3` | $0.05/img |
-| FLUX Schnell | `flux-schnell` | $0.03/img |
+| FLUX.2 Pro | `flux-2-pro` | $0.05/img |
+| FLUX Kontext Pro | `flux-kontext-pro` | $0.05/img |
+| Nano Banana 2 | `nano-banana-2` | $0.05/img |
+| FLUX.1 Fill | `flux-1-fill` | $0.05/img |
+| FLUX.2 Klein | `flux-2-klein` | $0.03/img |
+| Nano Banana | `nano-banana` | $0.03/img |
 
 ---
 
-## Video models — 6 models
+## Video models — 8 models
 
 Full guide with examples: [Video →](/video-generation)
 
 | Model | ID | Cost |
 |---|---|---|
+| Runway Gen-4.5 | `runway-gen4.5` | $5.00/video |
+| Runway Gen-4 Turbo | `runway-gen4-turbo` | $3.00/video |
 | Veo 3.1 | `veo-3.1` | $5.00 |
 | Seedance 2 | `seedance-2` | $3.00 |
 | Kling Video | `kling-video` | $3.00 |

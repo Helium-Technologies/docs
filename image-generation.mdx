@@ -1,11 +1,11 @@
 ---
 title: "Images"
 sidebarTitle: "Images"
-description: "Generate images with 7 models. Request format, response format, and examples."
+description: "Generate images with 13 models. Request format, response format, and examples."
 ---
 
 <Tip>
-**Which image model?** Start with `flux-schnell` ($0.03, fastest). Use `flux-pro-ultra` ($0.10) for best quality. [Compare all →](/models)
+**Which image model?** Start with `flux-2-klein` ($0.03, fastest). Use `flux-kontext-max` ($0.10) for best quality. Use `flux-kontext-pro` ($0.05) for image editing. [Compare all →](/models)
 </Tip>
 
 ## Request
@@ -18,7 +18,7 @@ Content-Type: application/json
 
 ```json
 {
-  "model": "flux-schnell",
+  "model": "flux-2-klein",
   "prompt": "A golden retriever puppy in autumn leaves, soft lighting, photorealistic",
   "size": "1920x1920",
   "n": 1
@@ -29,7 +29,7 @@ Content-Type: application/json
 
 ```json
 {
-  "model": "flux-schnell",
+  "model": "flux-2-klein",
   "images": [
     {
       "url": "https://cdn.example.com/generated-abc123.webp",
@@ -53,7 +53,7 @@ Your image URL is in `images[0].url`. Download it or display it directly.
 | Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `prompt` | string | **Yes** | — | What you want. Be specific — style, lighting, composition. Max 4,000 chars. |
-| `model` | string | No | `flux-pro-ultra` | Which model. See table below. |
+| `model` | string | No | `nano-banana-2` | Which model. See table below. |
 | `size` | string | No | `1920x1920` | `1920x1920` (square), `2560x1440` (landscape), `1440x2560` (portrait) |
 | `n` | integer | No | 1 | Number of images (1–4). Each billed separately. |
 | `image` | string | No | — | Reference image URL for image-to-image. Must be public HTTPS. |
@@ -62,13 +62,19 @@ Your image URL is in `images[0].url`. Download it or display it directly.
 
 | Model | ID | Cost | Speed | Best for |
 |---|---|---|---|---|
-| FLUX Pro Ultra | `flux-pro-ultra` | $0.10/img | ~8s | Highest quality |
+| FLUX Kontext Max | `flux-kontext-max` | $0.10/img | ~5-15s | Premium editing, max fidelity |
+| FLUX.2 Flex | `flux-2-flex` | $0.08/img | ~5-10s | Maximum quality generation |
+| FLUX.1 Pro Ultra | `flux-1-pro-ultra` | $0.08/img | ~8-15s | Ultra-high resolution (4MP) |
 | Recraft V3 | `recraft-v3` | $0.08/img | ~5s | Design, illustrations |
 | Google Imagen 4 | `google-imagen-4` | $0.08/img | ~15s | Photorealism, text rendering |
+| Nano Banana Pro | `nano-banana-pro` | $0.08/img | ~5s | Professional assets, thinking mode |
 | Seedream | `seedream` | $0.08/img | ~8s | Realistic, artistic styles |
-| FLUX Dev | `flux-dev` | $0.05/img | ~3s | Good value, development |
-| Stable Diffusion 3 | `stable-diffusion-3` | $0.05/img | ~10s | Versatile, all styles |
-| FLUX Schnell | `flux-schnell` | $0.03/img | <2s | Fastest, batch processing |
+| FLUX.2 Pro | `flux-2-pro` | $0.05/img | ~3-5s | Balanced quality/speed |
+| FLUX Kontext Pro | `flux-kontext-pro` | $0.05/img | ~5s | Image editing, style transfer |
+| Nano Banana 2 | `nano-banana-2` | $0.05/img | ~3s | Best value, text rendering |
+| FLUX.1 Fill | `flux-1-fill` | $0.05/img | ~5s | Inpainting, outpainting |
+| FLUX.2 Klein | `flux-2-klein` | $0.03/img | <2s | Fastest, batch processing |
+| Nano Banana | `nano-banana` | $0.03/img | ~2s | Fast, budget-friendly |
 
 ## Full working examples
 
@@ -79,7 +85,7 @@ import os, requests
 
 HEADERS = {"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"}
 
-def generate_image(prompt, model="flux-schnell", size="1920x1920"):
+def generate_image(prompt, model="flux-2-klein", size="1920x1920"):
     r = requests.post("https://ninjachat.ai/api/v1/images",
         headers=HEADERS,
         json={"model": model, "prompt": prompt, "size": size}
@@ -87,18 +93,18 @@ def generate_image(prompt, model="flux-schnell", size="1920x1920"):
     r.raise_for_status()
     return r.json()["images"][0]["url"]
 
-# Quick draft ($0.03, <2 seconds)
+# Quick draft ($0.03, <2s)
 url = generate_image("A mountain landscape at sunset")
 print(url)
 
-# High quality final ($0.10, ~8 seconds)
+# High quality final ($0.08, ~5-10 seconds)
 url = generate_image("A mountain landscape at sunset, 8k, ultra detailed",
-    model="flux-pro-ultra", size="2560x1440")
+    model="flux-2-flex", size="2560x1440")
 print(url)
 ```
 
 ```javascript Node.js
-async function generateImage(prompt, model = "flux-schnell", size = "1920x1920") {
+async function generateImage(prompt, model = "flux-2-klein", size = "1920x1920") {
   const r = await fetch("https://ninjachat.ai/api/v1/images", {
     method: "POST",
     headers: {
@@ -125,7 +131,7 @@ Transform an existing image by passing its URL:
 r = requests.post("https://ninjachat.ai/api/v1/images",
     headers=HEADERS,
     json={
-        "model": "flux-dev",
+        "model": "flux-kontext-pro",
         "prompt": "Turn this into a watercolor painting with soft colors",
         "image": "https://example.com/my-photo.jpg"  # Must be public HTTPS
     }
@@ -162,7 +168,3 @@ Be specific. Compare:
 | `logo` | `Minimal vector logo for a tech startup, geometric shapes, blue and white, clean lines, flat design` |
 
 Include: **subject** + **style** + **lighting** + **composition** + **detail level**
-
-<Tip>
-Not ready to write code? [Try this in the API Playground →](https://www.ninjachat.ai/api-playground)
-</Tip>

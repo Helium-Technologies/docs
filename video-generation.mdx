@@ -1,11 +1,11 @@
 ---
 title: "Video"
 sidebarTitle: "Video"
-description: "Generate videos with 6 models. Async with polling — full end-to-end code included."
+description: "Generate videos with 8 models. Async with polling — full end-to-end code included."
 ---
 
 <Tip>
-**Which video model?** Start with `veo-3.1-fast` ($3.00, good balance). Use `veo-3.1` ($5.00) for best quality. Use `seedance-2` ($3.00) for longest clips (up to 15s). [Compare all →](/models)
+**Which video model?** Start with `veo-3.1-fast` ($3.00, good balance). Use `runway-gen4.5` ($5.00) or `veo-3.1` ($5.00) for best quality. Use `seedance-2` ($3.00) for longest clips (up to 15s). [Compare all →](/models)
 </Tip>
 
 Video generation is **async**: submit a job → poll for status → get an MP4 URL.
@@ -115,7 +115,7 @@ POST https://ninjachat.ai/api/v1/video
 
 ```json
 {
-  "request_id": "replicate:abc123def456",
+  "request_id": "gemini:abc123def456",
   "model": "google-veo-2",
   "cost": { "this_request": "$3.00" },
   "balance": "$37.00"
@@ -163,6 +163,8 @@ Failed jobs are **not charged** — credits refunded automatically.
 | Veo 3.1 | `veo-3.1` | 4, 6, 8s | ~3-5 min | $5.00 — Best quality |
 | Veo 3.1 Fast | `veo-3.1-fast` | 4, 6, 8s | ~1-2 min | $3.00 — Speed-optimized |
 | Veo 3 Fast | `google-veo-3-fast` | 4, 6, 8s | ~1-2 min | $3.00 — Budget Veo |
+| Runway Gen-4.5 | `runway-gen4.5` | 5 or 10s | ~1-3 min | $5.00 — Runway flagship, cinematic |
+| Runway Gen-4 Turbo | `runway-gen4-turbo` | 5 or 10s | ~30-60s | $3.00 — Fast image-to-video (requires image_url) |
 
 ### Duration limits
 
@@ -174,6 +176,8 @@ Failed jobs are **not charged** — credits refunded automatically.
 | `veo-3.1` | 4, 6, or 8 only |
 | `veo-3.1-fast` | 4, 6, or 8 only |
 | `google-veo-3-fast` | 4, 6, or 8 only |
+| `runway-gen4.5` | 5 or 10 only |
+| `runway-gen4-turbo` | 5 or 10 only |
 
 ## Image-to-video
 
@@ -197,7 +201,3 @@ r = requests.post(f"{API}/api/v1/video", headers=HEADERS, json={
 | `ocean` | `Underwater camera glides through a coral reef, bioluminescent creatures pulse with light, slow motion, nature documentary` |
 
 Include: **camera movement** + **subject action** + **style** + **lighting**
-
-<Tip>
-Not ready to write code? [Try this in the API Playground →](https://www.ninjachat.ai/api-playground)
-</Tip>

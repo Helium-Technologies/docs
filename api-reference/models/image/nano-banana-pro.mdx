@@ -1,0 +1,46 @@
+---
+title: "Nano Banana Pro"
+sidebarTitle: "Nano Banana Pro"
+description: "nano-banana-pro — $0.08/img. Professional asset production, complex multi-turn editing, highest quality."
+---
+
+| | |
+|---|---|
+| **Model ID** | `nano-banana-pro` |
+| **Provider** | Google |
+| **Cost** | $0.08/img |
+| **Tier** | Premium |
+| **Speed** | ~10-30s |
+| **Best for** | Professional asset production, complex multi-turn editing, highest quality |
+
+## Description
+
+Google's professional image generation model (Gemini 3 Pro Image). Uses advanced "Thinking" reasoning for complex instructions. Supports 4K output, Google Search grounding, and up to 5 high-fidelity reference images.
+
+## Features
+
+- Text-to-image
+- Image editing
+- Thinking mode
+- Text rendering
+- Up to 4K resolution
+- Professional quality
+
+## Example
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/images \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "nano-banana-pro", "prompt": "A sunset over mountains, photorealistic"}'
+```
+
+```python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/images",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "nano-banana-pro", "prompt": "A sunset over mountains, photorealistic"}
+)
+print(r.json()["images"][0]["url"])
+```
