@@ -1,16 +1,16 @@
 ---
-title: "Video"
+title: "Video Generation"
 sidebarTitle: "Video"
-description: "Generate videos with 8 models. Async with polling — full end-to-end code included."
+description: "Generate videos with 8 models. Async with polling — full end-to-end examples for Python, Node.js, and cURL."
 ---
 
 <Tip>
-**Which video model?** Start with `veo-3.1-fast` ($3.00, good balance). Use `runway-gen4.5` ($5.00) or `veo-3.1` ($5.00) for best quality. Use `seedance-2` ($3.00) for longest clips (up to 15s). [Compare all →](/models)
+**Which video model?** Start with `veo-3.1-fast` ($3.00, good balance). Use `runway-gen4.5` ($5.00) or `veo-3.1` ($5.00) for highest quality. Use `seedance-2` ($3.00) for the longest clips (up to 15s). [Compare all →](/models)
 </Tip>
 
 Video generation is **async**: submit a job → poll for status → get an MP4 URL.
 
-## Complete example (copy-paste-run)
+## Complete example (copy, paste, run)
 
 <CodeGroup>
 
@@ -102,7 +102,7 @@ curl "https://ninjachat.ai/api/v1/video/status?request_id=abc123" \
 Not ready to write code? [Try this in the API Playground →](https://www.ninjachat.ai/api-playground)
 </Tip>
 
-## Submit request
+## Submit a request
 
 ```
 POST https://ninjachat.ai/api/v1/video
@@ -116,7 +116,7 @@ POST https://ninjachat.ai/api/v1/video
 | `aspect_ratio` | string | No | `16:9` | `16:9` or `9:16`. Ignored by Seedance 2. |
 | `image_url` | string | No | — | Animate this image. Must be public HTTPS URL. |
 
-### Submit response
+### Submit response example
 
 ```json
 {
@@ -158,7 +158,7 @@ Polling is **free** — no credits, no rate limit.
 
 Failed jobs are **not charged** — credits refunded automatically.
 
-## Models
+## Available models
 
 | Model | ID | Duration | Speed | Best for |
 |---|---|---|---|---|
@@ -198,7 +198,7 @@ r = requests.post(f"{API}/api/v1/video", headers=HEADERS, json={
 # Then poll as shown above
 ```
 
-## Prompt tips
+## Prompt writing tips
 
 | Weak | Strong |
 |---|---|

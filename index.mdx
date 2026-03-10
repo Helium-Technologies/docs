@@ -10,9 +10,9 @@ curl -X POST https://ninjachat.ai/api/v1/chat \
   -d '{"model": "auto", "messages": [{"role": "user", "content": "Hello!"}]}'
 ```
 
-One API key. GPT-5, Claude, Gemini, and 27 more models. Set `model` to `auto` and NinjaChat picks the best model for each task — or use `model: "gpt-5"` to pick explicitly.
+One API key. GPT-5, Claude, Gemini, and more models. Set `model` to `auto` and NinjaChat picks the best model for each task — or use `model: "gpt-5"` to pick explicitly.
 
-## Endpoints
+## Core endpoints
 
 | Endpoint | What it does | Guide |
 |---|---|---|
@@ -26,17 +26,17 @@ One API key. GPT-5, Claude, Gemini, and 27 more models. Set `model` to `auto` an
 | `POST /api/v1/video` | Video generation with 8 models | [Video →](/video-generation) |
 | `POST /api/v1/search` | Web search + AI answers | [Search →](/search) |
 
-## Get started
+## Get started in minutes
 
 <Steps>
   <Step title="Get an API key">
     Go to your [Developers dashboard](https://www.ninjachat.ai/developers/keys) and create a key. First **50 requests are free** — no credit card required.
   </Step>
-  <Step title="Make a request">
-    Copy the curl above, replace `nj_sk_YOUR_API_KEY`, and run it. [Full quickstart →](/quickstart)
+  <Step title="Make your first request">
+    Copy the curl above, replace `nj_sk_YOUR_API_KEY`, and run it in your terminal. [Full quickstart →](/quickstart)
   </Step>
   <Step title="Explore power features">
-    Try [smart routing](/smart-routing) to auto-select models, [compare](/compare) to benchmark models, or [batch](/batch) to run 20 prompts at once.
+    Try [smart routing](/smart-routing) to auto-select models, [compare](/compare) to benchmark models, or [batch](/batch) to run multiple prompts in one call.
   </Step>
 </Steps>
 
