@@ -1,0 +1,203 @@
+---
+title: "Smart Routing"
+sidebarTitle: "Smart Routing"
+description: "Let NinjaChat pick the best model for each task automatically. Four auto variants for different optimization goals."
+---
+
+<Tip>
+**TL;DR** — Set `model` to `auto` and NinjaChat routes each request to the optimal model based on what you're asking. No thinking required.
+</Tip>
+
+## The problem smart routing solves
+
+Picking the right model is hard. You need to know that `o3-mini` is best for math, `claude-sonnet-4.6` for code, `gemini-3.1-pro` for creative writing, and `gemini-3-flash` for quick factual answers. Smart routing does this automatically.
+
+## The four auto variants
+
+| Model ID | Optimizes for | Best when... |
+|---|---|---|
+| `auto` | Quality + speed balance | You want the best model without thinking about it |
+| `auto-fast` | Lowest latency | Real-time apps, chatbots, low-latency pipelines |
+| `auto-cheap` | Lowest cost | High-volume jobs, batch processing, cost-sensitive apps |
+| `auto-quality` | Highest quality | Enterprise use, critical decisions, best possible output |
+
+## Request
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "auto",
+    "messages": [{"role": "user", "content": "Solve: x² + 5x + 6 = 0"}],
+    "include_routing": true
+  }'
+```
+
+## Response
+
+```json
+{
+  "id": "chatcmpl-1749584400000",
+  "object": "chat.completion",
+  "model": "o3-mini",
+  "choices": [{
+    "index": 0,
+    "message": {
+      "role": "assistant",
+      "content": "Factoring: x² + 5x + 6 = (x + 2)(x + 3) = 0\nSolutions: x = -2 and x = -3"
+    },
+    "finish_reason": "stop"
+  }],
+  "routing": {
+    "requested": "auto",
+    "resolved": "o3-mini",
+    "task_type": "math",
+    "reasoning": "Detected task type: math"
+  },
+  "cost": {"this_request": "$0.006"},
+  "balance": "$4.820"
+}
+```
+
+The `routing` field shows exactly which model was chosen and why. Add `"include_routing": true` to always see this.
+
+## How task detection works
+
+NinjaChat analyzes your last 3 user messages using keyword pattern matching:
+
+| Task type | Detected keywords | `auto` routes to |
+|---|---|---|
+| `code` | function, debug, implement, algorithm, TypeScript, SQL... | `claude-sonnet-4.6` |
+| `math` | equation, solve, calculate, integral, probability... | `o3-mini` |
+| `creative` | write, story, poem, imagine, fiction, lyrics... | `gemini-3.1-pro` |
+| `analysis` | analyze, compare, evaluate, research, summarize... | `gpt-5` |
+| `quick` | Short prompts under 80 chars, "what is", "define"... | `gemini-3-flash` |
+| `general` | Everything else | `gpt-5` |
+
+## Full routing table
+
+<Tabs>
+  <Tab title="auto (balanced)">
+    | Task | Model |
+    |---|---|
+    | code | `claude-sonnet-4.6` |
+    | math | `o3-mini` |
+    | creative | `gemini-3.1-pro` |
+    | analysis | `gpt-5` |
+    | quick | `gemini-3-flash` |
+    | general | `gpt-5` |
+  </Tab>
+  <Tab title="auto-fast">
+    | Task | Model |
+    |---|---|
+    | code | `claude-haiku-4.5` |
+    | math | `gpt-5-mini` |
+    | creative | `gemini-3-flash` |
+    | analysis | `gpt-5-mini` |
+    | quick | `gpt-5-mini` |
+    | general | `gpt-5-mini` |
+  </Tab>
+  <Tab title="auto-cheap">
+    | Task | Model |
+    |---|---|
+    | code | `deepseek-v3` |
+    | math | `qwq-32b` |
+    | creative | `gemini-3-flash` |
+    | analysis | `deepseek-v3` |
+    | quick | `gemini-2.5-flash` |
+    | general | `llama-4-maverick` |
+  </Tab>
+  <Tab title="auto-quality">
+    | Task | Model |
+    |---|---|
+    | code | `claude-opus-4.6` |
+    | math | `o3-mini` |
+    | creative | `gemini-3.1-pro` |
+    | analysis | `claude-opus-4.6` |
+    | quick | `claude-opus-4.6` |
+    | general | `claude-opus-4.6` |
+  </Tab>
+</Tabs>
+
+## Billing
+
+Auto variants are billed at the **resolved model's rate** — not a flat fee. If `auto` routes to `o3-mini`, you pay `$0.006`. If it routes to `claude-sonnet-4.6`, you pay `$0.015`. The `routing` field always shows the cost-incurring model.
+
+## Parameters
+
+The auto variants accept all standard [Chat](/chat) parameters. Two extra fields are relevant:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `include_routing` | boolean | `false` | Include `routing` object in response showing resolved model and task type |
+| `budget_cents` | number | — | Override auto selection with a cost ceiling. See [Budget Routing](/chat#budget-routing). |
+
+## Code examples
+
+<CodeGroup>
+
+```python Python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={
+        "model": "auto",
+        "messages": [{"role": "user", "content": "Write a merge sort in Python"}],
+        "include_routing": True,
+    }
+)
+data = r.json()
+print(data["choices"][0]["message"]["content"])
+print("Routed to:", data["routing"]["resolved"])  # claude-sonnet-4.6
+print("Task type:", data["routing"]["task_type"]) # code
+```
+
+```javascript Node.js
+const r = await fetch("https://ninjachat.ai/api/v1/chat", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "auto",
+    messages: [{ role: "user", content: "Prove the Pythagorean theorem" }],
+    include_routing: true,
+  }),
+});
+const data = await r.json();
+console.log(data.choices[0].message.content);
+console.log("Routed to:", data.routing.resolved);  // o3-mini
+```
+
+```bash cURL — auto-cheap for batch jobs
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "auto-cheap",
+    "messages": [{"role": "user", "content": "Classify: positive or negative? Great product!"}],
+    "include_routing": true
+  }'
+```
+
+</CodeGroup>
+
+## Combine with other features
+
+Smart routing works with every other chat feature:
+
+```json
+{
+  "model": "auto",
+  "messages": [...],
+  "session_id": "user-123",
+  "include_routing": true,
+  "include_quality": true,
+  "min_quality": 0.8
+}
+```
+
+If quality falls below `min_quality`, the system auto-retries with a better model — on top of smart routing.

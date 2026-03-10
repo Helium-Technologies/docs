@@ -94,7 +94,7 @@
                 "properties": {
                   "model": {
                     "type": "string",
-                    "default": "gpt-5",
+                    "default": "ninja-1",
                     "enum": [
                       "gpt-5",
                       "gpt-5-mini",
@@ -142,7 +142,7 @@
                   "max_tokens": {
                     "type": "integer",
                     "minimum": 1,
-                    "maximum": 4096,
+                    "maximum": 16384,
                     "default": 2048,
                     "description": "Maximum output tokens."
                   },
@@ -541,11 +541,123 @@
         }
       }
     },
+    "/api/v1/batch": {
+      "post": {
+        "operationId": "batchRequests",
+        "summary": "Batch Requests",
+        "description": "Send multiple requests in a single HTTP call. Each item is processed independently and billed as if it were a separate request to the corresponding endpoint.",
+        "tags": ["Endpoints"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["requests"],
+                "properties": {
+                  "requests": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 50,
+                    "items": {
+                      "type": "object",
+                      "required": ["id", "endpoint", "body"],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Client-defined identifier used to match responses."
+                        },
+                        "endpoint": {
+                          "type": "string",
+                          "description": "Target endpoint path (e.g. /api/v1/chat, /api/v1/images, /api/v1/search)."
+                        },
+                        "body": {
+                          "type": "object",
+                          "description": "JSON body for the underlying request."
+                        }
+                      }
+                    },
+                    "description": "List of requests to execute in batch."
+                  }
+                }
+              },
+              "example": {
+                "requests": [
+                  {
+                    "id": "chat-1",
+                    "endpoint": "/api/v1/chat",
+                    "body": {
+                      "model": "gpt-5",
+                      "messages": [
+                        { "role": "user", "content": "Summarize this article about AI safety." }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "image-1",
+                    "endpoint": "/api/v1/images",
+                    "body": {
+                      "model": "flux-2-klein",
+                      "prompt": "A futuristic city skyline at sunset, concept art"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch responses, one per input request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "responses": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "description": "Matches the request id." },
+                          "status": { "type": "integer", "example": 200 },
+                          "body": {
+                            "type": "object",
+                            "description": "Raw JSON body returned from the underlying endpoint."
+                          }
+                        }
+                      }
+                    },
+                    "cost": { "$ref": "#/components/schemas/Cost" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid batch request.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "402": {
+            "description": "Insufficient credits.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "429": {
+            "description": "Rate limit exceeded.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
     "/api/v1/video": {
       "post": {
         "operationId": "generateVideo",
         "summary": "Video Generation",
-        "description": "Start a video generation job. Supports 5 models: **Seedance 2** (default, uncensored, 5–15s), **Kling Video** (motion quality, 5–10s), **Google Veo 2** (fast cinematic, 5–8s), **Veo 3.1** (premium cinematic, 4/6/8s), and **Veo 3.1 Fast** (speed-optimized, 4/6/8s). Cost: $3.00 per video. Poll the status endpoint with the returned `request_id` to retrieve the result.",
+        "description": "Start a video generation job. Supports 8 models. **$5.00/video:** `runway-gen4.5` (Runway flagship), `veo-3.1` (Google best quality). **$3.00/video:** `seedance-2` (default, uncensored, 5–15s), `kling-video` (motion quality, 5–10s), `google-veo-2` (fast cinematic, 5/6/8s), `veo-3.1-fast` (speed-optimized, 4/6/8s), `google-veo-3-fast` (budget Veo, 4/6/8s), `runway-gen4-turbo` (fast image-to-video, requires image_url). Poll the status endpoint with the returned `request_id` to retrieve the result.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -640,6 +752,23 @@
                     "duration": 4,
                     "aspect_ratio": "16:9"
                   }
+                },
+                "runway-gen4-5": {
+                  "summary": "Runway Gen-4.5 (flagship)",
+                  "value": {
+                    "prompt": "A cinematic drone shot soaring over a vast turquoise ocean at golden hour, film grain",
+                    "model": "runway-gen4.5",
+                    "duration": 10
+                  }
+                },
+                "runway-gen4-turbo": {
+                  "summary": "Runway Gen-4 Turbo (image-to-video)",
+                  "value": {
+                    "prompt": "Camera slowly pulls back to reveal the full landscape",
+                    "model": "runway-gen4-turbo",
+                    "duration": 5,
+                    "image_url": "https://example.com/landscape.jpg"
+                  }
                 }
               }
             }
@@ -703,6 +832,104 @@
           },
           "502": {
             "description": "Upstream video generation failed. You were not charged.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/compare": {
+      "post": {
+        "operationId": "compareModels",
+        "summary": "Model Comparison (beta)",
+        "description": "Compare outputs from two different models on the same prompt. Returns both responses side-by-side with basic metadata. Pricing is based on the underlying models used.",
+        "tags": ["Endpoints"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["model_a", "model_b", "prompt"],
+                "properties": {
+                  "model_a": {
+                    "type": "string",
+                    "description": "First model ID to compare (e.g. gpt-5, claude-sonnet-4.6)."
+                  },
+                  "model_b": {
+                    "type": "string",
+                    "description": "Second model ID to compare."
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000,
+                    "description": "The input prompt to send to both models."
+                  },
+                  "temperature": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 2,
+                    "default": 0.7,
+                    "description": "Optional sampling temperature applied to both models."
+                  }
+                }
+              },
+              "example": {
+                "model_a": "gpt-5",
+                "model_b": "claude-sonnet-4.6",
+                "prompt": "Explain the difference between supervised and unsupervised learning."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comparison results from both models.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "model_a": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "output": { "type": "string" }
+                      }
+                    },
+                    "model_b": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "output": { "type": "string" }
+                      }
+                    },
+                    "cost": { "$ref": "#/components/schemas/Cost" },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "latency_ms": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "402": {
+            "description": "Insufficient credits.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "429": {
+            "description": "Rate limit exceeded.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           }
         }
@@ -988,6 +1215,295 @@
         }
       }
     },
+    "/api/v1/sessions": {
+      "post": {
+        "operationId": "createSession",
+        "summary": "Create Session",
+        "description": "Create a persistent conversation session. Use the returned session_id with the chat endpoint to maintain context across messages.",
+        "tags": ["Sessions"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "session_id": {
+                    "type": "string",
+                    "description": "Optional stable identifier for this session (e.g. user-123-session-1). If omitted, a session_id is auto-generated."
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Optional metadata to associate with the session."
+                  }
+                }
+              },
+              "examples": {
+                "custom_id": {
+                  "summary": "Custom session ID",
+                  "value": { "session_id": "user-alice-session-1" }
+                },
+                "auto_id": {
+                  "summary": "Auto-generated session ID",
+                  "value": {}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Session created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "session_id": { "type": "string" },
+                    "message_count": { "type": "integer" },
+                    "created_at": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid session payload.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{id}": {
+      "get": {
+        "operationId": "getSession",
+        "summary": "Retrieve Session",
+        "description": "Get the full message history and metadata for a session.",
+        "tags": ["Sessions"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Session ID to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "session_id": { "type": "string" },
+                    "messages": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/ChatMessage" }
+                    },
+                    "message_count": { "type": "integer" },
+                    "created_at": { "type": "string", "format": "date-time" },
+                    "updated_at": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session not found.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteSession",
+        "summary": "Delete Session",
+        "description": "Permanently delete a session and its stored messages.",
+        "tags": ["Sessions"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Session ID to delete."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deleted": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session not found.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{id}/export": {
+      "get": {
+        "operationId": "exportSession",
+        "summary": "Export Session",
+        "description": "Export a session as JSON or Markdown.",
+        "tags": ["Sessions"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Session ID to export."
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["json", "markdown"],
+              "default": "json"
+            },
+            "description": "Export format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session export.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "JSON export of the session."
+                }
+              },
+              "text/markdown": {
+                "schema": {
+                  "type": "string",
+                  "description": "Markdown export of the session."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Session not found.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/models": {
+      "get": {
+        "operationId": "listModels",
+        "summary": "List Available Models",
+        "description": "List all available models, including capabilities, pricing tier, and recommended use cases. Supports filtering by tier, capability, and whether a model is virtual (auto/ensemble).",
+        "tags": ["Management"],
+        "parameters": [
+          {
+            "name": "tier",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["ultra", "premium", "standard", "budget"]
+            },
+            "description": "Filter by pricing tier."
+          },
+          {
+            "name": "capability",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "code"
+            },
+            "description": "Filter by capability (e.g. code, reasoning, images, video)."
+          },
+          {
+            "name": "virtual",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "If false, excludes virtual routing models like auto/ensemble."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of models.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "models": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "example": "gpt-5" },
+                          "group": { "type": "string", "example": "chat" },
+                          "tier": { "type": "string", "example": "standard" },
+                          "virtual": { "type": "boolean", "example": false },
+                          "capabilities": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "example": ["chat", "code"]
+                          },
+                          "price": {
+                            "type": "object",
+                            "properties": {
+                              "unit": { "type": "string", "example": "request" },
+                              "amount": { "type": "string", "example": "$0.006" }
+                            }
+                          },
+                          "recommended_for": {
+                            "type": "array",
+                            "items": { "type": "string" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/api-keys/transactions": {
       "get": {
         "operationId": "listTransactions",
@@ -1042,6 +1558,95 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Authentication failed.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/api/v1/estimate": {
+      "post": {
+        "operationId": "estimateCosts",
+        "summary": "Estimate Request Costs",
+        "description": "Estimate the cost of one or more planned API requests before sending them. Useful for budgeting and showing users a price quote.",
+        "tags": ["Management"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["items"],
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "required": ["group", "model"],
+                      "properties": {
+                        "group": {
+                          "type": "string",
+                          "enum": ["chat", "search", "images", "video"],
+                          "description": "Type of request you plan to send."
+                        },
+                        "model": {
+                          "type": "string",
+                          "description": "Model ID (e.g. gpt-5, flux-2-klein, veo-3.1)."
+                        },
+                        "count": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "default": 1,
+                          "description": "How many requests of this shape you plan to send."
+                        }
+                      }
+                    },
+                    "description": "Planned request shapes to estimate."
+                  }
+                }
+              },
+              "example": {
+                "items": [
+                  { "group": "chat", "model": "gpt-5", "count": 10 },
+                  { "group": "images", "model": "flux-2-klein", "count": 5 }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Estimated costs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "group": { "type": "string" },
+                          "model": { "type": "string" },
+                          "count": { "type": "integer" },
+                          "estimated_cost": { "type": "string", "example": "$0.060" }
+                        }
+                      }
+                    },
+                    "total": { "type": "string", "example": "$0.090" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid estimate request.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "401": {
             "description": "Authentication failed.",

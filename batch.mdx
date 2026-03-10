@@ -1,0 +1,254 @@
+---
+title: "Batch"
+sidebarTitle: "Batch"
+description: "Run up to 20 independent prompts in a single API call. All requests execute in parallel."
+---
+
+<Tip>
+**Total latency = slowest single request**, not the sum. Batch 20 prompts and pay the same wall-clock time as 1 prompt.
+</Tip>
+
+## Request
+
+```bash
+POST https://ninjachat.ai/api/v1/batch
+Authorization: Bearer nj_sk_YOUR_API_KEY
+Content-Type: application/json
+```
+
+```json
+{
+  "requests": [
+    {
+      "model": "gpt-5",
+      "messages": [{"role": "user", "content": "Summarize: React hooks enable state in functional components"}]
+    },
+    {
+      "model": "claude-sonnet-4.6",
+      "messages": [{"role": "user", "content": "Write a haiku about TypeScript"}]
+    },
+    {
+      "model": "deepseek-v3",
+      "messages": [{"role": "user", "content": "Fibonacci sequence in Rust"}]
+    },
+    {
+      "model": "auto",
+      "messages": [{"role": "user", "content": "Explain gradient descent mathematically"}]
+    }
+  ]
+}
+```
+
+## Response
+
+```json
+{
+  "results": [
+    {
+      "index": 0,
+      "success": true,
+      "model": "gpt-5",
+      "requested_model": "gpt-5",
+      "content": "React hooks provide a way to use state and lifecycle...",
+      "cost_cents": 0.6,
+      "latency_ms": 950,
+      "tokens": { "prompt": 14, "completion": 31, "total": 45 }
+    },
+    {
+      "index": 1,
+      "success": true,
+      "model": "claude-sonnet-4.6",
+      "requested_model": "claude-sonnet-4.6",
+      "content": "Types check at dawn\nCompiler finds every flaw\nSafe code ships at dusk",
+      "cost_cents": 1.5,
+      "latency_ms": 1100,
+      "tokens": { "prompt": 10, "completion": 18, "total": 28 }
+    },
+    {
+      "index": 2,
+      "success": true,
+      "model": "deepseek-v3",
+      "requested_model": "deepseek-v3",
+      "content": "fn fibonacci(n: u64) -> u64 { ... }",
+      "cost_cents": 0.3,
+      "latency_ms": 680,
+      "tokens": { "prompt": 7, "completion": 45, "total": 52 }
+    },
+    {
+      "index": 3,
+      "success": true,
+      "model": "o3-mini",
+      "requested_model": "auto",
+      "routing": { "requested": "auto", "resolved": "o3-mini", "task_type": "math" },
+      "content": "Gradient descent minimizes a loss function L(θ)...",
+      "cost_cents": 0.6,
+      "latency_ms": 1400,
+      "tokens": { "prompt": 8, "completion": 92, "total": 100 }
+    }
+  ],
+  "succeeded": 4,
+  "failed": 0,
+  "total_cost_cents": 3.0,
+  "total_cost": "$0.030",
+  "balance": "$4.760",
+  "metadata": {
+    "total_latency_ms": 1420,
+    "batch_size": 4,
+    "parallelism": 4
+  }
+}
+```
+
+Results are returned in the same order as your `requests` array, indexed by `index`.
+
+## Parameters
+
+### Top-level
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `requests` | array | **Yes** | — | 1–20 individual request objects. |
+| `fail_on_any_error` | boolean | No | `false` | If `true`, any single failure aborts the entire batch and returns a 500. Default: return partial results. |
+
+### Per-request object
+
+Each entry in `requests` supports the same parameters as a single `/chat` request:
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `model` | string | No | `"gpt-5"` | Model ID. Supports `auto`, `auto-fast`, `auto-cheap`, `auto-quality`. Does **not** support `ensemble*` or fallback chains. |
+| `messages` | array | **Yes** | — | 1–30 messages. |
+| `temperature` | number | No | `0.7` | Sampling temperature. |
+| `max_tokens` | integer | No | `2048` | Max output tokens (1–8,192). |
+
+## Billing
+
+Each successful request in the batch is charged at that model's standard rate. Failed requests are not charged. The total is deducted from your balance before the batch runs (pre-flight check).
+
+If your balance is insufficient for the estimated total, the entire batch is rejected before any models run.
+
+## Code examples
+
+<CodeGroup>
+
+```python Python — content moderation pipeline
+import requests, os
+
+texts = [
+    "I love this product!",
+    "Terrible experience, never again.",
+    "It's okay, nothing special.",
+    "Absolutely amazing, 10/10!",
+    "Waste of money.",
+]
+
+batch_requests = [
+    {
+        "model": "gpt-5-mini",
+        "messages": [
+            {"role": "system", "content": "Classify as POSITIVE, NEGATIVE, or NEUTRAL. One word only."},
+            {"role": "user", "content": text}
+        ],
+        "max_tokens": 5,
+    }
+    for text in texts
+]
+
+r = requests.post("https://ninjachat.ai/api/v1/batch",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"requests": batch_requests}
+)
+data = r.json()
+
+for i, result in enumerate(data["results"]):
+    if result["success"]:
+        print(f"{texts[i]!r:40} → {result['content'].strip()}")
+
+print(f"\nTotal cost: {data['total_cost']}")
+print(f"Total time: {data['metadata']['total_latency_ms']}ms")
+```
+
+```python Python — multi-model translation
+import requests, os
+
+text = "The quick brown fox jumps over the lazy dog"
+languages = ["Spanish", "French", "German", "Japanese", "Arabic"]
+
+batch_requests = [
+    {
+        "model": "auto-cheap",
+        "messages": [
+            {"role": "user", "content": f"Translate to {lang}: {text}"}
+        ]
+    }
+    for lang in languages
+]
+
+r = requests.post("https://ninjachat.ai/api/v1/batch",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"requests": batch_requests}
+)
+
+for lang, result in zip(languages, r.json()["results"]):
+    print(f"{lang}: {result['content']}")
+```
+
+```javascript Node.js — parallel summarization
+const articles = [
+  { id: 1, text: "OpenAI announced..." },
+  { id: 2, text: "Google DeepMind..." },
+  { id: 3, text: "Anthropic released..." },
+];
+
+const r = await fetch("https://ninjachat.ai/api/v1/batch", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    requests: articles.map(a => ({
+      model: "gpt-5",
+      messages: [
+        { role: "system", content: "Summarize in one sentence." },
+        { role: "user", content: a.text }
+      ],
+      max_tokens: 100,
+    })),
+  }),
+});
+
+const data = await r.json();
+articles.forEach((article, i) => {
+  const result = data.results[i];
+  if (result.success) {
+    console.log(`Article ${article.id}: ${result.content}`);
+  }
+});
+console.log(`Total: ${data.total_cost} in ${data.metadata.total_latency_ms}ms`);
+```
+
+</CodeGroup>
+
+## Limits
+
+| Limit | Value |
+|---|---|
+| Max requests per batch | 20 |
+| Max messages per request | 30 |
+| Max content per message | 50,000 chars |
+| Max tokens per request | 8,192 |
+
+## Error handling
+
+Individual request failures don't fail the batch by default. Check `result.success` and `result.error` per item:
+
+```python
+for result in data["results"]:
+    if not result["success"]:
+        print(f"Request {result['index']} failed: {result['error']}")
+    else:
+        print(f"Request {result['index']}: {result['content'][:100]}")
+```
+
+Use `"fail_on_any_error": true` if you need all-or-nothing semantics.

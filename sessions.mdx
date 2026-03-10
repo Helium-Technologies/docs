@@ -1,0 +1,277 @@
+---
+title: "Sessions"
+sidebarTitle: "Sessions"
+description: "Persistent conversation memory across API calls. Sessions store chat history for 7 days with automatic context injection."
+---
+
+<Tip>
+**How it works:** Create a session ID, then pass `session_id` on every chat request. NinjaChat automatically prepends the conversation history — no need to manage message arrays yourself.
+</Tip>
+
+## Overview
+
+Without sessions, you manage conversation history manually by sending all prior messages on every request. Sessions do this for you server-side, stored in Redis with a 7-day TTL.
+
+| Without sessions | With sessions |
+|---|---|
+| You send 50 messages of history every request | You send only the new message |
+| You manage message arrays in your app | NinjaChat stores and injects history |
+| Large request payloads | Minimal payload |
+| History lost on app restart | 7-day persistent storage |
+
+## Create a session
+
+```bash
+POST https://ninjachat.ai/api/v1/sessions
+Authorization: Bearer nj_sk_YOUR_API_KEY
+Content-Type: application/json
+```
+
+```json
+{ "session_id": "user-alice-session-1" }
+```
+
+**Response:**
+
+```json
+{
+  "session_id": "user-alice-session-1",
+  "message_count": 0,
+  "created_at": "2026-03-10T12:00:00.000Z"
+}
+```
+
+You can also omit `session_id` to get an auto-generated one:
+
+```json
+{}
+```
+
+```json
+{
+  "session_id": "sess_a1b2c3d4e5f6g7h8i9j0k1l2",
+  "message_count": 0,
+  "created_at": "2026-03-10T12:00:00.000Z"
+}
+```
+
+### Session ID format
+
+`session_id` must match: `^[a-zA-Z0-9_-]{1,64}$` — alphanumeric, hyphens, and underscores, 1–64 characters.
+
+Good session IDs: `user-123`, `conv_abc`, `proj-2026-march`, `thread_def456`
+
+## Chat with a session
+
+Add `session_id` to any `/chat` request. Previous messages are automatically injected before your new messages.
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-5",
+    "messages": [{"role": "user", "content": "My name is Alice. I work in fintech."}],
+    "session_id": "user-alice-session-1"
+  }'
+```
+
+Second request (history is automatically included):
+
+```bash
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-5",
+    "messages": [{"role": "user", "content": "What do you know about me?"}],
+    "session_id": "user-alice-session-1"
+  }'
+```
+
+The model will respond: *"You told me your name is Alice and you work in fintech."*
+
+### Chat response with session info
+
+```json
+{
+  "model": "gpt-5",
+  "choices": [{"message": {"role": "assistant", "content": "You told me your name is Alice..."}}],
+  "session": {
+    "id": "user-alice-session-1",
+    "message_count": 4
+  },
+  "cost": {"this_request": "$0.006"}
+}
+```
+
+## Retrieve a session
+
+```bash
+GET https://ninjachat.ai/api/v1/sessions/user-alice-session-1
+Authorization: Bearer nj_sk_YOUR_API_KEY
+```
+
+```json
+{
+  "session_id": "user-alice-session-1",
+  "messages": [
+    {"role": "user", "content": "My name is Alice. I work in fintech."},
+    {"role": "assistant", "content": "Nice to meet you, Alice! ..."},
+    {"role": "user", "content": "What do you know about me?"},
+    {"role": "assistant", "content": "You told me your name is Alice..."}
+  ],
+  "message_count": 4,
+  "created_at": "2026-03-10T12:00:00.000Z",
+  "updated_at": "2026-03-10T12:01:32.000Z"
+}
+```
+
+## Export a session
+
+Export as JSON or Markdown — useful for saving conversations, support tickets, or debugging.
+
+```bash
+# JSON export
+GET https://ninjachat.ai/api/v1/sessions/user-alice-session-1/export?format=json
+Authorization: Bearer nj_sk_YOUR_API_KEY
+
+# Markdown export
+GET https://ninjachat.ai/api/v1/sessions/user-alice-session-1/export?format=markdown
+Authorization: Bearer nj_sk_YOUR_API_KEY
+```
+
+The Markdown export returns a formatted document with headers and message blocks, ready to save as a `.md` file.
+
+## Delete a session
+
+```bash
+DELETE https://ninjachat.ai/api/v1/sessions/user-alice-session-1
+Authorization: Bearer nj_sk_YOUR_API_KEY
+```
+
+```json
+{ "deleted": true }
+```
+
+## Limits and behavior
+
+| Property | Value |
+|---|---|
+| TTL | 7 days from last activity |
+| Max messages stored | 100 |
+| Truncation | When limit is hit, oldest 50 messages are dropped |
+| Ownership | Sessions are tied to your API key — other keys cannot access them |
+| Storage | Upstash Redis (global, low latency) |
+
+## Code examples
+
+<CodeGroup>
+
+```python Python — customer support bot
+import requests, os
+import uuid
+
+API_KEY = os.environ["NINJACHAT_API_KEY"]
+BASE = "https://ninjachat.ai/api/v1"
+HEADERS = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
+
+def create_session(user_id: str) -> str:
+    """Create or reuse a session for this user."""
+    session_id = f"support-{user_id}"
+    requests.post(f"{BASE}/sessions", headers=HEADERS, json={"session_id": session_id})
+    return session_id
+
+def chat(session_id: str, message: str) -> str:
+    """Send a message and get a reply — history is automatic."""
+    r = requests.post(f"{BASE}/chat", headers=HEADERS, json={
+        "model": "gpt-5",
+        "messages": [{"role": "user", "content": message}],
+        "session_id": session_id,
+    })
+    return r.json()["choices"][0]["message"]["content"]
+
+# Usage
+session = create_session("alice-123")
+print(chat(session, "Hi, my order #4521 hasn't arrived yet."))
+print(chat(session, "I ordered it 2 weeks ago."))
+print(chat(session, "What's the refund policy?"))
+# Each message includes full prior context automatically
+```
+
+```javascript Node.js — multi-turn chat app
+const API_KEY = process.env.NINJACHAT_API_KEY;
+const BASE = "https://ninjachat.ai/api/v1";
+const headers = { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" };
+
+async function createSession(sessionId) {
+  await fetch(`${BASE}/sessions`, {
+    method: "POST", headers,
+    body: JSON.stringify({ session_id: sessionId }),
+  });
+  return sessionId;
+}
+
+async function chat(sessionId, message) {
+  const r = await fetch(`${BASE}/chat`, {
+    method: "POST", headers,
+    body: JSON.stringify({
+      model: "gpt-5",
+      messages: [{ role: "user", content: message }],
+      session_id: sessionId,
+    }),
+  });
+  const data = await r.json();
+  return data.choices[0].message.content;
+}
+
+async function exportSession(sessionId) {
+  const r = await fetch(`${BASE}/sessions/${sessionId}/export?format=markdown`, { headers });
+  return await r.text();
+}
+
+// Usage
+const session = await createSession("user-bob-456");
+await chat(session, "I want to build a REST API in Go.");
+await chat(session, "What packages should I use?");
+const md = await exportSession(session);
+console.log(md); // Full conversation as Markdown
+```
+
+```python Python — export and save
+import requests, os
+
+API_KEY = os.environ["NINJACHAT_API_KEY"]
+
+# Export as Markdown
+r = requests.get(
+    "https://ninjachat.ai/api/v1/sessions/my-session-id/export",
+    headers={"Authorization": f"Bearer {API_KEY}"},
+    params={"format": "markdown"}
+)
+
+with open("conversation.md", "w") as f:
+    f.write(r.text)
+print("Saved to conversation.md")
+```
+
+</CodeGroup>
+
+## Sessions + other features
+
+Sessions work with all `/chat` parameters:
+
+```json
+{
+  "model": "auto",
+  "messages": [{"role": "user", "content": "Continue our analysis..."}],
+  "session_id": "research-session-1",
+  "include_routing": true,
+  "min_quality": 0.85,
+  "cache": false
+}
+```
+
+<Note>
+Cache is automatically disabled when `session_id` is present — since history changes every request, cached responses would be incorrect.
+</Note>

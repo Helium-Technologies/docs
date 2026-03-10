@@ -1,0 +1,201 @@
+---
+title: "Model Compare"
+sidebarTitle: "Model Compare"
+description: "Run one prompt against multiple models simultaneously and get back ranked results. The model battle arena."
+---
+
+<Tip>
+**One prompt. Multiple models. One API call.** `POST /api/v1/compare` runs your prompt against N models in parallel and ranks the results by quality, speed, or cost. No competitor offers this.
+</Tip>
+
+## Why compare?
+
+Before committing to a model for your production app, you want to know: which one actually answers best? How do their latencies differ? What's the cheapest model that still meets your quality bar?
+
+The compare endpoint answers all of these in one call.
+
+## Request
+
+```bash
+POST https://ninjachat.ai/api/v1/compare
+Authorization: Bearer nj_sk_YOUR_API_KEY
+Content-Type: application/json
+```
+
+```json
+{
+  "messages": [
+    {"role": "user", "content": "Explain quantum entanglement in one paragraph"}
+  ],
+  "models": ["gpt-5", "claude-sonnet-4.6", "gemini-3.1-pro", "deepseek-v3"],
+  "rank_by": "balanced"
+}
+```
+
+## Response
+
+```json
+{
+  "winner": {
+    "model": "claude-sonnet-4.6",
+    "name": "Claude Sonnet 4.6",
+    "reason": "Best balance of quality (0.97), speed (1180ms), and cost ($0.015)"
+  },
+  "results": [
+    {
+      "rank": 1,
+      "model": "claude-sonnet-4.6",
+      "content": "Quantum entanglement is a phenomenon where two particles become correlated...",
+      "quality": { "confidence": 0.97, "flags": [], "suggested_retry": false },
+      "latency_ms": 1180,
+      "cost_cents": 1.5,
+      "tokens": { "prompt": 18, "completion": 87, "total": 105 },
+      "success": true
+    },
+    {
+      "rank": 2,
+      "model": "gpt-5",
+      "content": "When two particles become quantum entangled...",
+      "quality": { "confidence": 0.95, "flags": [], "suggested_retry": false },
+      "latency_ms": 920,
+      "cost_cents": 0.6,
+      "tokens": { "prompt": 18, "completion": 74, "total": 92 },
+      "success": true
+    },
+    {
+      "rank": 3,
+      "model": "gemini-3.1-pro",
+      "content": "Quantum entanglement describes a special connection between particles...",
+      "quality": { "confidence": 0.93, "flags": [], "suggested_retry": false },
+      "latency_ms": 1050,
+      "cost_cents": 0.6,
+      "tokens": { "prompt": 18, "completion": 82, "total": 100 },
+      "success": true
+    },
+    {
+      "rank": 4,
+      "model": "deepseek-v3",
+      "content": "Quantum entanglement is a quantum mechanical phenomenon...",
+      "quality": { "confidence": 0.89, "flags": [], "suggested_retry": false },
+      "latency_ms": 780,
+      "cost_cents": 0.3,
+      "tokens": { "prompt": 18, "completion": 69, "total": 87 },
+      "success": true
+    }
+  ],
+  "failed": [],
+  "summary": {
+    "fastest": { "model": "deepseek-v3", "latency_ms": 780 },
+    "highest_quality": { "model": "claude-sonnet-4.6", "confidence": 0.97 },
+    "cheapest": { "model": "deepseek-v3", "cost_cents": 0.3 },
+    "best_value": { "model": "gpt-5" }
+  },
+  "ranked_by": "balanced",
+  "models_compared": 4,
+  "succeeded": 4,
+  "total_cost_cents": 3.0,
+  "total_cost": "$0.030",
+  "balance": "$4.790",
+  "compared_at": "2026-03-10T12:00:00.000Z"
+}
+```
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `messages` | array | **Yes** | — | Same format as `/chat`. 1–20 messages. |
+| `models` | array | No | Top 5 across tiers | Which models to run. 2–8 models. Cannot include `auto*` or `ensemble*`. |
+| `rank_by` | string | No | `"balanced"` | How to rank results: `quality`, `speed`, `cost`, or `balanced`. |
+| `max_tokens` | integer | No | `1024` | Max response length per model (1–8,192). |
+| `temperature` | number | No | `0.7` | Sampling temperature. |
+| `include_full_responses` | boolean | No | `true` | Include full response text in results. Set to `false` to get 200-char previews. |
+
+### rank_by modes
+
+| Mode | Weights |
+|---|---|
+| `balanced` | 50% quality + 30% speed + 20% cost |
+| `quality` | 100% quality score |
+| `speed` | 100% speed (lowest latency wins) |
+| `cost` | 100% cost (cheapest wins) |
+
+### Default models (when `models` not specified)
+
+`gpt-5`, `claude-sonnet-4.6`, `gemini-3.1-pro`, `deepseek-v3`, `gemini-3-flash`
+
+## Billing
+
+You are charged for **every successful model call**. A 4-model compare costs the sum of each model's per-request rate. The response includes `total_cost` and a per-model `cost_cents` breakdown.
+
+If any model fails, you are not charged for that model. All successful models are charged.
+
+<Note>
+Pre-flight balance check: if your balance is less than the estimated total cost, the request fails before any models run.
+</Note>
+
+## Code examples
+
+<CodeGroup>
+
+```python Python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/compare",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={
+        "messages": [{"role": "user", "content": "Write a haiku about machine learning"}],
+        "models": ["gpt-5", "claude-sonnet-4.6", "gemini-3.1-pro"],
+        "rank_by": "quality",
+    }
+)
+data = r.json()
+winner = data["winner"]
+print(f"Winner: {winner['model']} — {winner['reason']}")
+for result in data["results"]:
+    print(f"  #{result['rank']} {result['model']}: quality={result['quality']['confidence']:.2f}, {result['latency_ms']}ms, ${result['cost_cents']/100:.4f}")
+```
+
+```javascript Node.js
+const r = await fetch("https://ninjachat.ai/api/v1/compare", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    messages: [{ role: "user", content: "Explain recursion to a 10-year-old" }],
+    models: ["gpt-5", "claude-sonnet-4.6", "deepseek-v3", "gemini-3-flash"],
+    rank_by: "balanced",
+  }),
+});
+const data = await r.json();
+console.log("Winner:", data.winner.model);
+console.log("Best value:", data.summary.best_value.model);
+data.results.forEach(r =>
+  console.log(`#${r.rank} ${r.model}: ${r.quality.confidence.toFixed(2)} quality, ${r.latency_ms}ms`)
+);
+```
+
+```bash cURL — rank by speed
+curl -X POST https://ninjachat.ai/api/v1/compare \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [{"role": "user", "content": "What is 15% of 240?"}],
+    "models": ["gpt-5-mini", "gemini-3-flash", "deepseek-v3", "llama-4-scout"],
+    "rank_by": "speed"
+  }'
+```
+
+</CodeGroup>
+
+## Common use cases
+
+**Choose a model for production** — Compare 4–5 models on a representative sample of your actual prompts before committing to one.
+
+**Verify quality across models** — Run the same benchmark prompt monthly to see if model updates changed behavior.
+
+**Find the best value** — `summary.best_value` shows the model with the highest quality-to-cost ratio.
+
+**Regression testing** — Run your golden test prompts against a new model before switching.

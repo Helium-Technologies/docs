@@ -6,10 +6,9 @@ description: "From zero to working API call in 60 seconds."
 ## 1. Get an API key
 
 Go to your [Developers dashboard](https://www.ninjachat.ai/developers/keys):
-1. Add credits to your account
-2. Click **Create API Key**, give it a name, and copy it immediately (starts with `nj_sk_`, shown once)
+1. Click **Create API Key**, give it a name, and copy it (starts with `nj_sk_`, shown once)
 
-No subscription required. Pay only for what you use.
+**No credit card required.** Your first 50 requests/month are free.
 
 ## 2. Make a request
 
@@ -20,25 +19,25 @@ curl -X POST https://ninjachat.ai/api/v1/chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -d '{
-    "model": "gpt-5",
+    "model": "auto",
     "messages": [{"role": "user", "content": "What is the capital of France?"}]
   }'
 ```
 
-```python Python (no dependencies except requests)
+```python Python
 import requests
 
 r = requests.post("https://ninjachat.ai/api/v1/chat",
     headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
     json={
-        "model": "gpt-5",
+        "model": "auto",
         "messages": [{"role": "user", "content": "What is the capital of France?"}]
     }
 )
-print(r.json()["message"]["content"])
+print(r.json()["choices"][0]["message"]["content"])
 ```
 
-```javascript Node.js (zero dependencies)
+```javascript Node.js
 const r = await fetch("https://ninjachat.ai/api/v1/chat", {
   method: "POST",
   headers: {
@@ -46,12 +45,12 @@ const r = await fetch("https://ninjachat.ai/api/v1/chat", {
     "Authorization": "Bearer nj_sk_YOUR_API_KEY",
   },
   body: JSON.stringify({
-    model: "gpt-5",
+    model: "auto",
     messages: [{ role: "user", content: "What is the capital of France?" }],
   }),
 });
 const data = await r.json();
-console.log(data.message.content);
+console.log(data.choices[0].message.content);
 ```
 
 </CodeGroup>
@@ -60,101 +59,167 @@ console.log(data.message.content);
 
 ```json
 {
-  "model": "gpt-5",
-  "message": {
-    "role": "assistant",
-    "content": "The capital of France is Paris."
-  },
-  "usage": {
-    "prompt_tokens": 14,
-    "completion_tokens": 8,
-    "total_tokens": 22
-  },
-  "cost": {
-    "this_request": "$0.006"
-  },
-  "metadata": {
-    "latency_ms": 842
-  }
+  "id": "chatcmpl-1749584400000",
+  "object": "chat.completion",
+  "model": "gemini-3-flash",
+  "choices": [{
+    "message": { "role": "assistant", "content": "The capital of France is Paris." },
+    "finish_reason": "stop"
+  }],
+  "usage": { "prompt_tokens": 14, "completion_tokens": 8, "total_tokens": 22 },
+  "cost": { "this_request": "$0.003" },
+  "balance": "$49.997",
+  "metadata": { "latency_ms": 312 }
 }
 ```
 
-That's it. You just called GPT-5 with one request.
+`model: "auto"` routed a quick factual question to `gemini-3-flash` (fastest, cheapest for short queries). Add `"include_routing": true` to see the routing decision.
 
 ---
 
-## Switch models in one line
+## Switch models
 
-Same endpoint, same code. Just change `"model"`:
+Same endpoint, just change `model`:
 
-```python
-# GPT-5 — general purpose
-{"model": "gpt-5", "messages": [...]}
-
-# Claude Sonnet 4.6 — best for code
-{"model": "claude-sonnet-4.6", "messages": [...]}
-
-# DeepSeek V3 — fast and lightweight
-{"model": "deepseek-v3", "messages": [...]}
-
-# Gemini 3.1 Pro — advanced reasoning
-{"model": "gemini-3.1-pro", "messages": [...]}
+```json
+{"model": "gpt-5"}          // General purpose — $0.006/req
+{"model": "claude-sonnet-4.6"}  // Best for code — $0.015/req
+{"model": "deepseek-v3"}    // Fast & cheap — $0.003/req
+{"model": "auto"}           // NinjaChat picks — billed at resolved rate
+{"model": "ensemble"}       // 3 models vote — $0.040/req
 ```
 
-See all [24 chat models, 13 image models, and 8 video models →](/models)
-
 ---
 
-## Try every endpoint
+## Try the power features
+
+These are unique to NinjaChat — no other API offers them.
 
 <CodeGroup>
 
-```python Chat
+```python Smart Routing
+# auto routes to best model based on what you ask
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
+    json={
+        "model": "auto",
+        "messages": [{"role": "user", "content": "Solve: ∫x²dx"}],
+        "include_routing": True,
+    }
+)
+data = r.json()
+print(data["choices"][0]["message"]["content"])
+print("Routed to:", data["routing"]["resolved"])  # o3-mini (math specialist)
+```
+
+```python Model Compare
+# Run one prompt against multiple models, ranked by quality/speed/cost
+r = requests.post("https://ninjachat.ai/api/v1/compare",
+    headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
+    json={
+        "messages": [{"role": "user", "content": "Explain recursion simply"}],
+        "models": ["gpt-5", "claude-sonnet-4.6", "deepseek-v3"],
+        "rank_by": "balanced",
+    }
+)
+data = r.json()
+print("Winner:", data["winner"]["model"])
+for r in data["results"]:
+    print(f"#{r['rank']} {r['model']}: quality={r['quality']['confidence']:.2f}")
+```
+
+```python Batch
+# 20 prompts, all run in parallel
+r = requests.post("https://ninjachat.ai/api/v1/batch",
+    headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
+    json={
+        "requests": [
+            {"model": "gpt-5", "messages": [{"role": "user", "content": "Haiku about Python"}]},
+            {"model": "deepseek-v3", "messages": [{"role": "user", "content": "Fibonacci in Go"}]},
+            {"model": "auto", "messages": [{"role": "user", "content": "Prove: √2 is irrational"}]},
+        ]
+    }
+)
+data = r.json()
+print(f"Done in {data['metadata']['total_latency_ms']}ms, cost {data['total_cost']}")
+```
+
+```python Fallback Chains
+# Try claude first, fall back to gpt-5, then gemini if it fails
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
+    json={
+        "model": "claude-opus-4.6>gpt-5>gemini-3.1-pro",
+        "messages": [{"role": "user", "content": "Review this contract..."}],
+        "min_quality": 0.85,
+    }
+)
+data = r.json()
+print("Resolved to:", data["model"])
+print("Fallback triggered:", data["fallback"]["triggered"])
+```
+
+```python Persistent Sessions
+import requests
+
+# Turn 1
+requests.post("https://ninjachat.ai/api/v1/sessions",
+    headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
+    json={"session_id": "my-session"}
+)
+requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
+    json={
+        "model": "gpt-5",
+        "messages": [{"role": "user", "content": "My name is Alice."}],
+        "session_id": "my-session",
+    }
+)
+
+# Turn 2 — prior messages auto-injected
 r = requests.post("https://ninjachat.ai/api/v1/chat",
     headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
     json={
         "model": "gpt-5",
-        "messages": [{"role": "user", "content": "Hello!"}]
+        "messages": [{"role": "user", "content": "What is my name?"}],
+        "session_id": "my-session",
     }
 )
-print(r.json()["message"]["content"])
+print(r.json()["choices"][0]["message"]["content"])  # "Your name is Alice."
 ```
+
+</CodeGroup>
+
+---
+
+## Try every endpoint type
+
+<CodeGroup>
 
 ```python Images
 r = requests.post("https://ninjachat.ai/api/v1/images",
     headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
-    json={
-        "model": "flux-2-klein",
-        "prompt": "A cute robot drinking coffee, cartoon style"
-    }
+    json={"model": "flux-2-klein", "prompt": "A cute robot drinking coffee, cartoon style"}
 )
 print(r.json()["images"][0]["url"])
 ```
 
 ```python Video
-# Step 1: Submit
+import time
+
+# Submit
 r = requests.post("https://ninjachat.ai/api/v1/video",
     headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
-    json={
-        "model": "google-veo-2",
-        "prompt": "A timelapse of a flower blooming",
-        "duration": 5
-    }
+    json={"model": "google-veo-2", "prompt": "A timelapse of a flower blooming", "duration": 5}
 )
 request_id = r.json()["request_id"]
 
-# Step 2: Poll every 10s
-import time
+# Poll
 while True:
-    s = requests.get(
-        f"https://ninjachat.ai/api/v1/video/status?request_id={request_id}",
-        headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"}
-    ).json()
+    s = requests.get(f"https://ninjachat.ai/api/v1/video/status?request_id={request_id}",
+        headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"}).json()
     if s["status"] == "completed":
         print(s["result"]["video_url"])
-        break
-    if s["status"] == "failed":
-        print("Failed:", s.get("error"))
         break
     time.sleep(10)
 ```
@@ -162,10 +227,7 @@ while True:
 ```python Search
 r = requests.post("https://ninjachat.ai/api/v1/search",
     headers={"Authorization": "Bearer nj_sk_YOUR_API_KEY"},
-    json={
-        "query": "latest AI news",
-        "include_answer": True
-    }
+    json={"query": "latest AI news", "include_answer": True}
 )
 print(r.json()["answer"])
 ```
@@ -178,9 +240,11 @@ print(r.json()["answer"])
 
 | I want to... | Go here |
 |---|---|
-| See all available models | [Models](/models) |
-| Understand pricing | [Pricing](/pricing) |
-| Generate images | [Image Generation guide](/image-generation) |
-| Generate videos | [Video Generation guide](/video-generation) |
-| Use web search | [Search guide](/search) |
-| Handle errors properly | [Error Handling](/error-handling) |
+| Auto-select the best model per task | [Smart Routing →](/smart-routing) |
+| Compare models side-by-side | [Model Compare →](/compare) |
+| Run 20 prompts at once | [Batch →](/batch) |
+| Build a multi-turn chatbot | [Sessions →](/sessions) |
+| Know cost before running | [Estimate →](/estimate) |
+| See all available models | [Models →](/models) |
+| Understand pricing | [Pricing →](/pricing) |
+| Handle errors properly | [Error Handling →](/error-handling) |

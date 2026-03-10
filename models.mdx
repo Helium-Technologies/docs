@@ -1,33 +1,51 @@
 ---
 title: "All Models"
 sidebarTitle: "All Models"
-description: "All 40+ AI models with IDs, pricing, and recommendations. One API key, one endpoint."
+description: "All 30+ AI models plus smart routing variants. One API key, one endpoint per type."
 ---
 
 One API key, one endpoint per type. Just change the `model` parameter.
+
+<Tip>
+**Not sure which model to pick?** Use `model: "auto"` — NinjaChat routes each request to the optimal model based on your prompt. [Smart routing guide →](/smart-routing)
+</Tip>
+
+## Smart routing variants
+
+These are virtual models that route to real models at runtime. Use them when you don't want to hard-code a specific model.
+
+| ID | Optimizes for | Billed at | Guide |
+|---|---|---|---|
+| `auto` | Best model per task type (balanced) | Resolved model's rate | [Smart Routing →](/smart-routing) |
+| `auto-fast` | Lowest latency | Resolved model's rate | [Smart Routing →](/smart-routing) |
+| `auto-cheap` | Lowest cost | Resolved model's rate | [Smart Routing →](/smart-routing) |
+| `auto-quality` | Highest quality | Resolved model's rate | [Smart Routing →](/smart-routing) |
+| `ensemble` | 3-model consensus (GPT-5 + Claude Sonnet + Gemini Pro) | $0.040/req flat | [Chat →](/chat#ensemble) |
+| `ensemble-quality` | 3-model consensus (GPT-5 + Claude Opus + Gemini Pro) | $0.050/req flat | [Chat →](/chat#ensemble) |
+
+You can also use **fallback chains**: `"claude-opus-4.6>gpt-5>gemini-3.1-pro"` — tries each model in order if the previous fails or scores below your quality threshold. [See chat docs →](/chat#fallback-chains)
+
+---
 
 ## Pick a model
 
 | I want to... | Model | Cost | ID |
 |---|---|---|---|
-| Build a chatbot | [GPT-5](/api-reference/models/chat/gpt-5) | $0.006 | `gpt-5` |
-| Generate code | [Claude Sonnet 4.6](/api-reference/models/chat/claude-sonnet-4-6) | $0.015 | `claude-sonnet-4.6` |
-| Classify/extract text | [DeepSeek V3](/api-reference/models/chat/deepseek-v3) | $0.003 | `deepseek-v3` |
-| Analyze long documents | [Claude Sonnet 4.5](/api-reference/models/chat/claude-sonnet-4-5) | $0.006 | `claude-sonnet-4.5` |
-| Do math/reasoning | [O3 Mini](/api-reference/models/chat/o3-mini) | $0.006 | `o3-mini` |
-| Get fastest responses | [Gemini 2.5 Flash](/api-reference/models/chat/gemini-2-5-flash) | $0.003 | `gemini-2.5-flash` |
-| Best quality (any task) | [Claude Opus 4.6](/api-reference/models/chat/claude-opus-4-6) | $0.03 | `claude-opus-4.6` |
+| Let NinjaChat decide | Auto (Balanced) | resolved rate | `auto` |
+| Build a production chatbot | [GPT-5](/api-reference/models/chat/gpt-5) | $0.006 | `gpt-5` |
+| Generate high-quality code | [Claude Sonnet 4.6](/api-reference/models/chat/claude-sonnet-4-6) | $0.015 | `claude-sonnet-4.6` |
+| Do math and logical reasoning | [o3-mini](/api-reference/models/chat/o3-mini) | $0.006 | `o3-mini` |
+| Get the best possible answer | [Claude Opus 4.6](/api-reference/models/chat/claude-opus-4-6) | $0.030 | `claude-opus-4.6` |
+| Classify / extract text (budget) | [DeepSeek V3](/api-reference/models/chat/deepseek-v3) | $0.003 | `deepseek-v3` |
+| Fast real-time chat | [Gemini 3 Flash](/api-reference/models/chat/gemini-3-flash) | $0.003 | `gemini-3-flash` |
+| Analyze long documents | [Gemini 2.5 Pro](/api-reference/models/chat/gemini-2-5-pro) | $0.006 | `gemini-2.5-pro` |
+| Highest quality (any task) | [Ensemble Quality](/chat#ensemble) | $0.050 | `ensemble-quality` |
 | Generate images | [Nano Banana 2](/api-reference/models/image/nano-banana-2) | $0.05/img | `nano-banana-2` |
 | Generate images (budget) | [FLUX.2 Klein](/api-reference/models/image/flux-2-klein) | $0.03/img | `flux-2-klein` |
-| Generate best images | [FLUX Kontext Max](/api-reference/models/image/flux-kontext-max) | $0.10/img | `flux-kontext-max` |
-| Edit/transform images | [FLUX Kontext Pro](/api-reference/models/image/flux-kontext-pro) | $0.05/img | `flux-kontext-pro` |
+| Best image quality | [FLUX Kontext Max](/api-reference/models/image/flux-kontext-max) | $0.10/img | `flux-kontext-max` |
 | Generate video | [Veo 3.1 Fast](/api-reference/models/video/veo-3-1-fast) | $3.00/video | `veo-3.1-fast` |
-| Generate best video | [Veo 3.1](/api-reference/models/video/veo-3-1) | $5.00/video | `veo-3.1` |
-| Search the web | [Web Search](/search) | $0.05 | — |
-
-<Note>
-**Not sure?** Use `gpt-5` for general use. Switch to Claude for code or DeepSeek for budget workloads. See [Pricing](/pricing) for full cost breakdown.
-</Note>
+| Best video quality | [Veo 3.1](/api-reference/models/video/veo-3-1) | $5.00/video | `veo-3.1` |
+| Search the web | [Web Search](/search) | $0.05/query | — |
 
 ---
 
@@ -35,13 +53,13 @@ One API key, one endpoint per type. Just change the `model` parameter.
 
 Full guide with examples: [Chat →](/chat)
 
-**$0.03/req — Ultra:** [`claude-opus-4.6`](/api-reference/models/chat/claude-opus-4-6)
+**$0.030/req — Ultra:** [`claude-opus-4.6`](/api-reference/models/chat/claude-opus-4-6)
 
 **$0.015/req — Premium:** [`claude-sonnet-4.6`](/api-reference/models/chat/claude-sonnet-4-6)
 
 **$0.006/req — Standard:** [`gpt-5`](/api-reference/models/chat/gpt-5) [`o3-mini`](/api-reference/models/chat/o3-mini) [`claude-sonnet-4.5`](/api-reference/models/chat/claude-sonnet-4-5) [`claude-haiku-4.5`](/api-reference/models/chat/claude-haiku-4-5) [`gemini-2.5-pro`](/api-reference/models/chat/gemini-2-5-pro) [`gemini-3-pro`](/api-reference/models/chat/gemini-3-pro) [`gemini-3.1-pro`](/api-reference/models/chat/gemini-3-1-pro) [`grok-4`](/api-reference/models/chat/grok-4) [`kimi-k2`](/api-reference/models/chat/kimi-k2) [`mistral-large`](/api-reference/models/chat/mistral-large) [`llama-4-maverick`](/api-reference/models/chat/llama-4-maverick) [`kimi-k2.5`](/api-reference/models/chat/kimi-k2-5)
 
-**$0.003/req — Budget:** [`gpt-5-mini`](/api-reference/models/chat/gpt-5-mini) [`gemini-2.5-flash`](/api-reference/models/chat/gemini-2-5-flash) [`gemini-3-flash`](/api-reference/models/chat/gemini-3-flash) [`llama-4-scout`](/api-reference/models/chat/llama-4-scout) [`deepseek-v3`](/api-reference/models/chat/deepseek-v3) [`qwq-32b`](/api-reference/models/chat/qwq-32b) [`glm-5`](/api-reference/models/chat/glm-5) [`minimax-m2.5`](/api-reference/models/chat/minimax-m2-5) [`ninja-1`](/api-reference/models/chat/ninja-1) [`uncensored-ai`](/api-reference/models/chat/uncensored-ai)
+**$0.003/req — Free tier:** [`gpt-5-mini`](/api-reference/models/chat/gpt-5-mini) [`gemini-2.5-flash`](/api-reference/models/chat/gemini-2-5-flash) [`gemini-3-flash`](/api-reference/models/chat/gemini-3-flash) [`llama-4-scout`](/api-reference/models/chat/llama-4-scout) [`deepseek-v3`](/api-reference/models/chat/deepseek-v3) [`qwq-32b`](/api-reference/models/chat/qwq-32b) [`glm-5`](/api-reference/models/chat/glm-5) [`minimax-m2.5`](/api-reference/models/chat/minimax-m2-5) [`ninja-1`](/api-reference/models/chat/ninja-1) [`uncensored-ai`](/api-reference/models/chat/uncensored-ai)
 
 ---
 
@@ -87,3 +105,25 @@ Full guide with examples: [Video →](/video-generation)
 ## Search — $0.05/query
 
 Full guide with examples: [Search →](/search)
+
+---
+
+## Live model catalog via API
+
+Get the full model list programmatically — including capabilities, context window, speed, and recommendations:
+
+```bash
+# All models
+GET https://ninjachat.ai/api/v1/models
+
+# Filter by tier
+GET https://ninjachat.ai/api/v1/models?tier=standard
+
+# Filter by capability
+GET https://ninjachat.ai/api/v1/models?capability=code
+
+# Exclude virtual models (auto/ensemble)
+GET https://ninjachat.ai/api/v1/models?virtual=false
+```
+
+Response includes rich metadata per model: `capabilities`, `context_window`, `max_output_tokens`, `speed`, `recommended_for`. [Estimate costs →](/estimate)

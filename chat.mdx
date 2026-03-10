@@ -1,11 +1,11 @@
 ---
 title: "Chat"
 sidebarTitle: "Chat"
-description: "Generate text with 24 LLMs. Request format, response format, streaming, and examples."
+description: "Text generation with 30+ LLMs. Smart routing, fallback chains, budget routing, sessions, ensemble, quality scoring, and caching."
 ---
 
 <Tip>
-**Which chat model?** Start with `gpt-5` ($0.006) for general use. Use `claude-sonnet-4.6` ($0.015) for code. Use `deepseek-v3` ($0.003) for budget. [Compare all →](/models)
+**New:** Set `model: "auto"` for smart routing, `model: "a>b>c"` for fallback chains, or `budget_cents: 1` for budget-aware routing. [See all power features →](#power-features)
 </Tip>
 
 ## Request
@@ -32,127 +32,252 @@ Content-Type: application/json
 
 ```json
 {
+  "id": "chatcmpl-1749584400000",
+  "object": "chat.completion",
   "model": "gpt-5",
-  "message": {
-    "role": "assistant",
-    "content": "Quantum computing harnesses quantum mechanical phenomena..."
-  },
+  "choices": [{
+    "index": 0,
+    "message": {
+      "role": "assistant",
+      "content": "Quantum computing harnesses quantum mechanical phenomena..."
+    },
+    "finish_reason": "stop"
+  }],
   "usage": {
     "prompt_tokens": 24,
     "completion_tokens": 87,
     "total_tokens": 111
   },
-  "cost": {
-    "this_request": "$0.006"
-  },
-  "metadata": {
-    "latency_ms": 1243
+  "cost": {"this_request": "$0.006"},
+  "balance": "$4.820",
+  "metadata": {"latency_ms": 1243}
+}
+```
+
+## Parameters
+
+### Standard parameters
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `model` | string | No | `ninja-1` | Model ID, `auto*` variant, `ensemble*` variant, or fallback chain (`a>b>c`). |
+| `messages` | array | **Yes** | — | 1–50 messages. Each has `role` (`system`/`user`/`assistant`) and `content`. |
+| `temperature` | number | No | `0.7` | 0 = deterministic, 2 = creative. |
+| `max_tokens` | integer | No | `2048` | Max response length (1–16,384). |
+| `stream` | boolean | No | `false` | Stream tokens via SSE. |
+
+### Power feature parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `session_id` | string | — | Attach to a persistent session. History is auto-injected. [Sessions →](/sessions) |
+| `cache` | boolean | `true` | Cache non-streaming responses. Returns `"cached": true` on hits (free). |
+| `include_routing` | boolean | `false` | Include routing decision in response (which model was chosen and why). |
+| `include_quality` | boolean | `false` | Include quality score (0–1 confidence) in response. |
+| `budget_cents` | number | — | Auto-select best model within this cost ceiling (cents). Overrides `model`. |
+| `min_quality` | number | — | If response quality score < this threshold (0–1), auto-retry with a better model. |
+| `fallback_on_error` | boolean | `true` | In fallback chains: continue to next model on error. |
+
+---
+
+## Power features
+
+### Smart routing — `auto`, `auto-fast`, `auto-cheap`, `auto-quality`
+
+NinjaChat detects task type (code, math, creative, analysis, quick, general) and routes to the optimal model automatically.
+
+```json
+{
+  "model": "auto",
+  "messages": [{"role": "user", "content": "Write a binary search in Python"}],
+  "include_routing": true
+}
+```
+
+Response includes:
+```json
+"routing": {
+  "requested": "auto",
+  "resolved": "claude-sonnet-4.6",
+  "task_type": "code",
+  "reasoning": "Detected task type: code"
+}
+```
+
+[Full smart routing guide →](/smart-routing)
+
+---
+
+### Fallback chains — `model: "a>b>c"`
+
+Try models in order. If one fails or scores below `min_quality`, automatically fall back to the next.
+
+```json
+{
+  "model": "claude-opus-4.6>gpt-5>gemini-3.1-pro",
+  "messages": [{"role": "user", "content": "Review this contract clause..."}],
+  "min_quality": 0.85
+}
+```
+
+Response:
+```json
+{
+  "model": "gpt-5",
+  "fallback": {
+    "chain": ["claude-opus-4.6", "gpt-5", "gemini-3.1-pro"],
+    "triggered": true,
+    "attempts": [
+      {"model": "claude-opus-4.6", "success": false, "error": "timeout"},
+      {"model": "gpt-5", "success": true, "quality_score": 0.94}
+    ]
   }
 }
 ```
 
-Your text is in `message.content`. That's all you need.
+- Up to 4 models in a chain
+- Billing: charged per successful attempt
+- Combine with `min_quality` to trigger fallback on low-quality responses
 
-## Parameters
+---
 
-| Parameter | Type | Required | Default | Description |
-|---|---|---|---|---|
-| `model` | string | No | `gpt-5` | Model ID. See [all models](/models). |
-| `messages` | array | **Yes** | — | Conversation messages (1–50). Each has `role` and `content`. |
-| `temperature` | number | No | 0.7 | 0 = deterministic, 2 = very creative. |
-| `max_tokens` | integer | No | 2048 | Max response length (1–4096). |
-| `stream` | boolean | No | false | Stream response token-by-token via SSE. |
+### Ensemble — `model: "ensemble"` or `"ensemble-quality"`
 
-### Message roles
+Runs 3 models in parallel, then synthesizes the best answer with a 4th call. Eliminates hallucinations and gets consensus.
 
-| Role | Purpose | Example |
-|---|---|---|
-| `system` | Set behavior/personality | "You are a Python expert. Be concise." |
-| `user` | The human's message | "Write a function to sort a list." |
-| `assistant` | Previous AI responses (for multi-turn) | "Here's a sort function: ..." |
-
-## Full working examples
-
-<CodeGroup>
-
-```python Python
-import os, requests
-
-def chat(model, message, system=None):
-    messages = []
-    if system:
-        messages.append({"role": "system", "content": system})
-    messages.append({"role": "user", "content": message})
-
-    r = requests.post("https://ninjachat.ai/api/v1/chat",
-        headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
-        json={"model": model, "messages": messages}
-    )
-    r.raise_for_status()
-    return r.json()["message"]["content"]
-
-# Basic usage
-print(chat("gpt-5", "What is 2+2?"))
-
-# With system prompt
-print(chat("claude-sonnet-4.6", "Review this code: def f(x): return x+1",
-    system="You are a senior Python developer. Be concise."))
-
-# Budget model for classification
-print(chat("deepseek-v3", "Classify as positive/negative: 'Great product!'"))
-```
-
-```javascript Node.js
-async function chat(model, message, system) {
-  const messages = [];
-  if (system) messages.push({ role: "system", content: system });
-  messages.push({ role: "user", content: message });
-
-  const r = await fetch("https://ninjachat.ai/api/v1/chat", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ model, messages }),
-  });
-  if (!r.ok) throw new Error(`${r.status}: ${await r.text()}`);
-  return (await r.json()).message.content;
+```json
+{
+  "model": "ensemble",
+  "messages": [{"role": "user", "content": "Is microservices worth it for a 3-person startup?"}]
 }
-
-console.log(await chat("gpt-5", "What is 2+2?"));
-console.log(await chat("claude-sonnet-4.6", "Review this code: def f(x): return x+1",
-    "You are a senior Python developer. Be concise."));
 ```
 
-</CodeGroup>
-
-<Tip>
-Not ready to write code? [Try this in the API Playground →](https://www.ninjachat.ai/api-playground)
-</Tip>
-
-## Multi-turn conversations
-
-Pass the full conversation history in `messages`:
-
-```python
-messages = [
-    {"role": "system", "content": "You are a helpful tutor."},
-    {"role": "user", "content": "What is photosynthesis?"},
-    {"role": "assistant", "content": "Photosynthesis is the process by which plants convert sunlight..."},
-    {"role": "user", "content": "How efficient is it compared to solar panels?"},
-]
-
-r = requests.post("https://ninjachat.ai/api/v1/chat",
-    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
-    json={"model": "gpt-5", "messages": messages}
-)
-print(r.json()["message"]["content"])
+```json
+{
+  "ensemble": {
+    "models": ["gpt-5", "claude-sonnet-4.6", "gemini-3.1-pro"],
+    "synthesis": "consensus"
+  },
+  "cost": {"this_request": "$0.040"}
+}
 ```
+
+| Variant | Models | Cost |
+|---|---|---|
+| `ensemble` | GPT-5 + Claude Sonnet 4.6 + Gemini 3.1 Pro | $0.04/req |
+| `ensemble-quality` | GPT-5 + Claude Opus 4.6 + Gemini 3.1 Pro | $0.05/req |
+
+---
+
+### Budget routing — `budget_cents`
+
+Pick the best available model within a cost ceiling. Overrides `model`.
+
+```json
+{
+  "budget_cents": 0.5,
+  "messages": [{"role": "user", "content": "Translate to Spanish: Hello world"}],
+  "include_routing": true
+}
+```
+
+```json
+"routing": {
+  "budget_routing": {
+    "requested_budget_cents": 0.5,
+    "resolved": "deepseek-v3",
+    "reason": "Best model within 0.5¢: DeepSeek V3 (free tier, 0.3¢/req)"
+  }
+}
+```
+
+---
+
+### Quality scoring — `include_quality` + `min_quality`
+
+Every response can include a heuristic quality score. Use `min_quality` to auto-retry with a better model if the score is too low.
+
+```json
+{
+  "model": "gpt-5",
+  "messages": [{"role": "user", "content": "Write a poem about the ocean"}],
+  "include_quality": true,
+  "min_quality": 0.8
+}
+```
+
+```json
+"quality": {
+  "confidence": 0.94,
+  "flags": [],
+  "suggested_retry": false
+}
+```
+
+If `confidence < min_quality`, the system automatically retries with a higher-quality model and adds `auto_retry` to the response:
+
+```json
+"auto_retry": {
+  "triggered": true,
+  "original_model": "gpt-5-mini",
+  "retry_model": "gpt-5",
+  "original_quality": 0.52
+}
+```
+
+---
+
+### Response caching — `cache`
+
+Non-streaming, non-session responses are cached by default (TTL: 1 hour). Identical requests return instantly with no credit charge.
+
+```json
+"cached": true
+```
+
+Disable with `"cache": false`. Cache is automatically disabled when using `session_id`.
+
+---
+
+### Persistent sessions — `session_id`
+
+Attach conversation history to a named session. All prior messages are automatically prepended.
+
+```json
+{
+  "model": "gpt-5",
+  "messages": [{"role": "user", "content": "What did I ask you before?"}],
+  "session_id": "user-123"
+}
+```
+
+```json
+"session": {
+  "id": "user-123",
+  "message_count": 6
+}
+```
+
+[Full sessions guide →](/sessions)
+
+---
+
+### Free tier
+
+Users with $0 balance get **50 free requests/month** (resets on the 1st). Free requests include `free_tier` in the response:
+
+```json
+"free_tier": {
+  "used": 3,
+  "remaining": 47
+}
+```
+
+---
 
 ## Streaming
 
-Set `stream: true` to get tokens as they're generated (SSE format). Better UX for chatbots.
+Set `stream: true` for token-by-token SSE output. Works with all model variants.
 
 <CodeGroup>
 
@@ -162,9 +287,10 @@ import os, requests, json
 r = requests.post("https://ninjachat.ai/api/v1/chat",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     json={
-        "model": "gpt-5",
+        "model": "auto",
         "messages": [{"role": "user", "content": "Write a haiku about coding"}],
-        "stream": True
+        "stream": True,
+        "include_routing": True,
     },
     stream=True
 )
@@ -175,6 +301,9 @@ for line in r.iter_lines():
     text = line.decode("utf-8")
     if text.startswith("data: ") and text != "data: [DONE]":
         chunk = json.loads(text[6:])
+        # First chunk may contain routing info (no content delta)
+        if "routing" in chunk:
+            print(f"Routed to: {chunk['routing']['resolved']}", flush=True)
         token = chunk.get("choices", [{}])[0].get("delta", {}).get("content", "")
         print(token, end="", flush=True)
 print()
@@ -210,13 +339,36 @@ while (true) {
 
 </CodeGroup>
 
-## Models & pricing
+## Multi-turn conversations
+
+Without sessions, pass the full history manually:
+
+```python
+messages = [
+    {"role": "system", "content": "You are a helpful tutor."},
+    {"role": "user", "content": "What is photosynthesis?"},
+    {"role": "assistant", "content": "Photosynthesis converts sunlight into energy..."},
+    {"role": "user", "content": "How does it compare to solar panels?"},
+]
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={"model": "gpt-5", "messages": messages}
+)
+```
+
+Or use [sessions](/sessions) to have NinjaChat manage history for you.
+
+## Models and pricing
 
 | Tier | Cost | Models |
 |---|---|---|
-| Ultra | $0.03/req | `claude-opus-4.6` |
+| Ultra | $0.030/req | `claude-opus-4.6` |
 | Premium | $0.015/req | `claude-sonnet-4.6` |
-| Standard | $0.006/req | `gpt-5` `o3-mini` `claude-sonnet-4.5` `claude-haiku-4.5` `gemini-2.5-pro` `gemini-3-pro` `gemini-3.1-pro` `grok-4` `kimi-k2` `mistral-large` `llama-4-maverick` `kimi-k2.5` |
-| Budget | $0.003/req | `gpt-5-mini` `gemini-2.5-flash` `gemini-3-flash` `llama-4-scout` `deepseek-v3` `qwq-32b` `glm-5` `minimax-m2.5` `ninja-1` `uncensored-ai` |
+| Standard | $0.006/req | `gpt-5` `o3-mini` `claude-sonnet-4.5` `claude-haiku-4.5` `gemini-2.5-pro` `gemini-3-pro` `gemini-3.1-pro` `grok-4` `kimi-k2` `kimi-k2.5` `mistral-large` `llama-4-maverick` |
+| Free | $0.003/req | `gpt-5-mini` `gemini-2.5-flash` `gemini-3-flash` `llama-4-scout` `deepseek-v3` `qwq-32b` `glm-5` `minimax-m2.5` `ninja-1` `uncensored-ai` |
+| Ensemble | $0.040/req | `ensemble` (3 models + synthesis) |
+| Ensemble Quality | $0.050/req | `ensemble-quality` |
+
+Auto variants (`auto`, `auto-fast`, `auto-cheap`, `auto-quality`) are billed at the resolved model's rate.
 
 [All model details →](/models)

@@ -1,0 +1,198 @@
+---
+title: "Cost Estimation"
+sidebarTitle: "Cost Estimation"
+description: "Pre-flight cost estimation. Know exactly what a request will cost before running it — no credits deducted."
+---
+
+<Tip>
+**No credits deducted.** The estimate endpoint is always free. Use it to build cost calculators, validate budgets before running batch jobs, or compare pricing across models.
+</Tip>
+
+## Request
+
+```bash
+POST https://ninjachat.ai/api/v1/estimate
+Content-Type: application/json
+```
+
+<Note>
+No API key required for basic estimates. Pass your key if you want balance-aware responses.
+</Note>
+
+```json
+{
+  "model": "claude-sonnet-4.6",
+  "messages": [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Write a 500-word essay about climate change."}
+  ],
+  "count": 1000
+}
+```
+
+## Response
+
+```json
+{
+  "model": "claude-sonnet-4.6",
+  "model_name": "Claude Sonnet 4.6",
+  "provider": "Anthropic",
+  "tier": "premium",
+  "cost_per_request_cents": 1.5,
+  "cost_per_request": "$0.0150",
+  "estimated_tokens": {
+    "prompt": 28,
+    "completion": 11
+  },
+  "for_count": 1000,
+  "total_cost_cents": 1500.0,
+  "total_cost": "$15.0000",
+  "cheaper_alternatives": [
+    {
+      "id": "claude-sonnet-4.5",
+      "name": "Claude Sonnet 4.5",
+      "cost_cents": 0.6,
+      "savings_percent": 60,
+      "capabilities": ["text", "code", "analysis", "reasoning"]
+    },
+    {
+      "id": "gpt-5",
+      "name": "GPT-5",
+      "cost_cents": 0.6,
+      "savings_percent": 60,
+      "capabilities": ["text", "code", "reasoning", "analysis", "math"]
+    },
+    {
+      "id": "deepseek-v3",
+      "name": "DeepSeek V3",
+      "cost_cents": 0.3,
+      "savings_percent": 80,
+      "capabilities": ["text", "code", "math", "reasoning"]
+    }
+  ],
+  "monthly_estimate": {
+    "at_100": "$0.15",
+    "at_1000": "$1.50",
+    "at_10000": "$15.00",
+    "at_100000": "$150.00"
+  },
+  "ensemble_pricing": {
+    "ensemble": { "cost_cents": 4, "cost": "$0.040" },
+    "ensemble-quality": { "cost_cents": 5, "cost": "$0.050" }
+  },
+  "note": "Token estimates are approximate. Actual billing is per-request, not per-token."
+}
+```
+
+## Parameters
+
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `model` | string | **Yes** | — | Any model ID (concrete models only, not `auto*`). |
+| `messages` | array | No | — | Used for approximate token estimation. |
+| `count` | integer | No | `1` | Number of requests to estimate total cost for (1–1,000,000). |
+| `models` | array | No | — | Compare pricing across multiple models simultaneously. |
+
+## Compare multiple models at once
+
+Pass `models` to get a side-by-side pricing comparison:
+
+```json
+{
+  "model": "claude-sonnet-4.6",
+  "count": 50000,
+  "models": ["gpt-5", "claude-sonnet-4.6", "deepseek-v3", "gpt-5-mini", "claude-opus-4.6"]
+}
+```
+
+```json
+{
+  "model_comparison": [
+    { "model": "gpt-5-mini",      "cost_cents": 0.3, "total_cost_cents": 15000 },
+    { "model": "deepseek-v3",     "cost_cents": 0.3, "total_cost_cents": 15000 },
+    { "model": "gpt-5",           "cost_cents": 0.6, "total_cost_cents": 30000 },
+    { "model": "claude-sonnet-4.6","cost_cents": 1.5, "total_cost_cents": 75000 },
+    { "model": "claude-opus-4.6", "cost_cents": 3.0, "total_cost_cents": 150000 }
+  ]
+}
+```
+
+## Code examples
+
+<CodeGroup>
+
+```python Python — validate budget before batch
+import requests
+
+def estimate_batch_cost(model: str, count: int) -> float:
+    """Returns estimated cost in cents. Free to call."""
+    r = requests.post("https://ninjachat.ai/api/v1/estimate",
+        json={"model": model, "count": count}
+    )
+    return r.json()["total_cost_cents"]
+
+# Check cost before running a large batch
+cost = estimate_batch_cost("claude-sonnet-4.6", 10000)
+budget = 5000  # 50 dollars in cents
+
+if cost > budget:
+    print(f"Too expensive: ${cost/100:.2f}. Try 'gpt-5' or 'deepseek-v3'.")
+else:
+    print(f"Within budget: ${cost/100:.2f}. Proceeding with batch.")
+    # ... run batch
+```
+
+```javascript Node.js — cost calculator UI
+async function getModelPricing(models, requestCount) {
+  const r = await fetch("https://ninjachat.ai/api/v1/estimate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: models[0],
+      count: requestCount,
+      models: models,
+    }),
+  });
+  const data = await r.json();
+  return data.model_comparison;
+}
+
+const pricing = await getModelPricing(
+  ["gpt-5-mini", "gpt-5", "claude-sonnet-4.6"],
+  100_000
+);
+
+pricing.forEach(p => {
+  console.log(`${p.model}: $${(p.total_cost_cents / 100).toFixed(2)} for 100K requests`);
+});
+// gpt-5-mini:       $300.00 for 100K requests
+// gpt-5:            $600.00 for 100K requests
+// claude-sonnet-4.6: $1500.00 for 100K requests
+```
+
+```bash cURL — quick spot check
+curl -X POST https://ninjachat.ai/api/v1/estimate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-5",
+    "count": 1000,
+    "models": ["gpt-5", "claude-sonnet-4.6", "deepseek-v3", "gpt-5-mini"]
+  }'
+```
+
+</CodeGroup>
+
+## Monthly cost planning
+
+The `monthly_estimate` field in every response gives you cost projections at 4 scale levels:
+
+```json
+"monthly_estimate": {
+  "at_100":    "$0.06",
+  "at_1000":   "$0.60",
+  "at_10000":  "$6.00",
+  "at_100000": "$60.00"
+}
+```
+
+Use this to plan credit purchases and set spend alerts in your application.

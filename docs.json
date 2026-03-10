@@ -22,19 +22,29 @@
             ]
           },
           {
-            "group": "API",
+            "group": "Chat",
             "pages": [
               "chat",
+              "smart-routing",
+              "compare",
+              "batch",
+              "sessions",
+              "estimate"
+            ]
+          },
+          {
+            "group": "Other Endpoints",
+            "pages": [
               "image-generation",
               "video-generation",
-              "search",
-              "models",
-              "pricing"
+              "search"
             ]
           },
           {
             "group": "Reference",
             "pages": [
+              "models",
+              "pricing",
               "error-handling",
               "rate-limits",
               "best-practices"
@@ -46,10 +56,36 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "Endpoints",
+            "group": "Chat",
             "openapi": "openapi.json",
             "pages": [
-              "POST /api/v1/chat",
+              "POST /api/v1/chat"
+            ]
+          },
+          {
+            "group": "Power Features",
+            "openapi": "openapi.json",
+            "pages": [
+              "POST /api/v1/compare",
+              "POST /api/v1/batch",
+              "POST /api/v1/estimate",
+              "GET /api/v1/models"
+            ]
+          },
+          {
+            "group": "Sessions",
+            "openapi": "openapi.json",
+            "pages": [
+              "POST /api/v1/sessions",
+              "GET /api/v1/sessions/{id}",
+              "DELETE /api/v1/sessions/{id}",
+              "GET /api/v1/sessions/{id}/export"
+            ]
+          },
+          {
+            "group": "Media",
+            "openapi": "openapi.json",
+            "pages": [
               "POST /api/v1/search",
               "POST /api/v1/images",
               "POST /api/v1/video",
@@ -150,6 +186,11 @@
           "anchor": "Dashboard",
           "href": "https://www.ninjachat.ai/developers",
           "icon": "gauge"
+        },
+        {
+          "anchor": "Playground",
+          "href": "https://www.ninjachat.ai/developers/playground",
+          "icon": "play"
         }
       ]
     }

@@ -1,63 +1,89 @@
 ---
-title: "NinjaChat API — 40+ AI Models, One API Key"
-description: "One API key. 40+ AI models. Chat, images, video, and search. GPT-5, Claude, Gemini, FLUX, Runway, and more."
+title: "NinjaChat API — 30+ AI Models, One API Key"
+description: "One API key. 30+ AI models. Smart routing, model comparison, batch processing, persistent sessions, and more."
 ---
 
 ```bash
 curl -X POST https://ninjachat.ai/api/v1/chat \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"model": "gpt-5", "messages": [{"role": "user", "content": "Hello!"}]}'
+  -d '{"model": "auto", "messages": [{"role": "user", "content": "Hello!"}]}'
 ```
 
-One API key gives you GPT-5, Claude, Gemini, FLUX, Runway, Veo, and 35+ more models. Same endpoint, same format — just change the `model` parameter.
+One API key. GPT-5, Claude, Gemini, and 27 more models. Set `model` to `auto` and NinjaChat picks the best model for each task — or use `model: "gpt-5"` to pick explicitly.
 
 ## Endpoints
 
 | Endpoint | What it does | Guide |
 |---|---|---|
-| `POST /api/v1/chat` | Text generation with 24 LLMs | [Chat guide](/chat) |
-| `POST /api/v1/images` | Image generation with 13 models | [Image guide](/image-generation) |
-| `POST /api/v1/video` | Video generation with 8 models | [Video guide](/video-generation) |
-| `POST /api/v1/search` | Web search + AI answers | [Search guide](/search) |
+| `POST /api/v1/chat` | Text generation with smart routing, fallback chains, sessions | [Chat →](/chat) |
+| `POST /api/v1/compare` | Run one prompt against N models, ranked by quality/speed/cost | [Compare →](/compare) |
+| `POST /api/v1/batch` | Up to 20 prompts in parallel — one API call | [Batch →](/batch) |
+| `GET /api/v1/models` | Live model catalog with metadata | [Models →](/models) |
+| `POST /api/v1/estimate` | Pre-flight cost estimation — free, no credits deducted | [Estimate →](/estimate) |
+| `POST /api/v1/sessions` | Create persistent conversation sessions | [Sessions →](/sessions) |
+| `POST /api/v1/images` | Image generation with 13 models | [Images →](/image-generation) |
+| `POST /api/v1/video` | Video generation with 8 models | [Video →](/video-generation) |
+| `POST /api/v1/search` | Web search + AI answers | [Search →](/search) |
 
 ## Get started
 
 <Steps>
   <Step title="Get an API key">
-    Go to your [Developers dashboard](https://www.ninjachat.ai/developers/keys), add credits, and create a key.
+    Go to your [Developers dashboard](https://www.ninjachat.ai/developers/keys) and create a key. First **50 requests are free** — no credit card required.
   </Step>
   <Step title="Make a request">
     Copy the curl above, replace `nj_sk_YOUR_API_KEY`, and run it. [Full quickstart →](/quickstart)
   </Step>
-  <Step title="Pick your models">
-    Browse all [40+ models](/models) and find the right one for your use case.
+  <Step title="Explore power features">
+    Try [smart routing](/smart-routing) to auto-select models, [compare](/compare) to benchmark models, or [batch](/batch) to run 20 prompts at once.
   </Step>
 </Steps>
 
 <Tip>
-**Want to try before coding?** The [API Playground](https://www.ninjachat.ai/api-playground) lets you test all models in your browser — no code required.
+**Want to try before coding?** The [API Playground](https://www.ninjachat.ai/developers/playground) lets you test all models and features in your browser.
 </Tip>
 
-## How it works
+## What makes NinjaChat different
 
-Every endpoint follows the same pattern:
+Every other API gives you one model at a time, stateless, with no intelligence about which model to use. NinjaChat adds a layer on top:
 
 ```
-POST https://ninjachat.ai/api/v1/{endpoint}
-Authorization: Bearer nj_sk_YOUR_API_KEY
-Content-Type: application/json
-
-{"model": "model-id", ...params}
+┌──────────────────────────────────────────────────────────────┐
+│                    Your application                           │
+└─────────────────────────┬────────────────────────────────────┘
+                          │  one API key
+┌─────────────────────────▼────────────────────────────────────┐
+│                    NinjaChat API                              │
+│                                                              │
+│  Smart Routing   │  Model Compare  │  Batch Processing       │
+│  auto → best     │  rank N models  │  20 prompts at once     │
+│  model/task      │  simultaneously │                         │
+│                  │                                           │
+│  Fallback Chains │  Ensemble       │  Persistent Sessions    │
+│  a>b>c           │  3 models vote, │  7-day memory, auto     │
+│  resilient AI    │  1 synthesizes  │  context injection      │
+│                  │                                           │
+│  Budget Routing  │  Quality Scores │  Response Caching       │
+│  best model      │  0-1 confidence │  instant repeat         │
+│  within N cents  │  auto-retry     │  responses, free        │
+└──────────────────┴─────────────────┴─────────────────────────┘
+          │              │               │              │
+         GPT-5       Claude         Gemini         DeepSeek
+         o3-mini      Opus          Flash          Llama 4
+         ...          ...           ...            ...
 ```
 
-**Chat and images** return results immediately. **Video** is async — you submit a job and [poll for the result](/video-generation).
+## How billing works
 
-Every response includes a `cost` field so you always know exactly what you paid:
+Every response includes `cost` and `balance`:
 
 ```json
 {
-  "message": {"role": "assistant", "content": "..."},
-  "cost": {"this_request": "$0.006"}
+  "choices": [{"message": {"role": "assistant", "content": "..."}}],
+  "cost": {"this_request": "$0.006"},
+  "balance": "$4.820"
 }
 ```
+
+No subscriptions. No per-token pricing. Flat per-request rates. [Full pricing →](/pricing)
