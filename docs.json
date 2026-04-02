@@ -22,18 +22,28 @@
             ]
           },
           {
-            "group": "Chat",
+            "group": "Chat Completions",
             "pages": [
               "chat",
+              "streaming",
+              "sessions"
+            ]
+          },
+          {
+            "group": "Smart Features",
+            "pages": [
               "smart-routing",
+              "fallback-chains",
               "compare",
               "batch",
-              "sessions",
+              "ensemble",
+              "budget-routing",
+              "quality-scoring",
               "estimate"
             ]
           },
           {
-            "group": "Other Endpoints",
+            "group": "Images, Video & Search",
             "pages": [
               "image-generation",
               "video-generation",
@@ -46,8 +56,7 @@
               "models",
               "pricing",
               "error-handling",
-              "rate-limits",
-              "best-practices"
+              "rate-limits"
             ]
           }
         ]

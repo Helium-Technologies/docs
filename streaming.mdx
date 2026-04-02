@@ -1,0 +1,95 @@
+---
+title: "Streaming"
+description: "Stream responses token-by-token over server-sent events."
+---
+
+Set `stream: true` to receive tokens as they're generated over SSE instead of waiting for the full response.
+
+## Request
+
+```json
+{
+  "model": "gpt-5",
+  "messages": [{"role": "user", "content": "Write a haiku about coding"}],
+  "stream": true
+}
+```
+
+## Code examples
+
+<CodeGroup>
+
+```python Python
+import os, requests, json
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={
+        "model": "auto",
+        "messages": [{"role": "user", "content": "Write a haiku about coding"}],
+        "stream": True,
+        "include_routing": True,
+    },
+    stream=True
+)
+
+for line in r.iter_lines():
+    if not line:
+        continue
+    text = line.decode("utf-8")
+    if text.startswith("data: ") and text != "data: [DONE]":
+        chunk = json.loads(text[6:])
+        if "routing" in chunk:
+            print(f"Routed to: {chunk['routing']['resolved']}", flush=True)
+        token = chunk.get("choices", [{}])[0].get("delta", {}).get("content", "")
+        print(token, end="", flush=True)
+print()
+```
+
+```javascript Node.js
+const r = await fetch("https://ninjachat.ai/api/v1/chat", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "gpt-5",
+    messages: [{ role: "user", content: "Write a haiku about coding" }],
+    stream: true,
+  }),
+});
+
+const reader = r.body.getReader();
+const decoder = new TextDecoder();
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  for (const line of decoder.decode(value).split("\n")) {
+    if (line.startsWith("data: ") && line !== "data: [DONE]") {
+      const token = JSON.parse(line.slice(6)).choices?.[0]?.delta?.content || "";
+      process.stdout.write(token);
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+## SSE format
+
+Each event is a `data:` line containing a JSON chunk. The stream ends with `data: [DONE]`.
+
+```
+data: {"choices":[{"delta":{"content":"The"}}]}
+data: {"choices":[{"delta":{"content":" capital"}}]}
+data: [DONE]
+```
+
+When using smart routing (`model: "auto"`), the first chunk includes a `routing` object with the resolved model — before any content tokens arrive.
+
+## Notes
+
+- Streaming works with all models, smart routing variants, and sessions.
+- Response caching is automatically disabled for streaming requests.
+- Billing is the same as non-streaming — you're charged at the resolved model's rate.

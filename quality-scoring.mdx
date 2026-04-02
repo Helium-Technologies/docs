@@ -1,0 +1,65 @@
+---
+title: "Quality Scoring"
+description: "Get a confidence score with every response. Auto-retry if it's too low."
+---
+
+Add `include_quality: true` to get a heuristic confidence score (0–1) with every response. Combine with `min_quality` to automatically retry with a better model when the score is too low.
+
+## Get a quality score
+
+```json
+{
+  "model": "gpt-5",
+  "messages": [{"role": "user", "content": "Write a poem about the ocean"}],
+  "include_quality": true
+}
+```
+
+```json
+{
+  "choices": [{"message": {"role": "assistant", "content": "..."}}],
+  "quality": {
+    "confidence": 0.94,
+    "flags": [],
+    "suggested_retry": false
+  }
+}
+```
+
+## Auto-retry on low quality
+
+Set `min_quality` to a threshold. If the response scores below it, the system automatically retries with a higher-quality model.
+
+```json
+{
+  "model": "gpt-5-mini",
+  "messages": [{"role": "user", "content": "Explain the Riemann hypothesis"}],
+  "include_quality": true,
+  "min_quality": 0.8
+}
+```
+
+If the initial response scores below 0.8, the response includes:
+
+```json
+{
+  "quality": {"confidence": 0.91},
+  "auto_retry": {
+    "triggered": true,
+    "original_model": "gpt-5-mini",
+    "retry_model": "gpt-5",
+    "original_quality": 0.52
+  }
+}
+```
+
+## Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `include_quality` | boolean | `false` | Include a quality score in the response. |
+| `min_quality` | number | — | If the score falls below this threshold (0–1), retry with a better model. |
+
+## Billing
+
+You're charged for each attempt. If auto-retry triggers, you pay for both the original and the retry.

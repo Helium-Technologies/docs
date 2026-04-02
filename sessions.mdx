@@ -1,12 +1,7 @@
 ---
 title: "Sessions"
-sidebarTitle: "Sessions"
-description: "Persistent conversation memory across API calls. Sessions store chat history for 7 days with automatic context injection."
+description: "Server-side conversation memory that persists for 7 days."
 ---
-
-<Tip>
-**How it works:** Create a session ID, then pass `session_id` on every chat request. NinjaChat automatically prepends the conversation history — no need to manage message arrays yourself.
-</Tip>
 
 ## Overview
 
@@ -256,21 +251,6 @@ print("Saved to conversation.md")
 ```
 
 </CodeGroup>
-
-## Sessions + other features
-
-Sessions work with all `/chat` parameters:
-
-```json
-{
-  "model": "auto",
-  "messages": [{"role": "user", "content": "Continue our analysis..."}],
-  "session_id": "research-session-1",
-  "include_routing": true,
-  "min_quality": 0.85,
-  "cache": false
-}
-```
 
 <Note>
 Cache is automatically disabled when `session_id` is present — since history changes every request, cached responses would be incorrect.

@@ -1,7 +1,6 @@
 ---
-title: "Pricing & Credits"
-sidebarTitle: "Pricing & Credits"
-description: "Per-request pricing. No token counting. Every response tells you what it cost."
+title: "Pricing"
+description: "Per-request pricing with no token counting. Every response includes its cost."
 ---
 
 ## TL;DR pricing
@@ -186,14 +185,15 @@ curl "https://ninjachat.ai/api/api-keys/logs?format=csv&from=2026-03-01" \
   -o usage.csv
 ```
 
-## Rate limits
+## Free tier
 
-| Endpoint | Limit |
-|---|---|
-| Chat | 60 req/min |
-| Search | 60 req/min |
-| Images | 30 req/min |
-| Video submit | 2 req/min |
-| Video polling | Unlimited |
+Users with $0 balance get **50 free requests/month** (resets on the 1st). Free requests include `free_tier` in the response:
 
-See [Rate Limits](/rate-limits) for details and retry code.
+```json
+"free_tier": {
+  "used": 3,
+  "remaining": 47
+}
+```
+
+For rate limits per endpoint, see [Rate Limits](/rate-limits).

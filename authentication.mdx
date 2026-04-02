@@ -1,6 +1,6 @@
 ---
 title: "Authentication"
-description: "Add one header to every request. That's it."
+description: "Set up your API key and add it to every request."
 ---
 
 Add this header to every request:
@@ -8,8 +8,6 @@ Add this header to every request:
 ```
 Authorization: Bearer nj_sk_YOUR_API_KEY
 ```
-
-No OAuth. No tokens to refresh. No SDK required.
 
 ## Get a key
 
@@ -89,4 +87,14 @@ NINJACHAT_API_KEY=nj_sk_YOUR_API_KEY
 
 ## CORS
 
-All `/api/v1/*` endpoints allow cross-origin requests. But **don't put your API key in frontend code** — proxy through your backend instead.
+All `/api/v1/*` endpoints allow cross-origin requests. But **don't put your API key in frontend code** — proxy through your backend instead:
+
+```python
+# Your backend handles the API key
+@app.post("/api/chat")
+def proxy(req):
+    return requests.post("https://ninjachat.ai/api/v1/chat",
+        headers=HEADERS,  # Server-side only
+        json={"model": "gpt-5", "messages": req.json["messages"]}
+    ).json()
+```

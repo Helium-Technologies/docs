@@ -1,0 +1,43 @@
+---
+title: "Ensemble"
+description: "Three models answer, a fourth synthesizes. Consensus-driven responses."
+---
+
+Ensemble runs your prompt through 3 models in parallel, then uses a 4th call to synthesize the best answer. Use it when accuracy matters more than speed or cost.
+
+## Request
+
+```json
+{
+  "model": "ensemble",
+  "messages": [{"role": "user", "content": "Is microservices worth it for a 3-person startup?"}]
+}
+```
+
+## Response
+
+```json
+{
+  "choices": [{"message": {"role": "assistant", "content": "For a 3-person startup..."}}],
+  "ensemble": {
+    "models": ["gpt-5", "claude-sonnet-4.6", "gemini-3.1-pro"],
+    "synthesis": "consensus"
+  },
+  "cost": {"this_request": "$0.040"}
+}
+```
+
+## Variants
+
+| Model ID | Models used | Cost |
+|---|---|---|
+| `ensemble` | GPT-5 + Claude Sonnet 4.6 + Gemini 3.1 Pro | $0.04/req |
+| `ensemble-quality` | GPT-5 + Claude Opus 4.6 + Gemini 3.1 Pro | $0.05/req |
+
+## When to use
+
+- High-stakes decisions where hallucinations are costly
+- Getting consensus across model families
+- Verifying that an answer isn't model-specific bias
+
+Ensemble accepts all standard [chat parameters](/chat) — temperature, max_tokens, sessions, etc.

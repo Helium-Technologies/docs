@@ -1,6 +1,6 @@
 ---
-title: "NinjaChat API — 30+ AI Models, One API Key"
-description: "One API key. 30+ AI models. Smart routing, model comparison, batch processing, persistent sessions, and more."
+title: "NinjaChat API"
+description: "One API key for GPT-5, Claude, Gemini, and 30+ more models."
 ---
 
 ```bash
@@ -10,33 +10,31 @@ curl -X POST https://ninjachat.ai/api/v1/chat \
   -d '{"model": "auto", "messages": [{"role": "user", "content": "Hello!"}]}'
 ```
 
-One API key. GPT-5, Claude, Gemini, and more models. Set `model` to `auto` and NinjaChat picks the best model for each task — or use `model: "gpt-5"` to pick explicitly.
+One API key. GPT-5, Claude, Gemini, and more. Set `model` to `auto` and NinjaChat picks the best model for each request — or choose one explicitly with `model: "gpt-5"`.
 
-## Core endpoints
+<CardGroup cols={3}>
+  <Card title="30+ models, one key" icon="key" href="/models">
+    Access GPT-5, Claude, Gemini, DeepSeek, Llama, and more. Switch models by changing a string.
+  </Card>
+  <Card title="Smart routing" icon="route" href="/smart-routing">
+    Set `model: "auto"` and NinjaChat picks the best model based on your prompt.
+  </Card>
+  <Card title="Simple pricing" icon="receipt" href="/pricing">
+    Flat per-request rates. No token math. Every response tells you what it cost.
+  </Card>
+</CardGroup>
 
-| Endpoint | What it does | Guide |
-|---|---|---|
-| `POST /api/v1/chat` | Text generation with smart routing, fallback chains, sessions | [Chat →](/chat) |
-| `POST /api/v1/compare` | Run one prompt against N models, ranked by quality/speed/cost | [Compare →](/compare) |
-| `POST /api/v1/batch` | Up to 20 prompts in parallel — one API call | [Batch →](/batch) |
-| `GET /api/v1/models` | Live model catalog with metadata | [Models →](/models) |
-| `POST /api/v1/estimate` | Pre-flight cost estimation — free, no credits deducted | [Estimate →](/estimate) |
-| `POST /api/v1/sessions` | Create persistent conversation sessions | [Sessions →](/sessions) |
-| `POST /api/v1/images` | Image generation with 13 models | [Images →](/image-generation) |
-| `POST /api/v1/video` | Video generation with 8 models | [Video →](/video-generation) |
-| `POST /api/v1/search` | Web search + AI answers | [Search →](/search) |
-
-## Get started in minutes
+## Get started
 
 <Steps>
   <Step title="Get an API key">
     Go to your [Developers dashboard](https://www.ninjachat.ai/developers/keys) and create a key. First **50 requests are free** — no credit card required.
   </Step>
   <Step title="Make your first request">
-    Copy the curl above, replace `nj_sk_YOUR_API_KEY`, and run it in your terminal. [Full quickstart →](/quickstart)
+    Copy the curl above, replace `nj_sk_YOUR_API_KEY`, and run it. [Full quickstart](/quickstart)
   </Step>
-  <Step title="Explore power features">
-    Try [smart routing](/smart-routing) to auto-select models, [compare](/compare) to benchmark models, or [batch](/batch) to run multiple prompts in one call.
+  <Step title="Explore features">
+    Try [smart routing](/smart-routing) to auto-select models, [compare](/compare) to benchmark them, or [batch](/batch) to run many prompts at once.
   </Step>
 </Steps>
 
@@ -44,39 +42,7 @@ One API key. GPT-5, Claude, Gemini, and more models. Set `model` to `auto` and N
 **Want to try before coding?** The [API Playground](https://www.ninjachat.ai/developers/playground) lets you test all models and features in your browser.
 </Tip>
 
-## What makes NinjaChat different
-
-Every other API gives you one model at a time, stateless, with no intelligence about which model to use. NinjaChat adds a layer on top:
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│                    Your application                           │
-└─────────────────────────┬────────────────────────────────────┘
-                          │  one API key
-┌─────────────────────────▼────────────────────────────────────┐
-│                    NinjaChat API                              │
-│                                                              │
-│  Smart Routing   │  Model Compare  │  Batch Processing       │
-│  auto → best     │  rank N models  │  20 prompts at once     │
-│  model/task      │  simultaneously │                         │
-│                  │                                           │
-│  Fallback Chains │  Ensemble       │  Persistent Sessions    │
-│  a>b>c           │  3 models vote, │  7-day memory, auto     │
-│  resilient AI    │  1 synthesizes  │  context injection      │
-│                  │                                           │
-│  Budget Routing  │  Quality Scores │  Response Caching       │
-│  best model      │  0-1 confidence │  instant repeat         │
-│  within N cents  │  auto-retry     │  responses, free        │
-└──────────────────┴─────────────────┴─────────────────────────┘
-          │              │               │              │
-         GPT-5       Claude         Gemini         DeepSeek
-         o3-mini      Opus          Flash          Llama 4
-         ...          ...           ...            ...
-```
-
-## How billing works
-
-Every response includes `cost` and `balance`:
+## Every response includes cost
 
 ```json
 {
@@ -86,4 +52,4 @@ Every response includes `cost` and `balance`:
 }
 ```
 
-No subscriptions. No per-token pricing. Flat per-request rates. [Full pricing →](/pricing)
+No subscriptions. No per-token pricing. Flat per-request rates. [Full pricing](/pricing)

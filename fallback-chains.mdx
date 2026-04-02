@@ -1,0 +1,78 @@
+---
+title: "Fallback Chains"
+description: "Try models in sequence — if one fails or scores low, the next one runs."
+---
+
+Set `model` to a `>` separated list of model IDs. If the first model fails or scores below your quality threshold, the next one runs automatically.
+
+## Request
+
+```json
+{
+  "model": "claude-opus-4.6>gpt-5>gemini-3.1-pro",
+  "messages": [{"role": "user", "content": "Review this contract clause..."}],
+  "min_quality": 0.85
+}
+```
+
+## Response
+
+```json
+{
+  "model": "gpt-5",
+  "fallback": {
+    "chain": ["claude-opus-4.6", "gpt-5", "gemini-3.1-pro"],
+    "triggered": true,
+    "attempts": [
+      {"model": "claude-opus-4.6", "success": false, "error": "timeout"},
+      {"model": "gpt-5", "success": true, "quality_score": 0.94}
+    ]
+  },
+  "cost": {"this_request": "$0.006"}
+}
+```
+
+## Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `model` | string | — | Up to 4 models separated by `>`. Example: `"a>b>c"` |
+| `min_quality` | number | — | If the response scores below this (0–1), fall back to the next model. |
+| `fallback_on_error` | boolean | `true` | Continue to the next model on error. Set to `false` to fail immediately. |
+
+## Billing
+
+You're charged for each model that runs successfully. If the first model times out and the second succeeds, you pay only for the second.
+
+## Code examples
+
+<CodeGroup>
+
+```python Python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={
+        "model": "claude-opus-4.6>gpt-5>gemini-3.1-pro",
+        "messages": [{"role": "user", "content": "Analyze this legal document..."}],
+        "min_quality": 0.85,
+    }
+)
+data = r.json()
+print(f"Resolved to: {data['model']}")
+print(f"Fallback triggered: {data['fallback']['triggered']}")
+```
+
+```bash cURL
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-opus-4.6>gpt-5>gemini-3.1-pro",
+    "messages": [{"role": "user", "content": "Summarize this research paper..."}],
+    "min_quality": 0.8
+  }'
+```
+
+</CodeGroup>

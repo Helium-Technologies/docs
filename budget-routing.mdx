@@ -1,0 +1,73 @@
+---
+title: "Budget Routing"
+description: "Set a cost ceiling per request and get the best model within it."
+---
+
+Pass `budget_cents` to automatically select the highest-quality model that fits within your cost limit. This overrides the `model` parameter.
+
+## Request
+
+```json
+{
+  "budget_cents": 0.5,
+  "messages": [{"role": "user", "content": "Translate to Spanish: Hello world"}],
+  "include_routing": true
+}
+```
+
+## Response
+
+```json
+{
+  "model": "deepseek-v3",
+  "routing": {
+    "budget_routing": {
+      "requested_budget_cents": 0.5,
+      "resolved": "deepseek-v3",
+      "reason": "Best model within 0.5¢: DeepSeek V3 (0.3¢/req)"
+    }
+  },
+  "cost": {"this_request": "$0.003"}
+}
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `budget_cents` | number | Maximum cost in cents for this request. Overrides `model`. |
+| `include_routing` | boolean | Include the routing decision in the response. |
+
+## Code examples
+
+<CodeGroup>
+
+```python Python
+import requests, os
+
+r = requests.post("https://ninjachat.ai/api/v1/chat",
+    headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
+    json={
+        "budget_cents": 1.0,
+        "messages": [{"role": "user", "content": "Explain gradient descent"}],
+        "include_routing": True,
+    }
+)
+data = r.json()
+print(f"Model: {data['model']}, Cost: {data['cost']['this_request']}")
+```
+
+```bash cURL
+curl -X POST https://ninjachat.ai/api/v1/chat \
+  -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "budget_cents": 0.5,
+    "messages": [{"role": "user", "content": "What is 2+2?"}],
+    "include_routing": true
+  }'
+```
+
+</CodeGroup>
+
+Budget routing works alongside [smart routing](/smart-routing) — if you pass both `model: "auto"` and `budget_cents`, the budget ceiling takes priority.
