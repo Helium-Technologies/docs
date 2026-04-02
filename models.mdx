@@ -1,28 +1,11 @@
 ---
 title: "Models"
-description: "Every available model with recommendations for common use cases."
+description: "Quick guide to picking the right model for your use case."
 ---
 
 <Tip>
-**Not sure which model to pick?** Use `model: "auto"` — NinjaChat routes each request to the best model for your prompt. [Smart routing guide](/smart-routing)
+**Not sure which model to pick?** Set `model: "auto"` and NinjaChat picks the best one for your prompt. [Learn more about smart routing](/smart-routing)
 </Tip>
-
-## Smart routing variants
-
-Virtual models that route to real models at runtime:
-
-| ID | Optimizes for | Billed at |
-|---|---|---|
-| `auto` | Best model per task type (balanced) | Resolved model's rate |
-| `auto-fast` | Lowest latency | Resolved model's rate |
-| `auto-cheap` | Lowest cost | Resolved model's rate |
-| `auto-quality` | Highest quality | Resolved model's rate |
-| `ensemble` | 3-model consensus | $0.040/req flat |
-| `ensemble-quality` | 3-model consensus (premium) | $0.050/req flat |
-
-You can also use [fallback chains](/fallback-chains): `"claude-opus-4.6>gpt-5>gemini-3.1-pro"` — tries each model in order if the previous fails.
-
----
 
 ## Pick a model
 
@@ -36,34 +19,16 @@ You can also use [fallback chains](/fallback-chains): `"claude-opus-4.6>gpt-5>ge
 | Classify or extract text (budget) | [DeepSeek V3](/api-reference/models/chat/deepseek-v3) | $0.003 | `deepseek-v3` |
 | Fast real-time chat | [Gemini 3 Flash](/api-reference/models/chat/gemini-3-flash) | $0.003 | `gemini-3-flash` |
 | Analyze long documents | [Gemini 2.5 Pro](/api-reference/models/chat/gemini-2-5-pro) | $0.006 | `gemini-2.5-pro` |
-| Consensus-driven answer | [Ensemble Quality](/ensemble) | $0.050 | `ensemble-quality` |
 | Generate images | [Nano Banana 2](/api-reference/models/image/nano-banana-2) | $0.05/img | `nano-banana-2` |
-| Generate images (budget) | [FLUX.2 Klein](/api-reference/models/image/flux-2-klein) | $0.03/img | `flux-2-klein` |
-| Best image quality | [FLUX Kontext Max](/api-reference/models/image/flux-kontext-max) | $0.10/img | `flux-kontext-max` |
 | Generate video | [Veo 3.1 Fast](/api-reference/models/video/veo-3-1-fast) | $3.00/video | `veo-3.1-fast` |
-| Best video quality | [Veo 3.1](/api-reference/models/video/veo-3-1) | $5.00/video | `veo-3.1` |
 | Search the web | [Web Search](/search) | $0.05/query | — |
 
-For full pricing by model, see [Pricing](/pricing).
+Browse all models with full specs, context windows, and pricing in the [Models tab](/models-overview).
 
----
-
-## Live model catalog via API
-
-Get the full model list programmatically:
+## Fetch models via API
 
 ```bash
-# All models
 GET https://ninjachat.ai/api/v1/models
-
-# Filter by tier
-GET https://ninjachat.ai/api/v1/models?tier=standard
-
-# Filter by capability
-GET https://ninjachat.ai/api/v1/models?capability=code
-
-# Exclude virtual models (auto/ensemble)
-GET https://ninjachat.ai/api/v1/models?virtual=false
 ```
 
-The response includes metadata per model: `capabilities`, `context_window`, `max_output_tokens`, `speed`, and `recommended_for`.
+Returns metadata per model: `capabilities`, `context_window`, `max_output_tokens`, `speed`, and `recommended_for`. Supports filtering by `tier`, `capability`, and `virtual`.

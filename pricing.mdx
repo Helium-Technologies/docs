@@ -185,15 +185,4 @@ curl "https://ninjachat.ai/api/api-keys/logs?format=csv&from=2026-03-01" \
   -o usage.csv
 ```
 
-## Free tier
-
-Users with $0 balance get **50 free requests/month** (resets on the 1st). Free requests include `free_tier` in the response:
-
-```json
-"free_tier": {
-  "used": 3,
-  "remaining": 47
-}
-```
-
 For rate limits per endpoint, see [Rate Limits](/rate-limits).
