@@ -6,7 +6,7 @@ description: "Set model to auto and NinjaChat picks the best model for each prom
 ## Request
 
 ```bash
-curl -X POST https://ninjachat.ai/api/v1/chat \
+curl -X POST https://www.ninjachat.ai/api/v1/chat \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -125,7 +125,7 @@ Auto variants are billed at the **resolved model's rate**. If `auto` routes to `
 ```python Python
 import requests, os
 
-r = requests.post("https://ninjachat.ai/api/v1/chat",
+r = requests.post("https://www.ninjachat.ai/api/v1/chat",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     json={
         "model": "auto",
@@ -134,13 +134,13 @@ r = requests.post("https://ninjachat.ai/api/v1/chat",
     }
 )
 data = r.json()
-print(data["choices"][0]["message"]["content"])
+print(data["choices"][0]["choices"][0]["message"]["content"])
 print("Routed to:", data["routing"]["resolved"])  # claude-sonnet-4.6
 print("Task type:", data["routing"]["task_type"]) # code
 ```
 
 ```javascript Node.js
-const r = await fetch("https://ninjachat.ai/api/v1/chat", {
+const r = await fetch("https://www.ninjachat.ai/api/v1/chat", {
   method: "POST",
   headers: {
     "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
@@ -157,7 +157,7 @@ console.log("Routed to:", data.routing.resolved);  // o3-mini
 ```
 
 ```bash cURL — auto-cheap
-curl -X POST https://ninjachat.ai/api/v1/chat \
+curl -X POST https://www.ninjachat.ai/api/v1/chat \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

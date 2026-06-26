@@ -16,7 +16,7 @@ description: "veo-3.1 — Google's highest quality video generation. $5.00/video
 ## Example
 
 ```bash
-curl -X POST https://ninjachat.ai/api/v1/video \
+curl -X POST https://www.ninjachat.ai/api/v1/video \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model": "veo-3.1", "prompt": "A single drop of ink falls into crystal clear water, blooming into a dragon shape, macro photography", "duration": 6}'
@@ -25,7 +25,7 @@ curl -X POST https://ninjachat.ai/api/v1/video \
 ```python
 import requests, os
 
-r = requests.post("https://ninjachat.ai/api/v1/video",
+r = requests.post("https://www.ninjachat.ai/api/v1/video",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     json={"model": "veo-3.1", "prompt": "A single drop of ink falls into crystal clear water, blooming into a dragon shape, macro photography", "duration": 6}
 )

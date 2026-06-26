@@ -1,0 +1,75 @@
+---
+title: "OpenAI Compatibility"
+description: "Use the official OpenAI SDKs with NinjaChat — just change the base URL and API key."
+---
+
+NinjaChat exposes an OpenAI-compatible `/chat/completions` endpoint. Point any
+OpenAI SDK at NinjaChat by setting two things:
+
+- **Base URL:** `https://www.ninjachat.ai/api/v1`
+- **API key:** your `nj_sk_...` key
+
+Everything else — request shape, streaming, tool calls, and error format — matches the OpenAI API.
+
+<CodeGroup>
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://www.ninjachat.ai/api/v1",
+    api_key="nj_sk_YOUR_API_KEY",
+)
+
+resp = client.chat.completions.create(
+    model="gpt-5",
+    messages=[{"role": "user", "content": "Hello!"}],
+)
+print(resp.choices[0].message.content)
+```
+
+```javascript Node.js
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://www.ninjachat.ai/api/v1",
+  apiKey: "nj_sk_YOUR_API_KEY",
+});
+
+const resp = await client.chat.completions.create({
+  model: "gpt-5",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+console.log(resp.choices[0].message.content);
+```
+
+</CodeGroup>
+
+## What works
+
+- **Any model** — pass any [model ID](/models), or `auto` to let NinjaChat pick.
+- **Streaming** — set `stream: true` for token-by-token server-sent events.
+- **Tool calling** — standard `tools` / `tool_choice` with `function.parameters`.
+- **Sampling** — `temperature`, `top_p`, `max_tokens` (or `max_completion_tokens`), `stop`, `seed`, `frequency_penalty`, `presence_penalty`.
+
+```python
+# Streaming
+for chunk in client.chat.completions.create(
+    model="auto",
+    messages=[{"role": "user", "content": "Write a haiku about the sea."}],
+    stream=True,
+):
+    print(chunk.choices[0].delta.content or "", end="")
+```
+
+<Note>
+  Both `/api/v1/chat/completions` (OpenAI-style) and `/api/v1/chat` (native)
+  accept the same request and return the same response. Use whichever your tooling expects.
+</Note>
+
+## NinjaChat extras
+
+The native [`/chat`](/chat) endpoint adds optional features OpenAI doesn't have —
+[smart routing](/smart-routing), [fallback chains](/fallback-chains),
+[budget routing](/budget-routing), [sessions](/sessions), and per-response `cost`
+and `balance`. They're ignored by the OpenAI SDK, so you can adopt them gradually.

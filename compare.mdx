@@ -6,7 +6,7 @@ description: "Run one prompt against multiple models and get ranked results."
 ## Request
 
 ```bash
-POST https://ninjachat.ai/api/v1/compare
+POST https://www.ninjachat.ai/api/v1/compare
 Authorization: Bearer nj_sk_YOUR_API_KEY
 Content-Type: application/json
 ```
@@ -130,7 +130,7 @@ Pre-flight balance check: if your balance is less than the estimated total cost,
 ```python Python
 import requests, os
 
-r = requests.post("https://ninjachat.ai/api/v1/compare",
+r = requests.post("https://www.ninjachat.ai/api/v1/compare",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     json={
         "messages": [{"role": "user", "content": "Write a haiku about machine learning"}],
@@ -146,7 +146,7 @@ for result in data["results"]:
 ```
 
 ```javascript Node.js
-const r = await fetch("https://ninjachat.ai/api/v1/compare", {
+const r = await fetch("https://www.ninjachat.ai/api/v1/compare", {
   method: "POST",
   headers: {
     "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
@@ -167,7 +167,7 @@ data.results.forEach(r =>
 ```
 
 ```bash cURL — rank by speed
-curl -X POST https://ninjachat.ai/api/v1/compare \
+curl -X POST https://www.ninjachat.ai/api/v1/compare \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

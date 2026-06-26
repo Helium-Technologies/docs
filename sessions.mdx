@@ -17,7 +17,7 @@ Without sessions, you manage conversation history manually by sending all prior 
 ## Create a session
 
 ```bash
-POST https://ninjachat.ai/api/v1/sessions
+POST https://www.ninjachat.ai/api/v1/sessions
 Authorization: Bearer nj_sk_YOUR_API_KEY
 Content-Type: application/json
 ```
@@ -61,7 +61,7 @@ Good session IDs: `user-123`, `conv_abc`, `proj-2026-march`, `thread_def456`
 Add `session_id` to any `/chat` request. Previous messages are automatically injected before your new messages.
 
 ```bash
-curl -X POST https://ninjachat.ai/api/v1/chat \
+curl -X POST https://www.ninjachat.ai/api/v1/chat \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -74,7 +74,7 @@ curl -X POST https://ninjachat.ai/api/v1/chat \
 Second request (history is automatically included):
 
 ```bash
-curl -X POST https://ninjachat.ai/api/v1/chat \
+curl -X POST https://www.ninjachat.ai/api/v1/chat \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -103,7 +103,7 @@ The model will respond: *"You told me your name is Alice and you work in fintech
 ## Retrieve a session
 
 ```bash
-GET https://ninjachat.ai/api/v1/sessions/user-alice-session-1
+GET https://www.ninjachat.ai/api/v1/sessions/user-alice-session-1
 Authorization: Bearer nj_sk_YOUR_API_KEY
 ```
 
@@ -128,11 +128,11 @@ Export as JSON or Markdown — useful for saving conversations, support tickets,
 
 ```bash
 # JSON export
-GET https://ninjachat.ai/api/v1/sessions/user-alice-session-1/export?format=json
+GET https://www.ninjachat.ai/api/v1/sessions/user-alice-session-1/export?format=json
 Authorization: Bearer nj_sk_YOUR_API_KEY
 
 # Markdown export
-GET https://ninjachat.ai/api/v1/sessions/user-alice-session-1/export?format=markdown
+GET https://www.ninjachat.ai/api/v1/sessions/user-alice-session-1/export?format=markdown
 Authorization: Bearer nj_sk_YOUR_API_KEY
 ```
 
@@ -141,7 +141,7 @@ The Markdown export returns a formatted document with headers and message blocks
 ## Delete a session
 
 ```bash
-DELETE https://ninjachat.ai/api/v1/sessions/user-alice-session-1
+DELETE https://www.ninjachat.ai/api/v1/sessions/user-alice-session-1
 Authorization: Bearer nj_sk_YOUR_API_KEY
 ```
 
@@ -168,7 +168,7 @@ import requests, os
 import uuid
 
 API_KEY = os.environ["NINJACHAT_API_KEY"]
-BASE = "https://ninjachat.ai/api/v1"
+BASE = "https://www.ninjachat.ai/api/v1"
 HEADERS = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
 
 def create_session(user_id: str) -> str:
@@ -184,7 +184,7 @@ def chat(session_id: str, message: str) -> str:
         "messages": [{"role": "user", "content": message}],
         "session_id": session_id,
     })
-    return r.json()["choices"][0]["message"]["content"]
+    return r.json()["choices"][0]["choices"][0]["message"]["content"]
 
 # Usage
 session = create_session("alice-123")
@@ -196,7 +196,7 @@ print(chat(session, "What's the refund policy?"))
 
 ```javascript Node.js — multi-turn chat app
 const API_KEY = process.env.NINJACHAT_API_KEY;
-const BASE = "https://ninjachat.ai/api/v1";
+const BASE = "https://www.ninjachat.ai/api/v1";
 const headers = { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" };
 
 async function createSession(sessionId) {
@@ -240,7 +240,7 @@ API_KEY = os.environ["NINJACHAT_API_KEY"]
 
 # Export as Markdown
 r = requests.get(
-    "https://ninjachat.ai/api/v1/sessions/my-session-id/export",
+    "https://www.ninjachat.ai/api/v1/sessions/my-session-id/export",
     headers={"Authorization": f"Bearer {API_KEY}"},
     params={"format": "markdown"}
 )

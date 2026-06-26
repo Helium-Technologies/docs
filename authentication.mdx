@@ -20,7 +20,7 @@ Keys start with `nj_sk_` and are shown **once**. Copy it immediately.
 <CodeGroup>
 
 ```bash cURL
-curl -X POST https://ninjachat.ai/api/v1/chat \
+curl -X POST https://www.ninjachat.ai/api/v1/chat \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model": "gpt-5", "messages": [{"role": "user", "content": "Hello"}]}'
@@ -29,14 +29,14 @@ curl -X POST https://ninjachat.ai/api/v1/chat \
 ```python Python
 import os, requests
 
-r = requests.post("https://ninjachat.ai/api/v1/chat",
+r = requests.post("https://www.ninjachat.ai/api/v1/chat",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     json={"model": "gpt-5", "messages": [{"role": "user", "content": "Hello"}]}
 )
 ```
 
 ```javascript Node.js
-const r = await fetch("https://ninjachat.ai/api/v1/chat", {
+const r = await fetch("https://www.ninjachat.ai/api/v1/chat", {
   method: "POST",
   headers: {
     "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
@@ -93,7 +93,7 @@ All `/api/v1/*` endpoints allow cross-origin requests. But **don't put your API 
 # Your backend handles the API key
 @app.post("/api/chat")
 def proxy(req):
-    return requests.post("https://ninjachat.ai/api/v1/chat",
+    return requests.post("https://www.ninjachat.ai/api/v1/chat",
         headers=HEADERS,  # Server-side only
         json={"model": "gpt-5", "messages": req.json["messages"]}
     ).json()

@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://ninjachat.ai"
+      "url": "https://www.ninjachat.ai"
     }
   ],
   "security": [
@@ -53,26 +53,20 @@
       },
       "ErrorResponse": {
         "type": "object",
+        "description": "OpenAI-compatible error. The top-level `message`, `code`, and `request_id` mirror fields inside `error` for convenience.",
         "properties": {
           "error": {
-            "type": "string",
-            "description": "Machine-readable error code."
+            "type": "object",
+            "properties": {
+              "message": { "type": "string", "description": "Human-readable error description." },
+              "type": { "type": "string", "description": "Error category: invalid_request_error, authentication_error, rate_limit_error, insufficient_quota, or api_error." },
+              "code": { "type": "string", "description": "Machine-readable error code." },
+              "param": { "type": "string", "nullable": true, "description": "The request parameter that caused the error, if any." }
+            }
           },
-          "message": {
-            "type": "string",
-            "description": "Human-readable error description."
-          },
-          "details": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "field": { "type": "string" },
-                "message": { "type": "string" }
-              }
-            },
-            "description": "Field-level validation errors (only for validation_error)."
-          }
+          "message": { "type": "string", "description": "Same as error.message." },
+          "code": { "type": "string", "description": "Same as error.code." },
+          "request_id": { "type": "string", "description": "Unique request ID, useful when contacting support." }
         }
       }
     }
@@ -82,7 +76,7 @@
       "post": {
         "operationId": "createChatCompletion",
         "summary": "Chat Completions",
-        "description": "Generate AI text completions using 24 LLM models. Supports both standard and streaming responses. Cost varies by model tier — see the `model` parameter for pricing details.",
+        "description": "Generate AI text completions using 26 LLM models. Supports both standard and streaming responses. Cost varies by model tier — see the `model` parameter for pricing details. Also available at the OpenAI-compatible path `/api/v1/chat/completions`.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -96,6 +90,8 @@
                     "type": "string",
                     "default": "ninja-1",
                     "enum": [
+                      "gpt-5.4",
+                      "gpt-5.4-pro",
                       "gpt-5",
                       "gpt-5-mini",
                       "o3-mini",
@@ -121,7 +117,7 @@
                       "ninja-1",
                       "uncensored-ai"
                     ],
-                    "description": "Model to use. **Ultra ($0.03/req):** `claude-opus-4.6`. **Premium ($0.015/req):** `claude-sonnet-4.6`. **Standard ($0.006/req):** `gpt-5`, `o3-mini`, `claude-sonnet-4.5`, `claude-haiku-4.5`, `gemini-2.5-pro`, `gemini-3-pro`, `gemini-3.1-pro`, `grok-4`, `kimi-k2`, `mistral-large`, `llama-4-maverick`, `kimi-k2.5`. **Budget ($0.003/req):** `gpt-5-mini`, `gemini-2.5-flash`, `gemini-3-flash`, `llama-4-scout`, `deepseek-v3`, `qwq-32b`, `glm-5`, `minimax-m2.5`, `ninja-1`, `uncensored-ai`."
+                    "description": "Model to use. **Ultra ($0.03/req):** `gpt-5.4-pro`, `claude-opus-4.6`. **Premium ($0.015/req):** `gpt-5.4`, `claude-sonnet-4.6`. **Standard ($0.006/req):** `gpt-5`, `o3-mini`, `claude-sonnet-4.5`, `claude-haiku-4.5`, `gemini-2.5-pro`, `gemini-3-pro`, `gemini-3.1-pro`, `grok-4`, `kimi-k2`, `mistral-large`, `llama-4-maverick`, `kimi-k2.5`. **Budget ($0.003/req):** `gpt-5-mini`, `gemini-2.5-flash`, `gemini-3-flash`, `llama-4-scout`, `deepseek-v3`, `qwq-32b`, `glm-5`, `minimax-m2.5`, `ninja-1`, `uncensored-ai`. Or set `auto` to let NinjaChat pick."
                   },
                   "messages": {
                     "type": "array",
@@ -657,7 +653,7 @@
       "post": {
         "operationId": "generateVideo",
         "summary": "Video Generation",
-        "description": "Start a video generation job. Supports 8 models. **$5.00/video:** `runway-gen4.5` (Runway flagship), `veo-3.1` (Google best quality). **$3.00/video:** `seedance-2` (default, uncensored, 5–15s), `kling-video` (motion quality, 5–10s), `google-veo-2` (fast cinematic, 5/6/8s), `veo-3.1-fast` (speed-optimized, 4/6/8s), `google-veo-3-fast` (budget Veo, 4/6/8s), `runway-gen4-turbo` (fast image-to-video, requires image_url). Poll the status endpoint with the returned `request_id` to retrieve the result.",
+        "description": "Start a video generation job. Supports 6 models. **$5.00/video:** `veo-3.1` (Google best quality). **$3.00/video:** `seedance-2` (default, uncensored, 5–15s), `kling-video` (motion quality, 5–10s), `google-veo-2` (fast cinematic, 5/6/8s), `veo-3.1-fast` (speed-optimized, 4/6/8s), `google-veo-3-fast` (budget Veo, 4/6/8s). Poll the status endpoint with the returned `request_id` to retrieve the result.",
         "tags": ["Endpoints"],
         "requestBody": {
           "required": true,
@@ -675,9 +671,9 @@
                   },
                   "model": {
                     "type": "string",
-                    "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast", "google-veo-3-fast", "runway-gen4.5", "runway-gen4-turbo"],
+                    "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast", "google-veo-3-fast"],
                     "default": "seedance-2",
-                    "description": "Video model to use. **$5.00/video:** `runway-gen4.5` (Runway flagship), `veo-3.1` (Google best quality). **$3.00/video:** `seedance-2` (longest clips, 5–15s), `kling-video` (motion quality, 5–10s), `google-veo-2` (fastest, ~40s), `veo-3.1-fast` (speed-optimized, 4/6/8s), `google-veo-3-fast` (budget Veo, 4/6/8s), `runway-gen4-turbo` (fast image-to-video, requires image_url)."
+                    "description": "Video model to use. **$5.00/video:** `veo-3.1` (Google best quality). **$3.00/video:** `seedance-2` (longest clips, 5–15s), `kling-video` (motion quality, 5–10s), `google-veo-2` (fastest, ~40s), `veo-3.1-fast` (speed-optimized, 4/6/8s), `google-veo-3-fast` (budget Veo, 4/6/8s)."
                   },
                   "duration": {
                     "type": "integer",
@@ -752,23 +748,6 @@
                     "duration": 4,
                     "aspect_ratio": "16:9"
                   }
-                },
-                "runway-gen4-5": {
-                  "summary": "Runway Gen-4.5 (flagship)",
-                  "value": {
-                    "prompt": "A cinematic drone shot soaring over a vast turquoise ocean at golden hour, film grain",
-                    "model": "runway-gen4.5",
-                    "duration": 10
-                  }
-                },
-                "runway-gen4-turbo": {
-                  "summary": "Runway Gen-4 Turbo (image-to-video)",
-                  "value": {
-                    "prompt": "Camera slowly pulls back to reveal the full landscape",
-                    "model": "runway-gen4-turbo",
-                    "duration": 5,
-                    "image_url": "https://example.com/landscape.jpg"
-                  }
                 }
               }
             }
@@ -788,7 +767,7 @@
                     },
                     "model": {
                       "type": "string",
-                      "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast", "google-veo-3-fast", "runway-gen4.5", "runway-gen4-turbo"],
+                      "enum": ["seedance-2", "kling-video", "google-veo-2", "veo-3.1", "veo-3.1-fast", "google-veo-3-fast"],
                       "description": "The model used for this generation."
                     },
                     "message": {

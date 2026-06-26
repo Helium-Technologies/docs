@@ -16,7 +16,7 @@ description: "google-veo-2 — Fastest generation with high visual quality. $3.0
 ## Example
 
 ```bash
-curl -X POST https://ninjachat.ai/api/v1/video \
+curl -X POST https://www.ninjachat.ai/api/v1/video \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model": "google-veo-2", "prompt": "Underwater camera glides through a bioluminescent coral reef, neon creatures pulse with light", "duration": 5}'
@@ -25,7 +25,7 @@ curl -X POST https://ninjachat.ai/api/v1/video \
 ```python
 import requests, os
 
-r = requests.post("https://ninjachat.ai/api/v1/video",
+r = requests.post("https://www.ninjachat.ai/api/v1/video",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     json={"model": "google-veo-2", "prompt": "Underwater camera glides through a bioluminescent coral reef, neon creatures pulse with light", "duration": 5}
 )

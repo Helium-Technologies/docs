@@ -22,7 +22,7 @@ Set `stream: true` to receive tokens as they're generated over SSE instead of wa
 ```python Python
 import os, requests, json
 
-r = requests.post("https://ninjachat.ai/api/v1/chat",
+r = requests.post("https://www.ninjachat.ai/api/v1/chat",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     json={
         "model": "auto",
@@ -47,7 +47,7 @@ print()
 ```
 
 ```javascript Node.js
-const r = await fetch("https://ninjachat.ai/api/v1/chat", {
+const r = await fetch("https://www.ninjachat.ai/api/v1/chat", {
   method: "POST",
   headers: {
     "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,

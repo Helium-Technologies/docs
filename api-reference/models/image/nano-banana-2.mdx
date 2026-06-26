@@ -28,7 +28,7 @@ Google's latest image generation model (Gemini 3.1 Flash Image). Best balance of
 ## Example
 
 ```bash
-curl -X POST https://ninjachat.ai/api/v1/images \
+curl -X POST https://www.ninjachat.ai/api/v1/images \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model": "nano-banana-2", "prompt": "A sunset over mountains, photorealistic"}'
@@ -37,7 +37,7 @@ curl -X POST https://ninjachat.ai/api/v1/images \
 ```python
 import requests, os
 
-r = requests.post("https://ninjachat.ai/api/v1/images",
+r = requests.post("https://www.ninjachat.ai/api/v1/images",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     json={"model": "nano-banana-2", "prompt": "A sunset over mountains, photorealistic"}
 )

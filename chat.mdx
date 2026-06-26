@@ -6,7 +6,7 @@ description: "Send messages to any model and get a response."
 ## Request
 
 ```bash
-POST https://ninjachat.ai/api/v1/chat
+POST https://www.ninjachat.ai/api/v1/chat
 Authorization: Bearer nj_sk_YOUR_API_KEY
 Content-Type: application/json
 ```
@@ -72,7 +72,7 @@ messages = [
     {"role": "assistant", "content": "Photosynthesis converts sunlight into energy..."},
     {"role": "user", "content": "How does it compare to solar panels?"},
 ]
-r = requests.post("https://ninjachat.ai/api/v1/chat",
+r = requests.post("https://www.ninjachat.ai/api/v1/chat",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     json={"model": "gpt-5", "messages": messages}
 )

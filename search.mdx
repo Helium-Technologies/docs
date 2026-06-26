@@ -6,7 +6,7 @@ description: "Search the web and get AI-synthesized answers with cited sources."
 ## Request
 
 ```bash
-POST https://ninjachat.ai/api/v1/search
+POST https://www.ninjachat.ai/api/v1/search
 Authorization: Bearer nj_sk_YOUR_API_KEY
 Content-Type: application/json
 ```
@@ -72,7 +72,7 @@ import os, requests
 HEADERS = {"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"}
 
 def search(query, group="web", depth="basic"):
-    r = requests.post("https://ninjachat.ai/api/v1/search",
+    r = requests.post("https://www.ninjachat.ai/api/v1/search",
         headers=HEADERS,
         json={
             "query": query,
@@ -101,7 +101,7 @@ print(result["answer"])
 
 ```javascript Node.js
 async function search(query, group = "web", depth = "basic") {
-  const r = await fetch("https://ninjachat.ai/api/v1/search", {
+  const r = await fetch("https://www.ninjachat.ai/api/v1/search", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
@@ -145,7 +145,7 @@ results = search("What is quantum computing?")
 # 2. Feed to a chat model with sources as context
 context = "\n".join(f"- {s['title']}: {s['content']}" for s in results["sources"][:5])
 
-r = requests.post("https://ninjachat.ai/api/v1/chat",
+r = requests.post("https://www.ninjachat.ai/api/v1/chat",
     headers=HEADERS,
     json={
         "model": "gpt-5",
@@ -155,5 +155,5 @@ r = requests.post("https://ninjachat.ai/api/v1/chat",
         ]
     }
 )
-print(r.json()["message"]["content"])
+print(r.json()["choices"][0]["message"]["content"])
 ```

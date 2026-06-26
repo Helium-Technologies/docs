@@ -6,7 +6,7 @@ description: "Check what a request will cost before you run it. Always free."
 ## Request
 
 ```bash
-POST https://ninjachat.ai/api/v1/estimate
+POST https://www.ninjachat.ai/api/v1/estimate
 Content-Type: application/json
 ```
 
@@ -121,7 +121,7 @@ import requests
 
 def estimate_batch_cost(model: str, count: int) -> float:
     """Returns estimated cost in cents. Free to call."""
-    r = requests.post("https://ninjachat.ai/api/v1/estimate",
+    r = requests.post("https://www.ninjachat.ai/api/v1/estimate",
         json={"model": model, "count": count}
     )
     return r.json()["total_cost_cents"]
@@ -139,7 +139,7 @@ else:
 
 ```javascript Node.js — cost calculator UI
 async function getModelPricing(models, requestCount) {
-  const r = await fetch("https://ninjachat.ai/api/v1/estimate", {
+  const r = await fetch("https://www.ninjachat.ai/api/v1/estimate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -166,7 +166,7 @@ pricing.forEach(p => {
 ```
 
 ```bash cURL — quick spot check
-curl -X POST https://ninjachat.ai/api/v1/estimate \
+curl -X POST https://www.ninjachat.ai/api/v1/estimate \
   -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-5",

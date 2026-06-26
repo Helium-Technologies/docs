@@ -10,7 +10,7 @@ description: "Generate images from text with 13 models via one endpoint."
 ## Request
 
 ```bash
-POST https://ninjachat.ai/api/v1/images
+POST https://www.ninjachat.ai/api/v1/images
 Authorization: Bearer nj_sk_YOUR_API_KEY
 Content-Type: application/json
 ```
@@ -89,7 +89,7 @@ import os, requests
 HEADERS = {"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"}
 
 def generate_image(prompt, model="flux-2-klein", size="1920x1920"):
-    r = requests.post("https://ninjachat.ai/api/v1/images",
+    r = requests.post("https://www.ninjachat.ai/api/v1/images",
         headers=HEADERS,
         json={"model": model, "prompt": prompt, "size": size}
     )
@@ -108,7 +108,7 @@ print(url)
 
 ```javascript Node.js
 async function generateImage(prompt, model = "flux-2-klein", size = "1920x1920") {
-  const r = await fetch("https://ninjachat.ai/api/v1/images", {
+  const r = await fetch("https://www.ninjachat.ai/api/v1/images", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
@@ -131,7 +131,7 @@ console.log(url);
 Transform an existing image by passing its URL:
 
 ```python
-r = requests.post("https://ninjachat.ai/api/v1/images",
+r = requests.post("https://www.ninjachat.ai/api/v1/images",
     headers=HEADERS,
     json={
         "model": "flux-kontext-pro",
@@ -147,7 +147,7 @@ print(r.json()["images"][0]["url"])
 Generate up to 4 variations in one request:
 
 ```python
-r = requests.post("https://ninjachat.ai/api/v1/images",
+r = requests.post("https://www.ninjachat.ai/api/v1/images",
     headers=HEADERS,
     json={
         "model": "recraft-v3",

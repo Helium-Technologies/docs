@@ -18,6 +18,7 @@
             "pages": [
               "index",
               "quickstart",
+              "openai-compatibility",
               "authentication"
             ]
           },
@@ -74,6 +75,8 @@
             "group": "Chat Models",
             "icon": "message",
             "pages": [
+              "api-reference/models/chat/gpt-5-4",
+              "api-reference/models/chat/gpt-5-4-pro",
               "api-reference/models/chat/gpt-5",
               "api-reference/models/chat/gpt-5-mini",
               "api-reference/models/chat/claude-opus-4-6",
@@ -123,8 +126,6 @@
             "group": "Video Models",
             "icon": "video",
             "pages": [
-              "api-reference/models/video/runway-gen4-5",
-              "api-reference/models/video/runway-gen4-turbo",
               "api-reference/models/video/veo-3-1",
               "api-reference/models/video/veo-3-1-fast",
               "api-reference/models/video/seedance-2",
@@ -244,7 +245,7 @@
     }
   },
   "api": {
-    "baseUrl": "https://ninjachat.ai",
+    "baseUrl": "https://www.ninjachat.ai",
     "auth": {
       "method": "bearer"
     },

@@ -3,12 +3,21 @@ title: "Error Handling"
 description: "Every error code, what it means, and what to do about it."
 ---
 
-All errors return JSON with an `error` code and `message`:
+Errors use the OpenAI-compatible shape — an `error` object with `message`, `type`,
+`code`, and `param`. The same `message` and `code` are also mirrored at the top
+level, alongside a `request_id` for support:
 
 ```json
 {
-  "error": "insufficient_credits",
-  "message": "Insufficient credits. Add more at Developers > Billing."
+  "error": {
+    "message": "Insufficient credits. Add more at Developers > Billing.",
+    "type": "insufficient_quota",
+    "code": "insufficient_credits",
+    "param": null
+  },
+  "message": "Insufficient credits. Add more at Developers > Billing.",
+  "code": "insufficient_credits",
+  "request_id": "req_abc123"
 }
 ```
 
@@ -31,8 +40,14 @@ All errors return JSON with an `error` code and `message`:
 
 ```json
 {
-  "error": "validation_error",
-  "message": "Invalid parameters",
+  "error": {
+    "message": "Invalid parameters.",
+    "type": "invalid_request_error",
+    "code": "validation_error",
+    "param": "messages"
+  },
+  "message": "Invalid parameters.",
+  "code": "validation_error",
   "details": [
     { "field": "messages", "message": "Required" },
     { "field": "model", "message": "Invalid model ID" }
@@ -51,13 +66,13 @@ HEADERS = {"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"}
 
 def chat(model, message, retries=3):
     for attempt in range(retries):
-        r = requests.post("https://ninjachat.ai/api/v1/chat",
+        r = requests.post("https://www.ninjachat.ai/api/v1/chat",
             headers=HEADERS,
             json={"model": model, "messages": [{"role": "user", "content": message}]}
         )
 
         if r.status_code == 200:
-            return r.json()["message"]["content"]
+            return r.json()["choices"][0]["message"]["content"]
 
         if r.status_code == 429:  # Rate limited — retry
             time.sleep(int(r.headers.get("Retry-After", 2 ** attempt)))
@@ -69,7 +84,7 @@ def chat(model, message, retries=3):
 
         # Client errors — don't retry
         err = r.json()
-        raise Exception(f"{r.status_code} {err['error']}: {err['message']}")
+        raise Exception(f"{r.status_code} {err['code']}: {err['message']}")
 
     raise Exception("Max retries exceeded")
 ```
@@ -77,7 +92,7 @@ def chat(model, message, retries=3):
 ```javascript Node.js
 async function chat(model, message, retries = 3) {
   for (let i = 0; i < retries; i++) {
-    const r = await fetch("https://ninjachat.ai/api/v1/chat", {
+    const r = await fetch("https://www.ninjachat.ai/api/v1/chat", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${process.env.NINJACHAT_API_KEY}`,
@@ -86,7 +101,7 @@ async function chat(model, message, retries = 3) {
       body: JSON.stringify({ model, messages: [{ role: "user", content: message }] }),
     });
 
-    if (r.ok) return (await r.json()).message.content;
+    if (r.ok) return (await r.json()).choices[0].message.content;
 
     if (r.status === 429) { // Rate limited — retry
       await new Promise(r => setTimeout(r, (r.headers.get("Retry-After") || 2 ** i) * 1000));
@@ -98,7 +113,7 @@ async function chat(model, message, retries = 3) {
     }
 
     const err = await r.json();
-    throw new Error(`${r.status} ${err.error}: ${err.message}`);
+    throw new Error(`${r.status} ${err.code}: ${err.message}`);
   }
   throw new Error("Max retries exceeded");
 }
@@ -136,7 +151,7 @@ Check for `balance_warning` in responses and alert yourself before running out. 
 ```bash
 # Test if your key works (should print 200)
 curl -s -o /dev/null -w "%{http_code}" \
-  -X POST https://ninjachat.ai/api/v1/chat \
+  -X POST https://www.ninjachat.ai/api/v1/chat \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"gpt-5-mini","messages":[{"role":"user","content":"hi"}]}'

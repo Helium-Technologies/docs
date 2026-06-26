@@ -15,7 +15,7 @@ description: "gemini-2.5-flash — Google's ultra-fast model. $0.003/request."
 ## Example
 
 ```bash
-curl -X POST https://ninjachat.ai/api/v1/chat \
+curl -X POST https://www.ninjachat.ai/api/v1/chat \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model": "gemini-2.5-flash", "messages": [{"role": "user", "content": "Hello!"}]}'
@@ -24,11 +24,11 @@ curl -X POST https://ninjachat.ai/api/v1/chat \
 ```python
 import requests, os
 
-r = requests.post("https://ninjachat.ai/api/v1/chat",
+r = requests.post("https://www.ninjachat.ai/api/v1/chat",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     json={"model": "gemini-2.5-flash", "messages": [{"role": "user", "content": "Hello!"}]}
 )
-print(r.json()["message"]["content"])
+print(r.json()["choices"][0]["message"]["content"])
 ```
 
 ---

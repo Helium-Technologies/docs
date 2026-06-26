@@ -50,9 +50,9 @@ A high-volume classifier using DeepSeek V3 ($0.003/request):
 
 ### Chat — `POST /api/v1/chat`
 
-**$0.03/req (ultra):** `claude-opus-4.6`
+**$0.03/req (ultra):** `gpt-5.4-pro` `claude-opus-4.6`
 
-**$0.015/req (premium):** `claude-sonnet-4.6`
+**$0.015/req (premium):** `gpt-5.4` `claude-sonnet-4.6`
 
 **$0.006/req (standard):** `gpt-5` `o3-mini` `claude-sonnet-4.5` `claude-haiku-4.5` `gemini-2.5-pro` `gemini-3-pro` `gemini-3.1-pro` `grok-4` `kimi-k2` `mistral-large` `llama-4-maverick` `kimi-k2.5`
 
@@ -82,8 +82,6 @@ Generating `n` images = `n` × per-image cost.
 
 | Model | Cost |
 |---|---|
-| `runway-gen4.5` | $5.00/video |
-| `runway-gen4-turbo` | $3.00/video |
 | `veo-3.1` | $5.00/video |
 | `seedance-2` `kling-video` `google-veo-2` `veo-3.1-fast` `google-veo-3-fast` | $3.00/video |
 
@@ -110,7 +108,7 @@ No request goes through. [Add more credits](https://www.ninjachat.ai/developers/
 From code:
 
 ```python
-r = requests.get("https://ninjachat.ai/api/api-keys",
+r = requests.get("https://www.ninjachat.ai/api/api-keys",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"})
 print(r.json()["billing"]["balanceFormatted"])  # → "$42.50"
 ```
@@ -140,7 +138,7 @@ At $1.00 or less, the warning becomes `"critical_low_balance"`. Use this to trig
 View all past credit purchases:
 
 ```python
-r = requests.get("https://ninjachat.ai/api/api-keys/transactions",
+r = requests.get("https://www.ninjachat.ai/api/api-keys/transactions",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"})
 
 for t in r.json()["transactions"]:
@@ -155,7 +153,7 @@ Get per-request usage logs with filtering:
 
 ```python
 # Recent logs
-r = requests.get("https://ninjachat.ai/api/api-keys/logs",
+r = requests.get("https://www.ninjachat.ai/api/api-keys/logs",
     headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
     params={"limit": 50, "group": "chat"})
 
@@ -180,7 +178,7 @@ for log in r.json()["logs"]:
 Add `format=csv` to download as a spreadsheet:
 
 ```bash
-curl "https://ninjachat.ai/api/api-keys/logs?format=csv&from=2026-03-01" \
+curl "https://www.ninjachat.ai/api/api-keys/logs?format=csv&from=2026-03-01" \
   -H "Authorization: Bearer nj_sk_YOUR_API_KEY" \
   -o usage.csv
 ```

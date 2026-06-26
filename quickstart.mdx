@@ -28,7 +28,7 @@ description: "Get an API key and make your first request in under a minute."
     <CodeGroup>
 
     ```bash cURL
-    curl -X POST https://ninjachat.ai/api/v1/chat \
+    curl -X POST https://www.ninjachat.ai/api/v1/chat \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer $NINJACHAT_API_KEY" \
       -d '{
@@ -40,18 +40,18 @@ description: "Get an API key and make your first request in under a minute."
     ```python Python
     import os, requests
 
-    r = requests.post("https://ninjachat.ai/api/v1/chat",
+    r = requests.post("https://www.ninjachat.ai/api/v1/chat",
         headers={"Authorization": f"Bearer {os.environ['NINJACHAT_API_KEY']}"},
         json={
             "model": "auto",
             "messages": [{"role": "user", "content": "What is the capital of France?"}]
         }
     )
-    print(r.json()["choices"][0]["message"]["content"])
+    print(r.json()["choices"][0]["choices"][0]["message"]["content"])
     ```
 
     ```javascript Node.js
-    const r = await fetch("https://ninjachat.ai/api/v1/chat", {
+    const r = await fetch("https://www.ninjachat.ai/api/v1/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
